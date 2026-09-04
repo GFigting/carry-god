@@ -1,0 +1,432 @@
+---
+type: query_schema
+project: fms
+page_id: arap-unified
+version: "1.0"
+updated: 2026-06-24
+---
+
+# FMS - ARAP 统一应收付列表查询
+
+page:
+  route: /reconciliation/arap
+  title: ARAP 统一应收付列表
+  api: GET /fc/arap/page
+  api_permission: "fc:arap:query"
+  component: "src/views/fms/reconciliation/arap/index.vue"
+  db_main_table: fc_inventory_bill
+  db_tables:
+    - fc_inventory_bill         # 库存单据主表 (别名 b)
+    - fc_inventory_bill_dt      # 库存单据明细表 (别名 dt)
+    - fc_source_inventory_bill  # 中台统一转换库存单 (别名 sib, LEFT JOIN)
+  description: >
+    统一查询应收应付明细，基于库存单据(bill) JOIN 明细(dt) JOIN 中台源单(sib)。
+    ARAP 类型由 bill_type 动态推导（PURCHASE_IN→AP, SALE_OUT→AR 等）。
+    支持按公司主体、供应商/客户、业务类型、单据类型、日期范围等多维度筛选。
+
+params:
+  # ── 应收付类型 ──
+  - key: arapBizTypeList
+    type: dict_array
+    label: 应收付类型
+    semantic: 应收/应付分类，由库存单据类型自动推导（采购入库→应付，销售出库→应收）
+    dict: FMS_ARAP_BIZ_TYPE
+    dict_values:
+      AR: 应收
+      AR_RED: 应收冲减
+      AP: 应付
+      AP_RED: 应付冲减
+      UNCLEAR: 未明确
+    db_column: null  # SQL 中使用 CASE WHEN 动态计算，非直接列
+    notes: "SQL 中通过 CASE WHEN b.bill_type 动态计算：PURCHASE_IN/SUBCONTRACT_PRODUCT_IN→AP, SALE_OUT/CONSIGNMENT_PRODUCT_OUT→AR, 红字→*_RED, 其他→UNCLEAR"
+    example: ["AP", "AR"]
+
+  # ── 业务类型 ──
+  - key: bizType
+    type: dict_single
+    label: 业务类型
+    semantic: 物料业务类型（面料/辅料/成品），区分不同的业务线
+    dict: MATERIAL_TYPE
+    db_column: b.biz_type
+    example: "FABRIC"
+
+  # ── 公司主体 ──
+  - key: orgId
+    type: table_single
+    label: 公司主体
+    semantic: 我方公司主体/结算主体，即单据归属的组织
+    table: fc_org
+    db_column: b.org_id
+    example: 1
+    notes: "值为 fc_org.id，前端通过 dictTable 加载 orgs 列表展示"
+
+  # ── 对手方类型 ──
+  - key: customerType
+    type: dict_single
+    label: 对手方类型
+    semantic: 对方的类型：内部主体 或 供应商
+    dict: CUSTOMER_TYPE
+    dict_values:
+      ORG: 内部主体
+      SUPPLIER: 供应商
+    db_column: b.customer_type
+    cascade: customerId
+    example: "SUPPLIER"
+    notes: "切换时清空 customerId，customerId 的下拉选项取决于此值"
+
+  # ── 对方名称 ──
+  - key: customerId
+    type: table_single
+    label: 对方名称
+    semantic: 对手方的具体名称。当 customerType=SUPPLIER 时为供应商名称，当 customerType=ORG 时为内部主体名称
+    table: "fc_supplier | fc_org"
+    db_column: b.customer_id
+    depends_on: customerType
+    example: 1001
+    notes: "依赖 customerType：SUPPLIER→查 suppliers 表，ORG→查 orgs 表。值为对应表的 id"
+
+  # ── 业务日期范围 ──
+  - key: dateRange
+    type: daterange
+    label: 业务日期范围
+    semantic: 单据业务发生日期范围（起止）
+    format: "YYYY-MM-DD HH:mm:ss"
+    db_column: b.bill_date
+    example: ["2026-05-25 00:00:00", "2026-06-24 23:59:59"]
+    notes: "前端 dateRange 在 buildQueryParams 时映射为 API 的 dateStart/dateEnd，后端用 billDate BETWEEN"
+
+  # ── 库存单据类型 ──
+  - key: billTypeList
+    type: dict_array
+    label: 库存单据类型
+    semantic: 库存单据的操作类型（采购入库/销售出库/委外材料出库等），决定应收付方向和映射类型
+    dict: INVENTORY_BILL_TYPE
+    dict_values:
+      PURCHASE_IN: 采购入库
+      PURCHASE_IN_RED: 采购入库红字
+      SALE_OUT: 销售出库
+      SALE_OUT_RED: 销售出库红字
+      SUBCONTRACT_MATERIAL_OUT: 委外材料出库
+      SUBCONTRACT_MATERIAL_OUT_RED: 委外材料出库红字
+      SUBCONTRACT_PRODUCT_IN: 委外成品入库
+      SUBCONTRACT_PRODUCT_IN_RED: 委外成品入库红字
+      CONSIGNMENT_MATERIAL_IN: 受托材料入库
+      CONSIGNMENT_MATERIAL_IN_RED: 受托材料入库红字
+      CONSIGNMENT_PRODUCT_OUT: 受托成品出库
+      CONSIGNMENT_PRODUCT_OUT_RED: 受托成品出库红字
+      OTHER_OUT: 其他出库
+      OTHER_IN: 其他入库
+    db_column: b.bill_type
+    example: ["PURCHASE_IN", "SALE_OUT"]
+    notes: "每种 bill_type 有固定的 direction_type(IN/OUT) 和对应的 arapBizType"
+
+  # ── 映射类型 ──
+  - key: mapTypeList
+    type: dict_array
+    label: 映射类型
+    semantic: 单据映射类型（库存型/费用型/物流单据型），目前 ARAP 只有 MAP_INVENTORY
+    dict: BILL_MAP_TYPE
+    dict_values:
+      MAP_INVENTORY: 库存型
+      MAP_COST: 费用型
+      MAP_GO: 物流单据型
+    db_column: null
+    example: ["MAP_INVENTORY"]
+    notes: "当前 ARAP 查询 SQL 中硬编码 mapType='MAP_INVENTORY'"
+
+  # ── 中台订单采购类型 ──
+  - key: ztOrderBillPurchaseTypeList
+    type: dict_array
+    label: 采购类型
+    semantic: 中台订单的采购类型（全卖/半卖/加工/外采等），来自中台源单数据
+    dict: ZT_PURCHASE_TYPE
+    db_column: sib.zt_order_bill_purchase_type
+    db_table: fc_source_inventory_bill
+    example: ["1", "2"]
+    notes: "仅展开搜索区可见；半卖(2)类型的价格会被 ArapPriceResolver 替换为 otherProcessPrice"
+
+  # ── 库存单号（批量精确匹配） ──
+  - key: billNumberList
+    type: text_array
+    label: 库存单号
+    semantic: FMS 库存单据号，批量精确匹配
+    db_column: b.bill_number
+    match_mode: exact
+    example: ["PI202605-0001"]
+    notes: "BatchSearchTextarea 组件输入，多行/逗号/空格分隔，最多50条"
+
+  # ── 中台订单号 ──
+  - key: ztOrderBillNumberList
+    type: text_array
+    label: 中台订单号
+    semantic: 中台系统的订单号，批量搜索
+    db_column: sib.zt_order_bill_number
+    db_table: fc_source_inventory_bill
+    match_mode: like
+    example: ["ZT-OD-202605-0001"]
+
+  # ── 中台库存单号 ──
+  - key: ztInventoryBillNumberList
+    type: text_array
+    label: 中台库存单号
+    semantic: 中台系统的库存单据号，批量搜索
+    db_column: b.zt_inventory_bill_number
+    match_mode: like
+    example: ["ZT-INV-202605-0001"]
+
+  # ── 中台入仓码 ──
+  - key: ztInventoryFollowNoList
+    type: text_array
+    label: 中台入仓码
+    semantic: 中台库存单据的入仓跟踪码
+    db_column: b.zt_inventory_follow_no
+    match_mode: like
+    example: ["FC2026050001"]
+
+  # ── 订单号 ──
+  - key: orderBillNumberList
+    type: text_array
+    label: 订单号
+    semantic: 关联的财务订单号，批量搜索
+    db_column: b.order_bill_number
+    match_mode: like
+    example: ["OD-202605-0001"]
+
+  # ── 业务键 ──
+  - key: businessKeyList
+    type: text_array
+    label: 业务键
+    semantic: "格式为 MAP_INVENTORY|库存单号|materialId|qty 的业务唯一键，精确匹配"
+    db_column: null
+    match_mode: exact
+    notes: "后台解析为 b.bill_number=xxx AND dt.material_id=xxx AND dt.qty=xxx。非法格式会变成 1=0 不返回数据"
+    example: ["MAP_INVENTORY|PI202605-0001|10001|50"]
+
+# ── 仅后端 API 支持的参数（前端未暴露） ──
+backend_only_params:
+  - key: materialCode
+    type: text
+    label: 商品编码
+    semantic: 库存明细中的商品/物料编码
+    db_column: dt.material_code
+    match_mode: like
+
+  - key: materialName
+    type: text
+    label: 商品名称
+    semantic: 库存明细中的商品/物料名称
+    db_column: dt.material_name
+    match_mode: like
+
+  - key: directionType
+    type: dict_single
+    label: 出入库方向
+    semantic: 库存单据的出入库方向（IN入库 / OUT出库）
+    dict: INVENTORY_DIRECTION_TYPE
+    dict_values:
+      IN: 入库
+      OUT: 出库
+    db_column: b.direction_type
+
+  - key: operateTypeList
+    type: dict_array
+    label: FMS操作类型
+    semantic: FMS 端的操作类型（面辅料/成品操作类型），来自中台源单
+    dict: "MATERIAL_OPERATE_TYPE_FOR_SYNC | PRODUCT_OPERATE_TYPE_FOR_SYNC"
+    db_column: sib.operate_type
+    db_table: fc_source_inventory_bill
+
+  - key: orderTypeList
+    type: dict_array
+    label: 关联订单类型
+    semantic: 库存单关联的财务订单类型（采购订单/销售订单/委外加工订单/受托加工订单）
+    dict: INVENTORY_ORDER_TYPE
+    dict_values:
+      PURCHASE_ORDER: 采购订单
+      SALES_ORDER: 销售订单
+      SUBCONTRACT_ORDER: 委外加工订单
+      CONSIGNMENT_ORDER: 受托加工订单
+    db_column: b.order_type
+
+  - key: ztInventoryTypeList
+    type: dict_array
+    label: 中台库存单类型
+    semantic: 中台系统的库存单类型（成品入库/成品出库/物料入库/物料出库）
+    dict: INVENTORY_ZT_INVENTORY_TYPE
+    dict_values:
+      ZT_PRODUCT_IN: 成品入库
+      ZT_PRODUCT_OUT: 成品出库
+      ZT_MATERIAL_IN: 物料入库
+      ZT_MATERIAL_OUT: 物料出库
+    db_column: b.zt_inventory_type
+
+  - key: ztMaterialPoNo
+    type: text
+    label: 中台物料采购单号
+    semantic: 中台物料采购单号，用于追溯物料采购来源
+    db_column: sib.zt_material_po_no
+    db_table: fc_source_inventory_bill
+
+  - key: ztSkuPoNo
+    type: text
+    label: 中台成品采购单号
+    semantic: 中台成品采购单号，用于追溯成品采购来源
+    db_column: sib.zt_sku_po_no
+    db_table: fc_source_inventory_bill
+
+  - key: ztStyleNo
+    type: text
+    label: 中台成品款号
+    semantic: 中台成品款号
+    db_column: sib.zt_style_no
+    db_table: fc_source_inventory_bill
+
+# ── 语义索引：用户口语 → 参数 key ──
+semantic_index:
+  # 日期/时间
+  - words: [本月, 这个月, 当月, 最近一个月, 一个月内, 近30天, 上月, 上个月]
+    maps_to: dateRange
+    resolver: relative_date
+
+  - words: [今天, 今日, 昨天, 最近一周, 最近7天, 本周, 上周]
+    maps_to: dateRange
+    resolver: relative_date
+
+  # 应收付
+  - words: [应收, 应付, 应收款, 应付款, 应收账款, 应付账款]
+    maps_to: arapBizTypeList
+    resolver: dict_lookup
+    dict: FMS_ARAP_BIZ_TYPE
+
+  # 供应商
+  - words: [供应商, 供方, 对方, 厂家, vendor, supplier]
+    maps_to: customerId
+    precondition: "customerType = 'SUPPLIER'"
+    resolver: db_probe
+    notes: "需先设置 customerType='SUPPLIER'，再查 fc_supplier 表获取 supplier_id"
+
+  # 公司/主体
+  - words: [公司, 主体, 我方, 本公司, 我方主体, 结算主体, 组织]
+    maps_to: orgId
+    resolver: db_probe
+    notes: "查 fc_org 表获取 org_id"
+
+  - words: [内部主体, 兄弟公司]
+    maps_to: customerId
+    precondition: "customerType = 'ORG'"
+    resolver: db_probe
+
+  # 业务类型
+  - words: [面料, 辅料, 成品, 面料业务, 成品业务]
+    maps_to: bizType
+    resolver: dict_lookup
+    dict: MATERIAL_TYPE
+
+  # 单据类型 → billTypeList
+  - words: [入库, 出库, 采购入库, 销售出库, 退货, 红字, 红冲, 委外, 受托]
+    maps_to: billTypeList
+    resolver: dict_lookup
+    dict: INVENTORY_BILL_TYPE
+    notes: "入库→PURCHASE_IN/SUBCONTRACT_PRODUCT_IN/CONSIGNMENT_MATERIAL_IN/OTHER_IN；出库→SALE_OUT/SUBCONTRACT_MATERIAL_OUT/CONSIGNMENT_PRODUCT_OUT/OTHER_OUT；红字→*_RED；委外→SUBCONTRACT_*；受托→CONSIGNMENT_*"
+
+  # 采购类型
+  - words: [全卖, 半卖, 加工, 外采]
+    maps_to: ztOrderBillPurchaseTypeList
+    resolver: dict_lookup
+    dict: ZT_PURCHASE_TYPE
+
+  # 单号类 → 多个可能，需根据上下文判断
+  - words: [单号, 订单号, 单据号, 编号]
+    maps_to: billNumberList
+    resolver: direct
+    notes: "模糊说法，可能匹配 billNumberList/orderBillNumberList/ztOrderBillNumberList/ztInventoryBillNumberList，需根据上下文或询问用户明确"
+
+  # 对账相关
+  - words: [对账, 要账, 对账多单, 批量对账, 多次对账]
+    maps_to: null
+    resolver: db_probe
+    notes: "需探查：同一供应商/客户在一定时间范围内有多少笔不同类型的库存单据 → 判断是否'多单'"
+
+# ── DB 探查提示：常见探查场景的 SQL 模板 ──
+db_probe_hints:
+  - scenario: 查找一个月内有多笔不同操作类型库存单的供应商
+    description: >
+      用于回答"可能要对账多单的供应商"等口语查询。
+      逻辑：同一个供应商(customer_id)在一定时间范围内有多笔不同 bill_type 的库存单据。
+    sql_template: |
+      SELECT b.customer_id, c.name AS supplier_name, COUNT(DISTINCT b.bill_type) AS type_count,
+             GROUP_CONCAT(DISTINCT b.bill_type) AS bill_types
+      FROM fc_inventory_bill b
+      LEFT JOIN fc_supplier c ON b.customer_id = c.id
+      WHERE b.deleted = 0
+        AND b.customer_type = 'SUPPLIER'
+        AND b.bill_date BETWEEN {dateStart} AND {dateEnd}
+      GROUP BY b.customer_id, c.name
+      HAVING type_count > 1
+      ORDER BY type_count DESC
+    output_maps_to: customerId
+    output_format: "将结果中的 customer_id 列表填入 customerId 字段（注意：前端 customerId 为单值，需考虑是否转为批量单号查询）"
+
+  - scenario: 查找特定供应商在一个月内的所有库存单据
+    description: 已知供应商名称，查其所有库存单据的 bill_type 和 arapBizType
+    sql_template: |
+      SELECT b.bill_number, b.bill_type, b.bill_date,
+             CASE WHEN b.bill_type IN ('PURCHASE_IN','SUBCONTRACT_PRODUCT_IN') THEN 'AP'
+                  WHEN b.bill_type IN ('PURCHASE_IN_RED','SUBCONTRACT_PRODUCT_IN_RED') THEN 'AP_RED'
+                  WHEN b.bill_type IN ('SALE_OUT','CONSIGNMENT_PRODUCT_OUT') THEN 'AR'
+                  WHEN b.bill_type IN ('SALE_OUT_RED','CONSIGNMENT_PRODUCT_OUT_RED') THEN 'AR_RED'
+                  ELSE 'UNCLEAR' END AS arap_biz_type,
+             b.org_id, b.customer_id
+      FROM fc_inventory_bill b
+      WHERE b.deleted = 0
+        AND b.customer_type = 'SUPPLIER'
+        AND b.customer_id = {supplierId}
+        AND b.bill_date BETWEEN {dateStart} AND {dateEnd}
+      ORDER BY b.bill_date DESC
+    output_maps_to: "[billNumberList, arapBizTypeList, dateRange]"
+    output_format: "汇总可用的筛选条件组合，供用户选择进一步缩小范围"
+
+  - scenario: 查找映射到不同公司主体的供应商库存单
+    description: 用于回答"对应到了不同主体"的查询场景
+    sql_template: |
+      SELECT b.customer_id, c.name AS supplier_name,
+             COUNT(DISTINCT b.org_id) AS org_count,
+             GROUP_CONCAT(DISTINCT o.short_name) AS org_names
+      FROM fc_inventory_bill b
+      LEFT JOIN fc_supplier c ON b.customer_id = c.id
+      LEFT JOIN fc_org o ON b.org_id = o.id
+      WHERE b.deleted = 0
+        AND b.customer_type = 'SUPPLIER'
+        AND b.bill_date BETWEEN {dateStart} AND {dateEnd}
+      GROUP BY b.customer_id, c.name
+      HAVING org_count > 1
+    output_maps_to: "[orgId, customerId]"
+    output_format: "返回多主体的供应商列表，可用于 orgId + customerId 组合筛选"
+
+  - scenario: 按业务类型 + 单据类型统计供应商维度的单据分布
+    description: 全景视图：各供应商在不同 bizType + billType 下的单据数量
+    sql_template: |
+      SELECT b.customer_id, c.name AS supplier_name, b.biz_type, b.bill_type,
+             CASE WHEN b.bill_type IN ('PURCHASE_IN','SUBCONTRACT_PRODUCT_IN') THEN 'AP'
+                  WHEN b.bill_type IN ('SALE_OUT','CONSIGNMENT_PRODUCT_OUT') THEN 'AR'
+                  WHEN b.bill_type IN ('PURCHASE_IN_RED','SUBCONTRACT_PRODUCT_IN_RED') THEN 'AP_RED'
+                  WHEN b.bill_type IN ('SALE_OUT_RED','CONSIGNMENT_PRODUCT_OUT_RED') THEN 'AR_RED'
+                  ELSE 'UNCLEAR' END AS arap_biz_type,
+             COUNT(*) AS bill_count
+      FROM fc_inventory_bill b
+      LEFT JOIN fc_supplier c ON b.customer_id = c.id
+      WHERE b.deleted = 0
+        AND b.customer_type = 'SUPPLIER'
+        AND b.bill_date BETWEEN {dateStart} AND {dateEnd}
+      GROUP BY b.customer_id, c.name, b.biz_type, b.bill_type
+      ORDER BY bill_count DESC
+    output_maps_to: "[customerId, bizType, billTypeList, arapBizTypeList]"
+    output_format: "供用户看到全景分布后选择具体筛选组合"
+
+# ── 前端导出/导入兼容性 ──
+clipboard:
+  component: QueryParamClipboard
+  exclude_keys: [pageNo, pageSize]
+  import_mode: "Object.assign(queryParams, v) — 仅覆盖已存在的 key"
+  date_format: "YYYY-MM-DD HH:mm:ss"
+  null_cleanup: "导入时由 buildQueryParams 自动清理 null/空字符串/空数组"

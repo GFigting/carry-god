@@ -1,0 +1,46 @@
+# ── 个人实际配置（首次使用需从 .template.yaml 复制）──
+配置与元数据/项目注册表.yaml
+配置与元数据/框架设置.yaml
+
+# ── 个人 MCP 配置（含数据库密码等敏感信息）──
+.mcp.json
+
+# ── Claude Code 内部配置 ──
+.claude/
+
+# ── Superpowers 本地运行状态 ──
+.superpowers/
+
+# ── CodeGraph 索引（可重建）──
+.codegraph/
+
+# ── IDE 个人配置 ──
+.cursor/
+
+# ── 个人 Obsidian 状态 ──
+.obsidian/workspace.json
+.obsidian/graph.json
+.obsidian/bookmarks.json
+.obsidian/hotkeys.json
+
+# ── 个人目标与工作记录 ──（caleb-ls 分支开放）
+# A.目标体系/GOAL-*/
+# A.目标体系/目标总览.md
+# A.目标体系/管理报告/
+# A.目标体系/历史目标/
+
+# ── 个人知识库内容 ──（caleb-ls 分支开放）
+# 知识沉淀/KB_*/
+# 知识沉淀/已处理信息/
+# 知识沉淀/未处理信息/
+
+# ── 个人产物工件（caleb-ls 分支开放）──
+# A.产物工件/*/
+
+# ── 归档内容（caleb-ls 分支开放）──
+# _封存/
+
+# ── 系统文件 ──
+.DS_Store
+Thumbs.db
+desktop.ini

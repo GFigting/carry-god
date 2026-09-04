@@ -1,0 +1,58 @@
+# 项目注册表 — 所有项目的唯一索引
+# 用途：供 Agent 和人类快速定位项目路径、了解技术栈，无需反复询问路径
+#
+# ⚠️ 使用方式：
+#   1. 复制本文件为 项目注册表.yaml
+#   2. 修改 projects_root 为你本机的项目根目录
+#   3. 在 projects: 下注册你的项目（参考下方示例）
+#
+# Agent 通过 key 和 alias 匹配用户口语中的项目名，自动 cd 到对应目录工作。
+
+projects_root: "D:/your/dev/projects"
+
+projects:
+  # ── 示例项目（替换为你的实际项目）──
+  example-rear:
+    name: "示例后端"
+    path: "D:/your/dev/projects/example-rear"
+    tech_stack: [Java, Spring Boot, Maven]
+    framework: "Spring Boot"
+    groupId: "com.example"
+    base_package: "com.example.project"
+    port: 8080
+    modules: {}
+    code_conventions:
+      package: "com.example.project.{layer}"
+      layers: "Controller → Service → DAL"
+    business_domains:
+      - 示例领域
+    description: "示例项目，用于演示注册表结构。替换为你的实际项目。"
+    docs_ref: "docs/README.md"
+    alias: [example, 示例]
+
+  example-ui:
+    name: "示例前端"
+    path: "D:/your/dev/projects/example-ui"
+    tech_stack: [Vue3, Vite, Element-Plus, TypeScript]
+    framework: "Vue3 + Vite"
+    package_manager: "pnpm"
+    node_version: ">= 16"
+    code_conventions:
+      views_pattern: "index.vue + Form.vue + Detail.vue"
+      api_mirrors_views: "src/api/ 与 src/views/ 目录镜像"
+    business_domains:
+      - 示例领域
+    description: "示例前端项目。替换为你的实际项目。"
+    docs_ref: "docs/README.md"
+    alias: [示例前端]
+
+# ── 字段说明 ──
+# key:         项目唯一标识，建议用 "{系统}-{端}" 格式（如 fms-rear, lasen-ui）
+# name:        中文名，Agent 展示用
+# path:        项目本地绝对路径
+# tech_stack:  技术栈列表，Agent 加载上下文时参考
+# alias:       口语简称，Agent 匹配用户口语用
+# description: 简要描述，Agent 理解项目边界用
+# docs_ref:    项目内 README 路径，Agent 进入项目时首先读取
+#
+# 其他字段（modules/business_domains/code_conventions 等）按需填写，Agent 会按需读取。

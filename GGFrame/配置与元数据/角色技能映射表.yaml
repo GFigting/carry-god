@@ -1,0 +1,462 @@
+# ============================================================
+# 角色 → 技能映射表（唯一真相来源）
+# ============================================================
+# 用途：Tech Lead 派发 subAgent 时，查此表确定上下文包中的技能挂接
+# 维护规则：角色文件中不再重复写技能映射，只放引用链接指向此表
+# 版本：2026-05-29 v2
+# ============================================================
+
+# 技能来源前缀约定
+# -----------------
+# superpowers:  → 外部 superpowers 技能集（需用户明确要求才启用）
+# claude:       → Claude Code 内置斜杠命令（直接可用）
+# zcf:          → 框架 zcf 系列技能（按场景触发）
+# chk:          → 框架检查清单（引用而非执行技能）
+
+# 角色分层
+# --------
+# Tier 1 — 可执行角色：作为 subAgent 运行，必须有技能映射
+# Tier 2 — 编排角色：秘书侧使用，产出需求/计划/规范，技能映射可选
+# Tier 3 — 支撑角色：辅助产出（文档/设计），技能映射可选
+
+roles:
+  # ============================================================
+  # Tier 1 — 研发类（可执行角色）
+  # ============================================================
+  ROLE-DEV-001:
+    name: "前端开发工程师"
+    tier: 1
+    identity: "资深前端开发工程师，负责 Web/H5 页面的架构设计、编码实现与迭代维护"
+    primary_skills:
+      - skill: "superpowers:writing-plans"
+        trigger: "任务涉及多个页面/组件/状态模块，或跨文件改动超过 3 个"
+        note: "先拆清数据流、组件职责、联调顺序和验证步骤"
+      - skill: "superpowers:test-driven-development"
+        trigger: "组件行为可先定义断言，或核心交互逻辑需要回归保障"
+        note: "优先定义组件测试、关键交互测试、回归样例"
+      - skill: "superpowers:systematic-debugging"
+        trigger: "浏览器异常、样式错乱、状态不同步、线上回归问题"
+        note: "先收集复现路径、控制台报错、网络请求、状态变化证据，再修改代码"
+      - skill: "superpowers:verification-before-completion"
+        trigger: "准备声明已完成/已修复/可提测之前"
+        note: "以最新测试、构建和关键页面验证结果作为结论依据"
+      - skill: "zcf:git-commit"
+        trigger: "代码变更完成后，生成符合 Conventional Commits 的提交信息"
+        note: "自动分析改动范围，生成规范提交信息"
+    optional_skills:
+      - skill: "superpowers:brainstorming"
+        trigger: "新功能、交互改造、组件行为变化、需求或设计存在歧义"
+      - skill: "superpowers:requesting-code-review"
+        trigger: "已完成实现并准备提交审查"
+      - skill: "superpowers:receiving-code-review"
+        trigger: "收到评审意见，需要判断是否采纳并修改"
+    checklists:
+      - "CHK-代码审查检查清单"
+      - "CHK-上线前检查清单"
+
+  ROLE-DEV-002:
+    name: "后端开发工程师"
+    tier: 1
+    identity: "资深后端开发工程师，负责服务端 API 设计、数据库建模与业务逻辑实现"
+    primary_skills:
+      - skill: "superpowers:writing-plans"
+        trigger: "任务涉及多模块/多表/接口+数据库+缓存协同改动"
+        note: "先拆清模块边界、数据流、事务边界、回滚点和验证步骤"
+      - skill: "superpowers:test-driven-development"
+        trigger: "核心业务逻辑可先定义断言，或涉及资金/权限等关键功能"
+        note: "优先定义单元测试、集成测试、契约测试和关键回归样例"
+      - skill: "superpowers:systematic-debugging"
+        trigger: "线上故障、接口异常、数据错误、测试失败、性能回归"
+        note: "先收集日志、请求样本、数据库状态、复现步骤和监控证据，再修改代码"
+      - skill: "superpowers:verification-before-completion"
+        trigger: "准备声明已完成/已修复/可联调或可上线之前"
+        note: "以最新测试、接口验证、构建结果和关键数据校验作为结论依据"
+      - skill: "zcf:git-commit"
+        trigger: "代码变更完成后，生成符合 Conventional Commits 的提交信息"
+        note: "自动分析改动范围，生成规范提交信息"
+    optional_skills:
+      - skill: "superpowers:brainstorming"
+        trigger: "新功能、接口行为调整、领域模型变化、需求或方案存在歧义"
+      - skill: "superpowers:requesting-code-review"
+        trigger: "已完成实现并准备提交审查"
+      - skill: "superpowers:receiving-code-review"
+        trigger: "收到评审意见，需要判断是否采纳并修改"
+    checklists:
+      - "CHK-代码审查检查清单"
+      - "CHK-上线前检查清单"
+
+  ROLE-DEV-003:
+    name: "移动端开发工程师"
+    tier: 1
+    identity: "资深移动端开发工程师，负责 iOS/Android 或跨平台移动应用的架构设计与功能开发"
+    primary_skills:
+      - skill: "superpowers:writing-plans"
+        trigger: "任务涉及多个页面/模块/平台适配，或跨文件改动超过 3 个"
+      - skill: "superpowers:test-driven-development"
+        trigger: "核心交互逻辑可先定义断言，或涉及离线缓存/数据同步等关键功能"
+      - skill: "superpowers:systematic-debugging"
+        trigger: "崩溃、卡顿、内存泄漏、弱网异常、线上回归问题"
+      - skill: "superpowers:verification-before-completion"
+        trigger: "准备声明已完成/已修复/可提测之前"
+      - skill: "zcf:git-commit"
+        trigger: "代码变更完成后"
+    optional_skills:
+      - skill: "superpowers:brainstorming"
+        trigger: "新功能、交互改造、跨平台方案选择、需求存在歧义"
+      - skill: "superpowers:requesting-code-review"
+        trigger: "已完成实现并准备提交审查"
+      - skill: "superpowers:receiving-code-review"
+        trigger: "收到评审意见"
+    checklists:
+      - "CHK-代码审查检查清单"
+      - "CHK-上线前检查清单"
+
+  ROLE-DEV-004:
+    name: "数据工程师"
+    tier: 1
+    identity: "资深数据工程师，负责数据管道设计、ETL/ELT 开发与数据质量保障"
+    primary_skills:
+      - skill: "superpowers:writing-plans"
+        trigger: "涉及多数据源/多层级数仓/复杂 DAG 编排的数据任务"
+      - skill: "superpowers:systematic-debugging"
+        trigger: "数据延迟、数据丢失、数据质量异常、ETL 作业失败"
+      - skill: "superpowers:verification-before-completion"
+        trigger: "准备声明数据处理管道可上线/数据质量问题已修复之前"
+    optional_skills:
+      - skill: "superpowers:brainstorming"
+        trigger: "数据模型设计、技术选型（Spark vs Flink）、方案存在歧义"
+    checklists:
+      - "CHK-代码审查检查清单"
+
+  # ============================================================
+  # Tier 1 — 质量类（可执行角色）
+  # ============================================================
+  ROLE-QA-001:
+    name: "测试工程师"
+    tier: 1
+    identity: "中级测试工程师，负责功能测试、回归测试、自动化测试与版本质量评估"
+    primary_skills:
+      - skill: "superpowers:writing-plans"
+        trigger: "制定测试策略和测试计划，涉及多模块/多场景的测试设计"
+        note: "先拆清测试范围、测试场景优先级、自动化 vs 手工测试分工"
+      - skill: "superpowers:systematic-debugging"
+        trigger: "发现缺陷需要定位根因时"
+        note: "收集复现步骤、日志、抓包数据、数据库状态，再给出精准的缺陷报告"
+      - skill: "superpowers:verification-before-completion"
+        trigger: "准备输出版本质量评估和上线建议之前"
+        note: "确保测试覆盖率和缺陷统计有数据支撑"
+    optional_skills:
+      - skill: "superpowers:brainstorming"
+        trigger: "参与需求评审，从可测试性角度提出建议"
+    checklists:
+      - "CHK-上线前检查清单"
+
+  ROLE-QA-002:
+    name: "代码审核员"
+    tier: 1
+    identity: "资深代码审核员，审查代码的正确性、安全性、可维护性和架构一致性"
+    primary_skills:
+      - skill: "claude:/simplify"
+        trigger: "审查发现问题后，对代码进行优化重构"
+        note: "Claude Code 内置命令，自动审查代码的质量、复用性和效率并修复"
+      - skill: "superpowers:receiving-code-review"
+        trigger: "处理审查反馈、分类审查意见时"
+        note: "区分必须修改和建议优化，按类别组织审查意见"
+    optional_skills:
+      - skill: "superpowers:systematic-debugging"
+        trigger: "审查中遇到可疑逻辑需要深入追踪时"
+    checklists:
+      - "CHK-代码审查检查清单"
+      - "CHK-安全审查检查清单"
+
+  ROLE-QA-003:
+    name: "性能测试工程师"
+    tier: 1
+    identity: "资深性能测试工程师，负责性能测试策略制定、压测执行与瓶颈分析"
+    primary_skills:
+      - skill: "superpowers:writing-plans"
+        trigger: "制定性能测试策略和负载模型时"
+      - skill: "superpowers:systematic-debugging"
+        trigger: "定位性能瓶颈时"
+        note: "基于监控数据和 Profiling 结果，分层排查 CPU/内存/IO/网络/数据库"
+      - skill: "superpowers:verification-before-completion"
+        trigger: "准备输出性能测试报告和上线建议之前"
+    optional_skills: []
+    checklists:
+      - "CHK-上线前检查清单"
+
+  ROLE-QA-004:
+    name: "代码质量检查员"
+    tier: 1
+    identity: "轻量级代码规范检查员，聚焦项目编码规范逐项核验，不涉及架构和业务逻辑审查"
+    primary_skills: []
+    optional_skills: []
+    checklists:
+      - "CHK-项目代码质量自检"
+
+  # ============================================================
+  # Tier 1 — 运维类（可执行角色）
+  # ============================================================
+  ROLE-OPS-001:
+    name: "DevOps工程师"
+    tier: 1
+    identity: "资深 DevOps 工程师，负责 CI/CD 流水线、多环境管理和部署发布"
+    primary_skills:
+      - skill: "superpowers:writing-plans"
+        trigger: "设计 CI/CD 流水线、多阶段部署策略、基础设施变更时"
+      - skill: "superpowers:verification-before-completion"
+        trigger: "准备执行生产部署或声明流水线可用之前"
+      - skill: "zcf:git-worktree"
+        trigger: "需要隔离的部署配置变更或基础设施代码修改时"
+    optional_skills:
+      - skill: "superpowers:systematic-debugging"
+        trigger: "CI/CD 流水线失败、部署异常、环境不一致问题排查"
+    checklists:
+      - "CHK-上线前检查清单"
+
+  ROLE-OPS-002:
+    name: "SRE工程师"
+    tier: 1
+    identity: "资深 SRE 工程师，负责生产环境可靠性保障、可观测性体系和故障应急"
+    primary_skills:
+      - skill: "superpowers:systematic-debugging"
+        trigger: "生产故障应急响应、告警排查、根因分析"
+        note: "从现象到根因，分层排查（网络/系统/应用/数据），保留完整时间线"
+      - skill: "superpowers:writing-plans"
+        trigger: "制定容量规划、可靠性改进方案、自动化运维工具设计时"
+    optional_skills:
+      - skill: "superpowers:verification-before-completion"
+        trigger: "故障修复后验证、变更窗口关闭前确认"
+    checklists:
+      - "CHK-上线前检查清单"
+      - "CHK-故障响应检查清单"
+
+  ROLE-OPS-003:
+    name: "值班工程师"
+    tier: 1
+    identity: "中级值班工程师，负责轮值期间的告警监控、初步排查和故障升级"
+    primary_skills:
+      - skill: "superpowers:systematic-debugging"
+        trigger: "收到告警需要初步排查和诊断时"
+        note: "按 Runbook 执行排查步骤，收集必要信息后判断是自行处理还是升级"
+    optional_skills: []
+    checklists:
+      - "CHK-上线前检查清单"
+      - "CHK-故障响应检查清单"
+
+  # ============================================================
+  # Tier 1 — 架构类（可执行角色）
+  # ============================================================
+  ROLE-ARCH-001:
+    name: "技术负责人"
+    tier: 1
+    identity: "Staff 级技术负责人，对项目技术交付质量全面负责，主导方案评审与任务拆解"
+    primary_skills:
+      - skill: "superpowers:brainstorming"
+        trigger: "需求评审、技术方案讨论、架构决策存在多方案需要权衡"
+      - skill: "superpowers:writing-plans"
+        trigger: "将 PRD 拆解为可执行的技术任务，评估工作量和依赖关系"
+      - skill: "zcf:feat"
+        trigger: "完整的新功能开发流程需要端到端管理时"
+        note: "全流程开发命令，覆盖研究→构思→计划→执行→优化→评审"
+    optional_skills:
+      - skill: "superpowers:requesting-code-review"
+        trigger: "从架构合理性角度审查团队成员的 PR"
+      - skill: "superpowers:verification-before-completion"
+        trigger: "迭代交付前确认技术方案落地质量"
+    checklists:
+      - "CHK-代码审查检查清单"
+      - "CHK-上线前检查清单"
+
+  ROLE-ARCH-002:
+    name: "系统架构师"
+    tier: 1
+    identity: "Staff 级系统架构师，负责跨系统宏观架构设计、技术规范制定和架构治理"
+    primary_skills:
+      - skill: "superpowers:brainstorming"
+        trigger: "技术选型、架构方案评审、新技术评估引入"
+      - skill: "superpowers:writing-plans"
+        trigger: "制定架构演进路线、技术规范、架构治理方案时"
+    optional_skills: []
+    checklists:
+      - "CHK-上线前检查清单"
+
+  ROLE-ARCH-003:
+    name: "安全架构师"
+    tier: 1
+    identity: "Staff 级安全架构师，负责信息安全架构设计、威胁建模和安全评估"
+    primary_skills:
+      - skill: "superpowers:writing-plans"
+        trigger: "制定安全架构方案、安全编码规范、DevSecOps 工具链设计时"
+      - skill: "superpowers:systematic-debugging"
+        trigger: "安全漏洞分析、渗透测试发现的问题追踪、安全事件调查"
+    optional_skills:
+      - skill: "superpowers:brainstorming"
+        trigger: "威胁建模讨论、安全方案评审"
+    checklists:
+      - "CHK-代码审查检查清单"
+      - "CHK-安全审查检查清单"
+      - "CHK-上线前检查清单"
+
+  # ============================================================
+  # Tier 2 — 管理类（编排角色，技能映射可选）
+  # ============================================================
+  ROLE-MGMT-001:
+    name: "产品经理"
+    tier: 2
+    identity: "资深产品经理，负责需求挖掘、PRD 撰写和产品 Backlog 优先级管理"
+    primary_skills:
+      - skill: "superpowers:brainstorming"
+        trigger: "需求澄清、用户故事编写、功能优先级讨论"
+    optional_skills: []
+    checklists: []
+
+  ROLE-MGMT-002:
+    name: "项目经理"
+    tier: 2
+    identity: "资深项目经理，负责项目规划、进度跟踪、风险管理和干系人协调"
+    primary_skills:
+      - skill: "claude:/loop"
+        trigger: "需要周期性跟踪项目进展、检查阻塞项状态"
+        note: "设置定时提醒，自动轮询项目状态"
+    optional_skills: []
+    checklists: []
+
+  ROLE-MGMT-003:
+    name: "敏捷教练"
+    tier: 2
+    identity: "Staff 级敏捷教练，负责敏捷实践导入、团队引导和组织级敏捷转型"
+    primary_skills: []
+    optional_skills: []
+    checklists: []
+
+  ROLE-MGMT-004:
+    name: "技术总监"
+    tier: 2
+    identity: "Principal 级技术总监，负责技术战略制定、组织建设和重大技术决策"
+    primary_skills: []
+    optional_skills: []
+    checklists: []
+
+  # ============================================================
+  # Tier 3 — 支撑类（辅助角色，技能映射可选）
+  # ============================================================
+  ROLE-SUPP-001:
+    name: "技术文档工程师"
+    tier: 3
+    identity: "中级技术文档工程师，负责编写和维护面向开发者的技术文档"
+    primary_skills: []
+    optional_skills: []
+    checklists: []
+
+  ROLE-SUPP-002:
+    name: "UX设计师"
+    tier: 3
+    identity: "中级 UX 设计师，负责用户研究、交互设计和设计系统维护"
+    primary_skills: []
+    optional_skills: []
+    checklists: []
+
+# ============================================================
+# TL 派发协议（供 Tech Lead 查阅）
+# ============================================================
+dispatch_protocol:
+  description: "TL 派发 subAgent 时按以下步骤组装技能上下文"
+  steps:
+    - step: 1
+      action: "确定角色 role_id"
+    - step: 2
+      action: "查此表 roles.<role_id>.primary_skills"
+    - step: 3
+      action: "根据任务类型匹配 trigger 条件"
+    - step: 4
+      action: "将匹配的 skill 写入 subAgent prompt 的「## 可用技能」章节"
+    - step: 5
+      action: "将 checklists 写入 subAgent prompt 的「## 检查清单」章节"
+    - step: 6
+      action: "拼装 identity + skills + checklists + 行为约束 + 输出规范 → 完整 prompt"
+    - step: 7
+      action: "在任务文件「TL 派发决策记录」中记录触发来源、派发角色、上下文包、验收标准和状态"
+
+  skill_activation_rule: |
+    技能分两级启用：
+    - primary_skills：TL 根据 trigger 条件判断是否匹配，匹配则默认写入 prompt
+    - optional_skills：根据任务具体需要决定是否添加，不匹配则不写入
+
+    superpowers 系列技能遵循用户授权规则：只有当用户明确要求使用某个 superpowers skill，
+    或明确要求按 superpowers 方法执行时，才加载对应技能。未被用户点名的 superpowers 技能，
+    仅作为角色文档中的参考能力，不自动启用。
+
+    claude: 和 zcf: 系列技能默认可用，无需用户特别授权。
+
+  tl_autonomous_dispatch:
+    description: "TL 在复杂任务中围绕问题记录、计划调整、独立审核、测试数据准备进行自治派发"
+    rules:
+      - trigger: "问题记录或计划调整，TL 已能判断范围且不改变主验收标准"
+        owner: "ROLE-ARCH-001"
+        action: "TL 直接完成，写入「TL 直接修订记录」或「TL 派发决策记录」，不派发"
+      - trigger: "需要新视角审核、避免 TL 自审，或需要架构/质量独立判断"
+        owner: "ROLE-QA-002 或 ROLE-ARCH-002"
+        action: "派发代码审核员或系统架构师，要求输出审核报告或任务记录"
+      - trigger: "代码变更完成，提交前检查项目编码规范（Mapper/常量/异常/字典）"
+        owner: "ROLE-QA-004"
+        action: "派发代码质量检查员，输出通过/不通过报告；不通过则 TL 修复后重新检查"
+      - trigger: "需要构造 SQL/Mock/基准数据以支撑验证"
+        owner: "ROLE-DEV-002"
+        action: "派发后端开发工程师生成测试数据，明确数据覆盖范围和输出路径"
+      - trigger: "需要证明功能链路、页面行为或回归范围通过"
+        owner: "ROLE-QA-001"
+        action: "派发测试工程师执行验证，要求输出测试报告或验证记录"
+      - trigger: "改变主验收标准、取消阶段、跨项目重大范围调整、数据库或接口契约大改"
+        owner: "ROLE-ARCH-001 + 人工确认"
+        action: "TL 不直接推进，先升级确认后再派发或实施"
+
+# ============================================================
+# 技能清单（完整注册表）
+# ============================================================
+skill_registry:
+  superpowers:
+    - name: "superpowers:brainstorming"
+      description: "需求/方案澄清，消除歧义"
+    - name: "superpowers:writing-plans"
+      description: "多步骤实现规划，拆解任务和验证步骤"
+    - name: "superpowers:test-driven-development"
+      description: "测试驱动开发，先定义断言再编码"
+    - name: "superpowers:systematic-debugging"
+      description: "系统化调试，先收集证据再修改代码"
+    - name: "superpowers:requesting-code-review"
+      description: "提交审查前自检 PR 描述和影响范围"
+    - name: "superpowers:receiving-code-review"
+      description: "处理审查反馈，区分必须修改和建议优化"
+    - name: "superpowers:verification-before-completion"
+      description: "完成前验证，以测试/构建/数据作为结论依据"
+    - name: "superpowers:dispatching-parallel-agents"
+      description: "并行派发多个 Agent（TL 侧使用）"
+    - name: "superpowers:subagent-driven-development"
+      description: "子代理驱动开发（TL 侧使用）"
+    - name: "superpowers:using-git-worktrees"
+      description: "Git worktree 使用与工作区隔离"
+    - name: "superpowers:finishing-a-development-branch"
+      description: "开发分支收尾与合并"
+
+  claude_builtin:
+    - name: "claude:/simplify"
+      description: "审查代码质量、复用性和效率，自动修复发现的问题"
+    - name: "claude:/loop"
+      description: "设置周期性任务轮询"
+    - name: "claude:/review-pr"
+      description: "PR 代码审查"
+
+  zcf_skills:
+    - name: "zcf:feat"
+      description: "完整功能开发流程（六阶段：研究→构思→计划→执行→优化→评审）"
+    - name: "zcf:git-commit"
+      description: "自动分析改动生成 Conventional Commits 提交信息"
+    - name: "zcf:git-worktree"
+      description: "管理 Git worktree，在项目平级目录创建"
+    - name: "zcf:git-rollback"
+      description: "交互式回滚 Git 分支到历史版本"
+    - name: "zcf:git-cleanBranches"
+      description: "安全清理已合并或过期的 Git 分支"
+    - name: "zcf:init-project"
+      description: "初始化项目 AI 上下文，生成 CLAUDE.md 索引"

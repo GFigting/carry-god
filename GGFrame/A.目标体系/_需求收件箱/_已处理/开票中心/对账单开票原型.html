@@ -1,0 +1,1820 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>对账单开票原型</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --panel: #ffffff;
+      --line: #dcdfe6;
+      --line-soft: #ebeef5;
+      --text: #303133;
+      --muted: #606266;
+      --subtle: #909399;
+      --primary: #409eff;
+      --success: #67c23a;
+      --warning: #e6a23c;
+      --danger: #f56c6c;
+      --info: #909399;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .app {
+      min-width: 1180px;
+      padding: 16px;
+    }
+
+    .page-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .page-title h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .page-title .desc {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line-soft);
+      border-radius: 6px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .page-switch {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .switch-btn {
+      height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #fff;
+      color: var(--muted);
+      padding: 0 12px;
+      cursor: pointer;
+    }
+
+    .switch-btn.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .prototype-page {
+      display: none;
+    }
+
+    .prototype-page.active {
+      display: block;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .section-desc {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .source-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .source-summary {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .field {
+      height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0 10px;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+    }
+
+    .field:focus {
+      border-color: var(--primary);
+    }
+
+    .w-120 { width: 120px; }
+    .w-150 { width: 150px; }
+    .w-180 { width: 180px; }
+    .w-220 { width: 220px; }
+
+    .btn {
+      height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #fff;
+      color: var(--text);
+      padding: 0 12px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn.primary {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn.success {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .btn.warning {
+      border-color: var(--warning);
+      color: var(--warning);
+    }
+
+    .btn.link {
+      height: auto;
+      border: 0;
+      background: transparent;
+      padding: 0 6px;
+      color: var(--primary);
+    }
+
+    .btn.link.warning {
+      color: var(--warning);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      color: var(--subtle);
+      border-color: var(--line);
+      background: #f5f7fa;
+    }
+
+    .alert {
+      padding: 9px 12px;
+      border-radius: 4px;
+      background: #ecf5ff;
+      color: #337ecc;
+      margin-bottom: 12px;
+      border: 1px solid #d9ecff;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric-grid.detail {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .metric-card {
+      min-width: 0;
+      border: 1px solid var(--line-soft);
+      border-radius: 6px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric-value {
+      margin-top: 6px;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .metric-value.warning { color: var(--warning); }
+    .metric-value.success { color: var(--success); }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line-soft);
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1320px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line-soft);
+      border-right: 1px solid var(--line-soft);
+      padding: 8px 10px;
+      text-align: left;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #f8f8f9;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    tr:hover td {
+      background: #f5f7fa;
+    }
+
+    tfoot td {
+      background: #fafafa;
+      font-weight: 600;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 4px;
+      border: 1px solid #d9ecff;
+      background: #ecf5ff;
+      color: #409eff;
+      font-size: 12px;
+    }
+
+    .tag.info {
+      border-color: #e9e9eb;
+      background: #f4f4f5;
+      color: var(--info);
+    }
+
+    .tag.success {
+      border-color: #e1f3d8;
+      background: #f0f9eb;
+      color: var(--success);
+    }
+
+    .tag.warning {
+      border-color: #faecd8;
+      background: #fdf6ec;
+      color: var(--warning);
+    }
+
+    .tag.danger {
+      border-color: #fde2e2;
+      background: #fef0f0;
+      color: var(--danger);
+    }
+
+    .drawer-mask,
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 20;
+      background: rgb(0 0 0 / 36%);
+    }
+
+    .drawer-mask.show,
+    .modal-mask.show {
+      display: block;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 5vh;
+      left: 50%;
+      width: min(1280px, calc(100vw - 40px));
+      max-height: 90vh;
+      background: var(--bg);
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+      transform: translateX(-50%) scale(.98);
+      opacity: 0;
+      transition: all .16s ease;
+      z-index: 21;
+      display: flex;
+      flex-direction: column;
+      pointer-events: none;
+    }
+
+    .drawer.show {
+      transform: translateX(-50%) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-header,
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: #fff;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .drawer-title,
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .drawer-body {
+      padding: 14px;
+      overflow: auto;
+    }
+
+    .desc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 1px solid var(--line-soft);
+      border-left: 1px solid var(--line-soft);
+      background: #fff;
+    }
+
+    .desc-item {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 94px minmax(0, 1fr);
+      border-right: 1px solid var(--line-soft);
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .desc-label {
+      padding: 9px 10px;
+      background: #fafafa;
+      color: var(--muted);
+    }
+
+    .desc-value {
+      padding: 9px 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid var(--line-soft);
+      margin-bottom: 10px;
+    }
+
+    .tab {
+      border: 0;
+      background: transparent;
+      padding: 10px 16px;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .editable {
+      width: 100%;
+      min-width: 100px;
+      height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0 8px;
+    }
+
+    .number-input {
+      width: 112px;
+      height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0 8px;
+      text-align: right;
+    }
+
+    .modal {
+      position: fixed;
+      top: 6vh;
+      left: 50%;
+      width: min(1080px, calc(100vw - 48px));
+      max-height: 88vh;
+      background: #fff;
+      border-radius: 6px;
+      transform: translateX(-50%) scale(.98);
+      opacity: 0;
+      transition: all .16s ease;
+      z-index: 31;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+    }
+
+    .modal.show {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+      pointer-events: auto;
+    }
+
+    .modal-body {
+      padding: 16px;
+      max-height: calc(88vh - 118px);
+      overflow: auto;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .form-row label {
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .form-row textarea {
+      min-height: 74px;
+      resize: vertical;
+      padding: 8px 10px;
+    }
+
+    .modal-summary {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-bottom: 12px;
+    }
+
+    .modal .table-wrap {
+      max-height: 300px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .toast {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      display: none;
+      min-width: 220px;
+      padding: 10px 14px;
+      border-radius: 4px;
+      color: #fff;
+      background: #303133;
+      text-align: center;
+      box-shadow: 0 4px 14px rgb(0 0 0 / 18%);
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .mt-12 {
+      margin-top: 12px;
+    }
+
+    @media (max-width: 1280px) {
+      .metric-grid,
+      .metric-grid.detail {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="page-title">
+      <div>
+        <h1>对账单开票原型</h1>
+        <div class="desc">基于对账单整单发起开票的纯前端静态原型，支持开票主体改选和按发票号选择开票行到票。</div>
+      </div>
+      <div class="page-switch">
+        <button class="switch-btn active" data-page="invoiceCenterPage">开票中心</button>
+        <button class="switch-btn" data-page="billSourcePage">正式账单状态</button>
+        <button class="switch-btn" data-page="reconciliationSourcePage">对账单整单发起</button>
+      </div>
+    </div>
+
+    <main id="invoiceCenterPage" class="prototype-page active">
+      <section class="panel">
+        <div class="filter-bar">
+          <input class="field w-180" id="invoiceNoFilter" placeholder="开票编号" />
+          <select class="field w-150" id="sourceFilter">
+            <option value="">来源</option>
+            <option value="RECONCILIATION">对账单</option>
+          </select>
+          <select class="field w-150" id="directionFilter">
+            <option value="">应收付类型</option>
+            <option value="AP">AP</option>
+            <option value="AP_RED">AP红冲</option>
+            <option value="AR">AR</option>
+            <option value="AR_RED">AR红冲</option>
+          </select>
+          <select class="field w-150" id="statusFilter">
+            <option value="">状态</option>
+            <option value="WAIT_TICKET">待到票</option>
+            <option value="PARTIAL_TICKETED">部分到票</option>
+            <option value="INVOICED">已开票</option>
+          </select>
+          <input class="field w-220" id="keywordFilter" placeholder="主体/对手方/来源单号" />
+          <button class="btn" id="searchBtn">搜索</button>
+          <button class="btn" id="resetBtn">重置</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="alert">原型说明：本页面使用本地 mock 数据，模拟从对账单详情整单发起开票、改选开票主体、按实际发票号选择开票行到票后的核心闭环。</div>
+        <div class="metric-grid" id="summaryGrid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="center">#</th>
+                <th>开票编号</th>
+                <th class="center">来源</th>
+                <th>来源单号</th>
+                <th class="center">应收付类型</th>
+                <th>对账单主体</th>
+                <th>开票主体</th>
+                <th>对手方</th>
+                <th class="center">业务类型</th>
+                <th class="right">开票金额</th>
+                <th class="right">到票金额</th>
+                <th class="center">状态</th>
+                <th class="center">发票行</th>
+                <th class="center">关联账单</th>
+                <th>创建时间</th>
+                <th>创建人</th>
+                <th>备注</th>
+                <th class="center">操作</th>
+              </tr>
+            </thead>
+            <tbody id="recordBody"></tbody>
+            <tfoot id="recordFoot"></tfoot>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <main id="billSourcePage" class="prototype-page">
+      <section class="panel">
+        <div class="section-title">
+          <div>
+            <h2>正式账单状态</h2>
+            <div class="section-desc">正式账单只展示开票/到票状态和剩余可开票金额，不提供发起开票入口。</div>
+          </div>
+          <button class="btn primary" id="createFromBillBtn" disabled>不可从账单发起</button>
+        </div>
+        <div class="source-actions">
+          <div class="filter-bar">
+            <input class="field w-180" id="billKeywordFilter" placeholder="账单编号/对手方" />
+            <select class="field w-150" id="billStatusFilter">
+              <option value="">开票状态</option>
+              <option value="NOT_INVOICED">未开票</option>
+              <option value="PARTIAL_INVOICED">部分开票</option>
+              <option value="INVOICED">已开票</option>
+            </select>
+            <button class="btn" id="billSearchBtn">搜索</button>
+            <button class="btn" id="billResetBtn">重置</button>
+          </div>
+          <div class="source-summary" id="billPickSummary">正式账单仅作为状态展示和金额回传对象</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>账单编号</th>
+                <th>对账单编号</th>
+                <th class="center">应收付类型</th>
+                <th>我方主体</th>
+                <th>对手方</th>
+                <th>款号</th>
+                <th>采购单号</th>
+                <th class="right">对账含税金额</th>
+                <th class="right">已开票金额</th>
+                <th class="right">剩余可开票</th>
+                <th class="right">本次开票金额</th>
+                <th class="center">开票状态</th>
+              </tr>
+            </thead>
+            <tbody id="billSourceBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <main id="reconciliationSourcePage" class="prototype-page">
+      <section class="panel">
+        <div class="section-title">
+          <div>
+            <h2>对账单整单发起开票</h2>
+            <div class="section-desc">选择对账单后整单发起，系统自动纳入已生成正式账单且未全额开票的明细。</div>
+          </div>
+          <button class="btn primary" id="createFromReconBtn">发起开票</button>
+        </div>
+        <div class="source-actions">
+          <div class="filter-bar">
+            <select class="field w-220" id="reconSelect"></select>
+            <button class="btn" id="reconSelectAllBtn">刷新可开票范围</button>
+            <button class="btn" id="reconClearBtn" disabled>不支持明细勾选</button>
+          </div>
+          <div class="source-summary" id="reconPickSummary">整单可开票 0 条，金额 0.00</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="center">纳入</th>
+                <th>对账明细ID</th>
+                <th>正式账单编号</th>
+                <th class="center">账单身份</th>
+                <th class="center">应收付类型</th>
+                <th>款号</th>
+                <th>采购单号</th>
+                <th>物料编码</th>
+                <th>物料名称</th>
+                <th class="right">数量</th>
+                <th class="right">对账含税金额</th>
+                <th class="right">已开票金额</th>
+                <th class="right">剩余可开票</th>
+                <th class="right">本次开票金额</th>
+              </tr>
+            </thead>
+            <tbody id="reconSourceBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="drawer-mask" id="drawerMask"></div>
+  <aside class="drawer" id="detailDrawer">
+    <div class="drawer-header">
+      <div class="drawer-title">开票维护弹窗</div>
+      <button class="btn" id="closeDrawerBtn">关闭</button>
+    </div>
+    <div class="drawer-body">
+      <section class="panel">
+        <div class="desc-grid" id="detailDesc"></div>
+        <div class="metric-grid detail mt-12" id="detailMetrics"></div>
+        <div class="action-bar">
+          <button class="btn primary" id="saveLineBtn">保存调整</button>
+          <button class="btn success" id="exportBtn">导出发票</button>
+          <button class="btn warning" id="drawerArrivalBtn">到票</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="tabs">
+          <button class="tab active" data-tab="line">发票行</button>
+          <button class="tab" data-tab="detail">关联明细</button>
+          <button class="tab" data-tab="ticket">到票记录</button>
+        </div>
+        <div id="tabContent"></div>
+      </section>
+    </div>
+  </aside>
+
+  <div class="modal-mask" id="modalMask"></div>
+  <section class="modal" id="arrivalModal">
+    <div class="modal-header">
+      <div class="modal-title">到票登记</div>
+      <button class="btn" id="closeModalBtn">关闭</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert">当前无发票 OCR 接口，附件仅做归档，不自动提取发票信息。</div>
+      <div class="desc-grid modal-summary" id="arrivalSummary"></div>
+      <div class="form-row">
+        <label>发票号</label>
+        <input class="field" id="arrivalTicketNo" placeholder="请输入实际发票号" />
+      </div>
+      <div class="form-row">
+        <label>开票行分配</label>
+        <div class="table-wrap" id="arrivalLineList"></div>
+      </div>
+      <div class="form-row">
+        <label>发票附件</label>
+        <input class="field" id="arrivalFile" type="file" />
+      </div>
+      <div class="form-row">
+        <label>备注</label>
+        <textarea class="field" id="arrivalRemark" placeholder="请输入到票备注"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="cancelArrivalBtn">取消</button>
+      <button class="btn primary" id="submitArrivalBtn">确认到票</button>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const statusTextMap = {
+      WAIT_TICKET: '待到票',
+      PARTIAL_TICKETED: '部分到票',
+      INVOICED: '已开票'
+    };
+    const sourceTextMap = {
+      FORMAL_BILL: '正式账单',
+      RECONCILIATION: '对账单',
+    };
+    const directionTextMap = {
+      AP: 'AP',
+      AP_RED: 'AP红冲',
+      AR: 'AR',
+      AR_RED: 'AR红冲'
+    };
+    const billInvoiceStatusTextMap = {
+      NOT_INVOICED: '未开票',
+      PARTIAL_INVOICED: '部分开票',
+      INVOICED: '已开票'
+    };
+    const orgOptions = ['拉森供应链主体A', '拉森供应链主体B', '拉森供应链主体C'];
+
+    const initialRecords = [
+      {
+        id: 1,
+        invoiceNo: 'INV-202606-0001',
+        sourceType: 'RECONCILIATION',
+        sourceBillNumber: 'REC-202606-0012',
+        sourceOrgName: '拉森供应链主体A',
+        invoiceOrgName: '拉森供应链主体B',
+        orgName: '拉森供应链主体A',
+        customerName: '绍兴某成衣供应商',
+        customerType: '供应商',
+        bizTypeName: '成品',
+        arapBizType: 'AP',
+        invoiceAmount: 168430.5,
+        ticketedAmount: 80000,
+        status: 'PARTIAL_TICKETED',
+        createTime: '2026-06-10 15:22:00',
+        creator: '财务01',
+        remark: '6月第一批成品入库对账开票',
+        details: [
+          { id: 101, billNumber: 'BILL-202606-0101', reconciliationBillNumber: 'REC-202606-0012', businessKey: 'MAP_INVENTORY|RK-202606-1001|8801|120', billType: 'NORMAL', deriveSeq: 0, arapBizType: 'AP', styleNo: 'STY-26001', purchaseNo: 'SKU-PO-88001', materialCode: 'SKU-26001-BK-M', materialName: '女装针织上衣', qty: 120, reconAmountWithTax: 67200, invoicedAmount: 0, currentInvoiceAmount: 67200, taxRate: 13 },
+          { id: 102, billNumber: 'BILL-202606-0102', reconciliationBillNumber: 'REC-202606-0012', businessKey: 'MAP_INVENTORY|RK-202606-1002|8802|80', billType: 'NORMAL', deriveSeq: 0, arapBizType: 'AP', styleNo: 'STY-26001', purchaseNo: 'SKU-PO-88001', materialCode: 'SKU-26001-WH-S', materialName: '女装针织上衣', qty: 80, reconAmountWithTax: 44800, invoicedAmount: 0, currentInvoiceAmount: 44800, taxRate: 13 },
+          { id: 103, billNumber: 'BILL-202606-0110', reconciliationBillNumber: 'REC-202606-0012', businessKey: 'MAP_INVENTORY|RK-202606-1010|8810|45', billType: 'NORMAL', deriveSeq: 0, arapBizType: 'AP', styleNo: 'STY-26009', purchaseNo: 'SKU-PO-88110', materialCode: 'SKU-26009-BL-L', materialName: '男装休闲衬衫', qty: 45, reconAmountWithTax: 56430.5, invoicedAmount: 0, currentInvoiceAmount: 56430.5, taxRate: 13 }
+        ],
+        lines: [
+          { id: 1001, styleNo: 'STY-26001', purchaseNo: 'SKU-PO-88001', displayName: 'STY-26001 成品加工费', sourceAmount: 112000, allocationAmount: 2500, finalAmount: 114500, taxRate: 13, remark: '含同款两个颜色尺码', detailIds: [101, 102] },
+          { id: 1002, styleNo: 'STY-26009', purchaseNo: 'SKU-PO-88110', displayName: 'STY-26009 成品加工费', sourceAmount: 56430.5, allocationAmount: -2500, finalAmount: 53930.5, taxRate: 13, remark: '承担行间分摊调整', detailIds: [103] }
+        ],
+        ticketRecords: [
+          {
+            id: 5001,
+            ticketNo: '33002606110000123456',
+            ticketAmount: 80000,
+            attachmentName: '供应商发票-20260610.pdf',
+            operator: '财务01',
+            ticketTime: '2026-06-11 10:18:00',
+            remark: '一张发票覆盖两条开票行中的部分金额',
+            lines: [
+              { invoiceLineId: 1001, ticketAmount: 60000 },
+              { invoiceLineId: 1002, ticketAmount: 20000 }
+            ]
+          }
+        ]
+      },
+      {
+        id: 2,
+        invoiceNo: 'INV-202606-0002',
+        sourceType: 'RECONCILIATION',
+        sourceBillNumber: 'REC-202606-0018',
+        sourceOrgName: '拉森供应链主体B',
+        invoiceOrgName: '拉森供应链主体B',
+        orgName: '拉森供应链主体B',
+        customerName: '杭州某品牌客户',
+        customerType: '组织',
+        bizTypeName: '成品',
+        arapBizType: 'AR',
+        invoiceAmount: 92180,
+        ticketedAmount: 0,
+        status: 'WAIT_TICKET',
+        createTime: '2026-06-11 09:42:00',
+        creator: '财务02',
+        remark: '从对账单整单发起开票',
+        details: [
+          { id: 201, billNumber: 'BILL-202606-0201', reconciliationBillNumber: '', businessKey: 'MAP_INVENTORY|CK-202606-2001|9901|60', billType: 'NORMAL', deriveSeq: 0, arapBizType: 'AR', styleNo: 'STY-26018', purchaseNo: 'SKU-PO-99001', materialCode: 'SKU-26018-GR-M', materialName: '品牌联名卫衣', qty: 60, reconAmountWithTax: 92180, invoicedAmount: 0, currentInvoiceAmount: 92180, taxRate: 13 }
+        ],
+        lines: [
+          { id: 2001, styleNo: 'STY-26018', purchaseNo: 'SKU-PO-99001', displayName: 'STY-26018 销售货款', sourceAmount: 92180, allocationAmount: 0, finalAmount: 92180, taxRate: 13, remark: '', detailIds: [201] }
+        ],
+        ticketRecords: []
+      },
+      {
+        id: 3,
+        invoiceNo: 'INV-202606-0003',
+        sourceType: 'RECONCILIATION',
+        sourceBillNumber: 'REC-202606-0008',
+        sourceOrgName: '拉森供应链主体A',
+        invoiceOrgName: '拉森供应链主体A',
+        orgName: '拉森供应链主体A',
+        customerName: '绍兴某成衣供应商',
+        customerType: '供应商',
+        bizTypeName: '成品',
+        arapBizType: 'AP_RED',
+        invoiceAmount: -12600,
+        ticketedAmount: -12600,
+        status: 'INVOICED',
+        createTime: '2026-06-09 16:05:00',
+        creator: '财务01',
+        remark: '红冲账单保留负数金额',
+        details: [
+          { id: 301, billNumber: 'BILL-202606-0301', reconciliationBillNumber: 'REC-202606-0008', businessKey: 'MAP_INVENTORY|RK-RED-202606-3001|8801|-20', billType: 'DERIVED', deriveSeq: 1, arapBizType: 'AP_RED', styleNo: 'STY-26001', purchaseNo: 'SKU-PO-88001', materialCode: 'SKU-26001-BK-M', materialName: '女装针织上衣', qty: -20, reconAmountWithTax: -12600, invoicedAmount: -12600, currentInvoiceAmount: -12600, taxRate: 13 }
+        ],
+        lines: [
+          { id: 3001, styleNo: 'STY-26001', purchaseNo: 'SKU-PO-88001', displayName: 'STY-26001 红冲调整', sourceAmount: -12600, allocationAmount: 0, finalAmount: -12600, taxRate: 13, remark: '红冲金额按负数展示', detailIds: [301] }
+        ],
+        ticketRecords: [
+          {
+            id: 5002,
+            ticketNo: '33002606090000987654',
+            ticketAmount: -12600,
+            attachmentName: '红冲发票-20260609.pdf',
+            operator: '财务01',
+            ticketTime: '2026-06-09 17:10:00',
+            remark: '红冲发票按负数登记',
+            lines: [
+              { invoiceLineId: 3001, ticketAmount: -12600 }
+            ]
+          }
+        ]
+      }
+    ];
+
+    const billSourceRows = [
+      { id: 9001, billNumber: 'BILL-202606-0401', reconciliationBillNumber: 'REC-202606-0020', orgName: '拉森供应链主体A', customerName: '绍兴某成衣供应商', customerType: '供应商', bizTypeName: '成品', arapBizType: 'AP', styleNo: 'STY-26021', purchaseNo: 'SKU-PO-88401', materialCode: 'SKU-26021-BK-M', materialName: '女装梭织外套', qty: 50, reconAmountWithTax: 58600, invoicedAmount: 0, currentInvoiceAmount: 58600, invoiceStatus: 'NOT_INVOICED', taxRate: 13, billType: 'NORMAL', deriveSeq: 0, businessKey: 'MAP_INVENTORY|RK-202606-4001|88401|50' },
+      { id: 9002, billNumber: 'BILL-202606-0402', reconciliationBillNumber: 'REC-202606-0020', orgName: '拉森供应链主体A', customerName: '绍兴某成衣供应商', customerType: '供应商', bizTypeName: '成品', arapBizType: 'AP', styleNo: 'STY-26021', purchaseNo: 'SKU-PO-88401', materialCode: 'SKU-26021-WH-S', materialName: '女装梭织外套', qty: 30, reconAmountWithTax: 35160, invoicedAmount: 10000, currentInvoiceAmount: 25160, invoiceStatus: 'PARTIAL_INVOICED', taxRate: 13, billType: 'NORMAL', deriveSeq: 0, businessKey: 'MAP_INVENTORY|RK-202606-4002|88402|30' },
+      { id: 9003, billNumber: 'BILL-202606-0410', reconciliationBillNumber: 'REC-202606-0021', orgName: '拉森供应链主体B', customerName: '杭州某品牌客户', customerType: '组织', bizTypeName: '成品', arapBizType: 'AR', styleNo: 'STY-26031', purchaseNo: 'SKU-PO-99110', materialCode: 'SKU-26031-GY-L', materialName: '男装运动裤', qty: 90, reconAmountWithTax: 126800, invoicedAmount: 126800, currentInvoiceAmount: 0, invoiceStatus: 'INVOICED', taxRate: 13, billType: 'NORMAL', deriveSeq: 0, businessKey: 'MAP_INVENTORY|CK-202606-4101|99110|90' },
+      { id: 9004, billNumber: 'BILL-202606-0420', reconciliationBillNumber: '', orgName: '拉森供应链主体A', customerName: '绍兴某成衣供应商', customerType: '供应商', bizTypeName: '成品', arapBizType: 'AP_RED', styleNo: 'STY-26021', purchaseNo: 'SKU-PO-88401', materialCode: 'SKU-26021-BK-M', materialName: '女装梭织外套', qty: -10, reconAmountWithTax: -11720, invoicedAmount: 0, currentInvoiceAmount: -11720, invoiceStatus: 'NOT_INVOICED', taxRate: 13, billType: 'DERIVED', deriveSeq: 1, businessKey: 'MAP_INVENTORY|RK-RED-202606-4201|88401|-10' }
+    ];
+
+    const reconciliationSourceRows = [
+      {
+        billNumber: 'REC-202606-0020',
+        orgName: '拉森供应链主体A',
+        customerName: '绍兴某成衣供应商',
+        customerType: '供应商',
+        bizTypeName: '成品',
+        arapBizType: 'AP',
+        details: [
+          { id: 8101, billNumber: 'BILL-202606-0401', reconciliationBillNumber: 'REC-202606-0020', businessKey: 'MAP_INVENTORY|RK-202606-4001|88401|50', billType: 'NORMAL', deriveSeq: 0, arapBizType: 'AP', styleNo: 'STY-26021', purchaseNo: 'SKU-PO-88401', materialCode: 'SKU-26021-BK-M', materialName: '女装梭织外套', qty: 50, reconAmountWithTax: 58600, invoicedAmount: 0, currentInvoiceAmount: 58600, taxRate: 13 },
+          { id: 8102, billNumber: 'BILL-202606-0402', reconciliationBillNumber: 'REC-202606-0020', businessKey: 'MAP_INVENTORY|RK-202606-4002|88402|30', billType: 'NORMAL', deriveSeq: 0, arapBizType: 'AP', styleNo: 'STY-26021', purchaseNo: 'SKU-PO-88401', materialCode: 'SKU-26021-WH-S', materialName: '女装梭织外套', qty: 30, reconAmountWithTax: 35160, invoicedAmount: 10000, currentInvoiceAmount: 25160, taxRate: 13 },
+          { id: 8103, billNumber: '', reconciliationBillNumber: 'REC-202606-0020', businessKey: 'MAP_INVENTORY|RK-202606-4003|88403|18', billType: 'NORMAL', deriveSeq: 0, arapBizType: 'AP', styleNo: 'STY-26029', purchaseNo: 'SKU-PO-88409', materialCode: 'SKU-26029-BL-M', materialName: '未生成账单明细', qty: 18, reconAmountWithTax: 21000, invoicedAmount: 0, currentInvoiceAmount: 0, taxRate: 13 }
+        ]
+      },
+      {
+        billNumber: 'REC-202606-0022',
+        orgName: '拉森供应链主体B',
+        customerName: '杭州某品牌客户',
+        customerType: '组织',
+        bizTypeName: '成品',
+        arapBizType: 'AR',
+        details: [
+          { id: 8201, billNumber: 'BILL-202606-0501', reconciliationBillNumber: 'REC-202606-0022', businessKey: 'MAP_INVENTORY|CK-202606-5001|99501|40', billType: 'NORMAL', deriveSeq: 0, arapBizType: 'AR', styleNo: 'STY-26041', purchaseNo: 'SKU-PO-99501', materialCode: 'SKU-26041-RD-M', materialName: '品牌针织裙', qty: 40, reconAmountWithTax: 88400, invoicedAmount: 0, currentInvoiceAmount: 88400, taxRate: 13 },
+          { id: 8202, billNumber: 'BILL-202606-0502', reconciliationBillNumber: 'REC-202606-0022', businessKey: 'MAP_INVENTORY|CK-202606-5002|99502|22', billType: 'NORMAL', deriveSeq: 0, arapBizType: 'AR', styleNo: 'STY-26042', purchaseNo: 'SKU-PO-99502', materialCode: 'SKU-26042-BK-L', materialName: '品牌针织裤', qty: 22, reconAmountWithTax: 49600, invoicedAmount: 49600, currentInvoiceAmount: 0, taxRate: 13 }
+        ]
+      }
+    ];
+
+    let records = JSON.parse(JSON.stringify(initialRecords));
+    let currentList = [];
+    let activeRecordId = null;
+    let selectedDetailIds = [];
+    let activeTab = 'line';
+    let arrivalTargetId = null;
+    let currentPage = 'invoiceCenterPage';
+    let selectedBillIds = [];
+    let selectedReconDetailIds = [];
+
+    const $ = (id) => document.getElementById(id);
+    const money = (value) => Number(value || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const sum = (rows, field) => rows.reduce((total, item) => total + Number(item[field] || 0), 0);
+    const nowText = () => '2026-06-11 15:30:00';
+    const getRecord = (id) => records.find((item) => item.id === id);
+    const activeRecord = () => getRecord(activeRecordId);
+    const lineTicketedAmount = (record, lineId) => (record.ticketRecords || [])
+      .flatMap((ticket) => ticket.lines || [])
+      .filter((line) => line.invoiceLineId === lineId)
+      .reduce((total, line) => total + Number(line.ticketAmount || 0), 0);
+    const lineRemainingAmount = (record, line) => Number(line.finalAmount || 0) - lineTicketedAmount(record, line.id);
+    const lineTicketNos = (record, lineId) => (record.ticketRecords || [])
+      .filter((ticket) => (ticket.lines || []).some((line) => line.invoiceLineId === lineId))
+      .map((ticket) => ticket.ticketNo)
+      .join('、') || '-';
+    const detailTicketNos = (record, detailId) => {
+      const lineIds = record.lines.filter((line) => (line.detailIds || []).includes(detailId)).map((line) => line.id);
+      return (record.ticketRecords || [])
+        .filter((ticket) => (ticket.lines || []).some((line) => lineIds.includes(line.invoiceLineId)))
+        .map((ticket) => ticket.ticketNo)
+        .join('、') || '-';
+    };
+    const detailTicketedAmount = (record, detail) => {
+      const line = record.lines.find((item) => (item.detailIds || []).includes(detail.id));
+      if (!line) return 0;
+      const lineTicketed = lineTicketedAmount(record, line.id);
+      if (!lineTicketed) return 0;
+      const lineDetails = record.details.filter((item) => (line.detailIds || []).includes(item.id));
+      const lineDetailAmount = sum(lineDetails, 'currentInvoiceAmount');
+      if (!lineDetailAmount) return 0;
+      return lineTicketed * (Number(detail.currentInvoiceAmount || 0) / lineDetailAmount);
+    };
+
+    function tag(text, type = '') {
+      return `<span class="tag ${type}">${text}</span>`;
+    }
+
+    function statusTag(status) {
+      const typeMap = { WAIT_TICKET: 'info', PARTIAL_TICKETED: 'warning', INVOICED: 'success' };
+      return tag(statusTextMap[status], typeMap[status]);
+    }
+
+    function directionTag(direction) {
+      return tag(directionTextMap[direction], direction.includes('RED') ? 'danger' : '');
+    }
+
+    function billInvoiceStatusTag(status) {
+      const typeMap = { NOT_INVOICED: 'info', PARTIAL_INVOICED: 'warning', INVOICED: 'success' };
+      return tag(billInvoiceStatusTextMap[status], typeMap[status]);
+    }
+
+    function toast(message) {
+      const el = $('toast');
+      el.textContent = message;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 1800);
+    }
+
+    function renderSummary() {
+      const invoiceAmount = sum(currentList, 'invoiceAmount');
+      const ticketedAmount = sum(currentList, 'ticketedAmount');
+      const waitCount = currentList.filter((item) => item.status !== 'INVOICED').length;
+      $('summaryGrid').innerHTML = [
+        ['开票记录', currentList.length],
+        ['开票金额', money(invoiceAmount)],
+        ['到票金额', money(ticketedAmount)],
+        ['待到票记录', waitCount, 'warning']
+      ].map(([label, value, cls]) => `
+        <div class="metric-card">
+          <div class="metric-label">${label}</div>
+          <div class="metric-value ${cls || ''}">${value}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderRecords() {
+      $('recordBody').innerHTML = currentList.map((row, index) => `
+        <tr>
+          <td class="center">${index + 1}</td>
+          <td>${row.invoiceNo}</td>
+          <td class="center">${tag(sourceTextMap[row.sourceType])}</td>
+          <td>${row.sourceBillNumber}</td>
+          <td class="center">${directionTag(row.arapBizType)}</td>
+          <td>${row.sourceOrgName || row.orgName}</td>
+          <td>${row.invoiceOrgName || row.orgName}</td>
+          <td>${row.customerName}</td>
+          <td class="center">${row.bizTypeName}</td>
+          <td class="right">${money(row.invoiceAmount)}</td>
+          <td class="right">${money(row.ticketedAmount)}</td>
+          <td class="center">${statusTag(row.status)}</td>
+          <td class="center">${row.lines.length} 行</td>
+          <td class="center">${row.details.length} 条</td>
+          <td>${row.createTime}</td>
+          <td>${row.creator}</td>
+          <td>${row.remark || ''}</td>
+          <td class="center">
+            <button class="btn link" onclick="openDetail(${row.id})">维护</button>
+            <button class="btn link warning" ${row.status === 'INVOICED' ? 'disabled' : ''} onclick="openArrival(${row.id})">到票</button>
+          </td>
+        </tr>
+      `).join('');
+
+      $('recordFoot').innerHTML = `
+        <tr>
+          <td class="center">合计</td>
+          <td colspan="8"></td>
+          <td class="right">${money(sum(currentList, 'invoiceAmount'))}</td>
+          <td class="right">${money(sum(currentList, 'ticketedAmount'))}</td>
+          <td colspan="7"></td>
+        </tr>
+      `;
+    }
+
+    function queryRecords() {
+      const invoiceNo = $('invoiceNoFilter').value.trim();
+      const sourceType = $('sourceFilter').value;
+      const direction = $('directionFilter').value;
+      const status = $('statusFilter').value;
+      const keyword = $('keywordFilter').value.trim();
+      currentList = records.filter((record) => {
+        const keywordFields = [record.sourceOrgName, record.invoiceOrgName, record.orgName, record.customerName, record.sourceBillNumber, record.remark].join('|');
+        return (!invoiceNo || record.invoiceNo.includes(invoiceNo))
+          && (!sourceType || record.sourceType === sourceType)
+          && (!direction || record.arapBizType === direction)
+          && (!status || record.status === status)
+          && (!keyword || keywordFields.includes(keyword));
+      });
+      renderSummary();
+      renderRecords();
+    }
+
+    function resetQuery() {
+      $('invoiceNoFilter').value = '';
+      $('sourceFilter').value = '';
+      $('directionFilter').value = '';
+      $('statusFilter').value = '';
+      $('keywordFilter').value = '';
+      queryRecords();
+    }
+
+    function switchPage(pageId) {
+      currentPage = pageId;
+      document.querySelectorAll('.prototype-page').forEach((page) => {
+        page.classList.toggle('active', page.id === pageId);
+      });
+      document.querySelectorAll('.switch-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.page === pageId);
+      });
+      if (pageId === 'billSourcePage') renderBillSource();
+      if (pageId === 'reconciliationSourcePage') renderReconciliationSource();
+    }
+
+    function remainingAmount(row) {
+      return Number(row.reconAmountWithTax || 0) - Number(row.invoicedAmount || 0);
+    }
+
+    function canInvoice(row) {
+      return !!row.billNumber && Math.abs(remainingAmount(row)) > 0;
+    }
+
+    function updateBillSummary() {
+      const selectedRows = billSourceRows.filter((row) => selectedBillIds.includes(row.id));
+      $('billPickSummary').textContent = `已选择 ${selectedRows.length} 条，金额 ${money(sum(selectedRows, 'currentInvoiceAmount'))}`;
+    }
+
+    function renderBillSource() {
+      const keyword = $('billKeywordFilter').value.trim();
+      const status = $('billStatusFilter').value;
+      const rows = billSourceRows.filter((row) => {
+        const keywordFields = [row.billNumber, row.reconciliationBillNumber, row.customerName, row.orgName].join('|');
+        return (!keyword || keywordFields.includes(keyword)) && (!status || row.invoiceStatus === status);
+      });
+      $('billSourceBody').innerHTML = rows.map((row) => {
+        const disabled = !canInvoice(row);
+        return `
+          <tr>
+            <td>${row.billNumber}</td>
+            <td>${row.reconciliationBillNumber || '-'}</td>
+            <td class="center">${directionTag(row.arapBizType)}</td>
+            <td>${row.orgName}</td>
+            <td>${row.customerName}</td>
+            <td>${row.styleNo}</td>
+            <td>${row.purchaseNo}</td>
+            <td class="right">${money(row.reconAmountWithTax)}</td>
+            <td class="right">${money(row.invoicedAmount)}</td>
+            <td class="right">${money(remainingAmount(row))}</td>
+            <td class="right"><input class="number-input" type="number" step="0.01" value="${row.currentInvoiceAmount}" ${disabled ? 'disabled' : ''} onchange="updateBillInvoiceAmount(${row.id}, this.value)" /></td>
+            <td class="center">${billInvoiceStatusTag(row.invoiceStatus)}</td>
+          </tr>
+        `;
+      }).join('');
+      $('billPickSummary').textContent = '正式账单仅作为状态展示和金额回传对象，不允许从本页发起开票';
+    }
+
+    function toggleBillPick(id, checked) {
+      selectedBillIds = checked
+        ? Array.from(new Set([...selectedBillIds, id]))
+        : selectedBillIds.filter((item) => item !== id);
+      updateBillSummary();
+    }
+
+    function updateBillInvoiceAmount(id, value) {
+      const row = billSourceRows.find((item) => item.id === id);
+      if (!row) return;
+      row.currentInvoiceAmount = Number(value || 0);
+      updateBillSummary();
+    }
+
+    function activeReconciliation() {
+      return reconciliationSourceRows.find((item) => item.billNumber === $('reconSelect').value) || reconciliationSourceRows[0];
+    }
+
+    function updateReconSummary() {
+      const recon = activeReconciliation();
+      const selectedRows = recon.details.filter((row) => canInvoice(row));
+      $('reconPickSummary').textContent = `整单可开票 ${selectedRows.length} 条，金额 ${money(sum(selectedRows, 'currentInvoiceAmount'))}`;
+    }
+
+    function renderReconciliationSource() {
+      if (!$('reconSelect').options.length) {
+        $('reconSelect').innerHTML = reconciliationSourceRows.map((row) => `<option value="${row.billNumber}">${row.billNumber} / ${row.customerName}</option>`).join('');
+      }
+      const recon = activeReconciliation();
+      $('reconSourceBody').innerHTML = recon.details.map((row) => {
+        const disabled = !canInvoice(row);
+        return `
+          <tr>
+            <td class="center">${disabled ? tag('不纳入', 'danger') : tag('自动纳入', 'success')}</td>
+            <td>${row.id}</td>
+            <td>${row.billNumber || tag('未生成账单', 'danger')}</td>
+            <td class="center">${row.billType}/${row.deriveSeq}</td>
+            <td class="center">${directionTag(row.arapBizType)}</td>
+            <td>${row.styleNo}</td>
+            <td>${row.purchaseNo}</td>
+            <td>${row.materialCode}</td>
+            <td>${row.materialName}</td>
+            <td class="right">${row.qty}</td>
+            <td class="right">${money(row.reconAmountWithTax)}</td>
+            <td class="right">${money(row.invoicedAmount)}</td>
+            <td class="right">${money(remainingAmount(row))}</td>
+            <td class="right"><input class="number-input" type="number" step="0.01" value="${row.currentInvoiceAmount}" ${disabled ? 'disabled' : ''} onchange="updateReconInvoiceAmount(${row.id}, this.value)" /></td>
+          </tr>
+        `;
+      }).join('');
+      updateReconSummary();
+    }
+
+    function toggleReconPick(id, checked) {
+      selectedReconDetailIds = checked
+        ? Array.from(new Set([...selectedReconDetailIds, id]))
+        : selectedReconDetailIds.filter((item) => item !== id);
+      updateReconSummary();
+    }
+
+    function updateReconInvoiceAmount(id, value) {
+      const recon = activeReconciliation();
+      const row = recon.details.find((item) => item.id === id);
+      if (!row) return;
+      row.currentInvoiceAmount = Number(value || 0);
+      updateReconSummary();
+    }
+
+    function buildLines(details) {
+      const groupMap = new Map();
+      details.forEach((detail) => {
+        const key = `${detail.styleNo || '未识别款号'}|${detail.purchaseNo || '未识别采购单'}|${detail.taxRate || 0}`;
+        if (!groupMap.has(key)) {
+          groupMap.set(key, {
+            id: Date.now() + groupMap.size,
+            styleNo: detail.styleNo || '未识别款号',
+            purchaseNo: detail.purchaseNo || '未识别采购单',
+            displayName: `${detail.styleNo || '未识别款号'} 开票项目`,
+            sourceAmount: 0,
+            allocationAmount: 0,
+            finalAmount: 0,
+            taxRate: detail.taxRate || 0,
+            remark: '',
+            detailIds: []
+          });
+        }
+        const line = groupMap.get(key);
+        line.sourceAmount += Number(detail.currentInvoiceAmount || 0);
+        line.finalAmount = line.sourceAmount + Number(line.allocationAmount || 0);
+        line.detailIds.push(detail.id);
+      });
+      return Array.from(groupMap.values());
+    }
+
+    function createInvoiceFromSelection(sourceType, sourceBillNumber, sourceMeta, details) {
+      if (!details.length) {
+        toast('请先选择可开票数据');
+        return;
+      }
+      const amountInvalid = details.some((row) => {
+        const amount = Number(row.currentInvoiceAmount || 0);
+        const remaining = remainingAmount(row);
+        return amount === 0 || Math.abs(amount) > Math.abs(remaining);
+      });
+      if (amountInvalid) {
+        toast('本次开票金额必须非0且不能超过剩余可开票金额');
+        return;
+      }
+      const first = details[0];
+      const mixed = details.some((row) => row.orgName && (row.orgName !== sourceMeta.orgName || row.customerName !== sourceMeta.customerName || row.bizTypeName !== sourceMeta.bizTypeName));
+      if (mixed) {
+        toast('不能混选不同主体、对手方或业务类型');
+        return;
+      }
+      const copiedDetails = details.map((row) => ({
+        id: row.id,
+        billNumber: row.billNumber,
+        reconciliationBillNumber: row.reconciliationBillNumber || sourceBillNumber,
+        businessKey: row.businessKey,
+        billType: row.billType,
+        deriveSeq: row.deriveSeq,
+        arapBizType: row.arapBizType,
+        styleNo: row.styleNo,
+        purchaseNo: row.purchaseNo,
+        materialCode: row.materialCode,
+        materialName: row.materialName,
+        qty: row.qty,
+        reconAmountWithTax: row.reconAmountWithTax,
+        invoicedAmount: row.invoicedAmount,
+        currentInvoiceAmount: row.currentInvoiceAmount,
+        taxRate: row.taxRate
+      }));
+      const record = {
+        id: Date.now(),
+        invoiceNo: `INV-DRAFT-${String(records.length + 1).padStart(4, '0')}`,
+        sourceType,
+        sourceBillNumber,
+        sourceOrgName: sourceMeta.orgName,
+        invoiceOrgName: sourceMeta.orgName,
+        orgName: sourceMeta.orgName,
+        customerName: sourceMeta.customerName,
+        customerType: sourceMeta.customerType,
+        bizTypeName: sourceMeta.bizTypeName,
+        arapBizType: first.arapBizType,
+        invoiceAmount: sum(copiedDetails, 'currentInvoiceAmount'),
+        ticketedAmount: 0,
+        status: 'WAIT_TICKET',
+        createTime: nowText(),
+        creator: '当前用户',
+        remark: '从对账单整单发起',
+        details: copiedDetails,
+        lines: buildLines(copiedDetails),
+        ticketRecords: []
+      };
+      records.unshift(record);
+      queryRecords();
+      switchPage('invoiceCenterPage');
+      openDetail(record.id);
+      toast('已生成开票草稿');
+    }
+
+    function createFromBills() {
+      toast('正式账单页面不提供发起开票入口，请从对账单详情整单发起');
+    }
+
+    function createFromReconciliation() {
+      const recon = activeReconciliation();
+      const details = recon.details.filter((row) => canInvoice(row));
+      createInvoiceFromSelection('RECONCILIATION', recon.billNumber, recon, details);
+    }
+
+    function renderDetail() {
+      const row = activeRecord();
+      if (!row) return;
+      $('detailDesc').innerHTML = [
+        ['开票编号', row.invoiceNo],
+        ['来源', `${tag(sourceTextMap[row.sourceType])} ${row.sourceBillNumber}`],
+        ['应收付类型', directionTag(row.arapBizType)],
+        ['状态', statusTag(row.status)],
+        ['对账单主体', row.sourceOrgName || row.orgName],
+        ['开票主体', `
+          <select class="field" onchange="updateInvoiceOrg(this.value)">
+            ${orgOptions.map((org) => `<option value="${org}" ${(row.invoiceOrgName || row.orgName) === org ? 'selected' : ''}>${org}</option>`).join('')}
+          </select>
+        `],
+        ['对手方', row.customerName],
+        ['业务类型', row.bizTypeName],
+        ['备注', row.remark || '-']
+      ].map(([label, value]) => `
+        <div class="desc-item">
+          <div class="desc-label">${label}</div>
+          <div class="desc-value">${value}</div>
+        </div>
+      `).join('');
+
+      const remaining = row.invoiceAmount - row.ticketedAmount;
+      $('detailMetrics').innerHTML = [
+        ['开票金额', money(row.invoiceAmount)],
+        ['到票金额', money(row.ticketedAmount)],
+        ['未到票金额', money(remaining), remaining === 0 ? 'success' : 'warning'],
+        ['发票行数', row.lines.length],
+        ['关联账单数', row.details.length]
+      ].map(([label, value, cls]) => `
+        <div class="metric-card">
+          <div class="metric-label">${label}</div>
+          <div class="metric-value ${cls || ''}">${value}</div>
+        </div>
+      `).join('');
+
+      $('drawerArrivalBtn').disabled = row.status === 'INVOICED';
+      renderTab();
+    }
+
+    function renderTab() {
+      document.querySelectorAll('.tab').forEach((item) => {
+        item.classList.toggle('active', item.dataset.tab === activeTab);
+      });
+      if (activeTab === 'line') renderLineTab();
+      if (activeTab === 'detail') renderDetailTab();
+      if (activeTab === 'ticket') renderTicketTab();
+    }
+
+    function renderLineTab() {
+      const row = activeRecord();
+      $('tabContent').innerHTML = `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="center">#</th>
+                <th>款号</th>
+                <th>采购单号</th>
+                <th>发票行展示名称</th>
+                <th class="right">原始汇总金额</th>
+                <th class="right">分摊调整</th>
+                <th class="right">最终展示金额</th>
+                <th class="right">已到票</th>
+                <th class="right">未到票</th>
+                <th>关联发票号</th>
+                <th class="right">税率</th>
+                <th class="center">关联明细</th>
+                <th>备注</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${row.lines.map((line, index) => `
+                <tr>
+                  <td class="center">${index + 1}</td>
+                  <td>${line.styleNo}</td>
+                  <td>${line.purchaseNo}</td>
+                  <td><input class="editable" value="${line.displayName}" onchange="updateLine(${line.id}, 'displayName', this.value)" /></td>
+                  <td class="right">${money(line.sourceAmount)}</td>
+                  <td class="right"><input class="number-input" type="number" step="0.01" value="${line.allocationAmount}" onchange="updateLine(${line.id}, 'allocationAmount', this.value)" /></td>
+                  <td class="right">${money(line.finalAmount)}</td>
+                  <td class="right">${money(lineTicketedAmount(row, line.id))}</td>
+                  <td class="right">${money(lineRemainingAmount(row, line))}</td>
+                  <td>${lineTicketNos(row, line.id)}</td>
+                  <td class="right">${line.taxRate}%</td>
+                  <td class="center"><button class="btn link" onclick="showLineDetails(${line.id})">${line.detailIds.length} 条</button></td>
+                  <td><input class="editable" value="${line.remark || ''}" onchange="updateLine(${line.id}, 'remark', this.value)" /></td>
+                </tr>
+              `).join('')}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="center">合计</td>
+                <td colspan="3"></td>
+                <td class="right">${money(sum(row.lines, 'sourceAmount'))}</td>
+                <td class="right">${money(sum(row.lines, 'allocationAmount'))}</td>
+                <td class="right">${money(sum(row.lines, 'finalAmount'))}</td>
+                <td class="right">${money(row.ticketedAmount)}</td>
+                <td class="right">${money(row.invoiceAmount - row.ticketedAmount)}</td>
+                <td colspan="4"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderDetailTab() {
+      const row = activeRecord();
+      const rows = selectedDetailIds.length
+        ? row.details.filter((item) => selectedDetailIds.includes(item.id))
+        : row.details;
+      $('tabContent').innerHTML = `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="center">#</th>
+                <th>正式账单编号</th>
+                <th>对账单编号</th>
+                <th class="center">应收付类型</th>
+                <th>款号</th>
+                <th>采购单号</th>
+                <th>物料编码</th>
+                <th>物料名称</th>
+                <th class="right">数量</th>
+                <th class="right">对账含税金额</th>
+                <th class="right">已开票金额</th>
+                <th class="right">本次开票金额</th>
+                <th>归属发票号</th>
+                <th class="right">已到票金额</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map((detail, index) => `
+                <tr>
+                  <td class="center">${index + 1}</td>
+                  <td>${detail.billNumber}</td>
+                  <td>${detail.reconciliationBillNumber || '-'}</td>
+                  <td class="center">${directionTag(detail.arapBizType)}</td>
+                  <td>${detail.styleNo}</td>
+                  <td>${detail.purchaseNo}</td>
+                  <td>${detail.materialCode}</td>
+                  <td>${detail.materialName}</td>
+                  <td class="right">${detail.qty}</td>
+                  <td class="right">${money(detail.reconAmountWithTax)}</td>
+                  <td class="right">${money(detail.invoicedAmount)}</td>
+                  <td class="right"><input class="number-input" type="number" step="0.01" value="${detail.currentInvoiceAmount}" onchange="updateDetailAmount(${detail.id}, this.value)" /></td>
+                  <td>${detailTicketNos(row, detail.id)}</td>
+                  <td class="right">${money(detailTicketedAmount(row, detail))}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="center">合计</td>
+                <td colspan="7"></td>
+                <td class="right">${money(sum(rows, 'qty'))}</td>
+                <td class="right">${money(sum(rows, 'reconAmountWithTax'))}</td>
+                <td class="right">${money(sum(rows, 'invoicedAmount'))}</td>
+                <td class="right">${money(sum(rows, 'currentInvoiceAmount'))}</td>
+                <td colspan="2"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderTicketTab() {
+      const row = activeRecord();
+      const body = row.ticketRecords.length
+        ? row.ticketRecords.map((ticket, index) => `
+          <tr>
+            <td class="center">${index + 1}</td>
+            <td>${ticket.ticketNo}</td>
+            <td class="right">${money(ticket.ticketAmount)}</td>
+            <td>${(ticket.lines || []).map((line) => {
+              const invoiceLine = row.lines.find((item) => item.id === line.invoiceLineId);
+              return `${invoiceLine ? invoiceLine.displayName : line.invoiceLineId}：${money(line.ticketAmount)}`;
+            }).join('<br>')}</td>
+            <td>${ticket.attachmentName}</td>
+            <td>${ticket.operator}</td>
+            <td>${ticket.ticketTime}</td>
+            <td>${ticket.remark || ''}</td>
+          </tr>
+        `).join('')
+        : '<tr><td class="center" colspan="8">暂无到票记录</td></tr>';
+      $('tabContent').innerHTML = `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="center">#</th>
+                <th>发票号</th>
+                <th class="right">到票金额</th>
+                <th>覆盖开票行</th>
+                <th>附件</th>
+                <th>操作人</th>
+                <th>到票时间</th>
+                <th>备注</th>
+              </tr>
+            </thead>
+            <tbody>${body}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function openDetail(id) {
+      activeRecordId = id;
+      selectedDetailIds = [];
+      activeTab = 'line';
+      $('drawerMask').classList.add('show');
+      $('detailDrawer').classList.add('show');
+      renderDetail();
+    }
+
+    function closeDetail() {
+      $('drawerMask').classList.remove('show');
+      $('detailDrawer').classList.remove('show');
+    }
+
+    function updateLine(lineId, field, value) {
+      const row = activeRecord();
+      const line = row.lines.find((item) => item.id === lineId);
+      if (!line) return;
+      if (field === 'allocationAmount') {
+        line.allocationAmount = Number(value || 0);
+        line.finalAmount = Number(line.sourceAmount || 0) + Number(line.allocationAmount || 0);
+      } else {
+        line[field] = value;
+      }
+      renderDetail();
+      queryRecords();
+    }
+
+    function updateInvoiceOrg(value) {
+      const row = activeRecord();
+      if (!row) return;
+      row.invoiceOrgName = value;
+      renderDetail();
+      queryRecords();
+      toast('开票主体已更新');
+    }
+
+    function updateDetailAmount(detailId, value) {
+      const row = activeRecord();
+      const detail = row.details.find((item) => item.id === detailId);
+      if (!detail) return;
+      detail.currentInvoiceAmount = Number(value || 0);
+      row.invoiceAmount = sum(row.details, 'currentInvoiceAmount');
+      renderDetail();
+      queryRecords();
+    }
+
+    function showLineDetails(lineId) {
+      const row = activeRecord();
+      const line = row.lines.find((item) => item.id === lineId);
+      selectedDetailIds = line ? line.detailIds.slice() : [];
+      activeTab = 'detail';
+      renderTab();
+    }
+
+    function openArrival(id) {
+      const row = getRecord(id);
+      if (!row || row.status === 'INVOICED') return;
+      arrivalTargetId = id;
+      $('arrivalSummary').innerHTML = [
+        ['开票编号', row.invoiceNo],
+        ['来源对账单', row.sourceBillNumber],
+        ['应收付类型', directionTag(row.arapBizType)],
+        ['对账单主体', row.sourceOrgName || row.orgName],
+        ['开票主体', row.invoiceOrgName || row.orgName],
+        ['对手方', `${row.customerType} / ${row.customerName}`],
+        ['业务类型', row.bizTypeName],
+        ['开票金额', money(row.invoiceAmount)],
+        ['已到票金额', money(row.ticketedAmount)],
+        ['未到票金额', money(row.invoiceAmount - row.ticketedAmount)],
+        ['发票行数', `${row.lines.length} 行`],
+        ['关联明细数', `${row.details.length} 条`]
+      ].map(([label, value]) => `
+        <div class="desc-item">
+          <div class="desc-label">${label}</div>
+          <div class="desc-value">${value}</div>
+        </div>
+      `).join('');
+      $('arrivalTicketNo').value = '';
+      $('arrivalFile').value = '';
+      $('arrivalRemark').value = '';
+      $('arrivalLineList').innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th class="center">选择</th>
+              <th>行ID</th>
+              <th>开票行</th>
+              <th>款号</th>
+              <th>采购单号</th>
+              <th class="right">最终金额</th>
+              <th class="right">已到票</th>
+              <th class="right">未到票</th>
+              <th>已关联发票</th>
+              <th class="right">本张发票金额</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${row.lines.map((line) => {
+              const remaining = lineRemainingAmount(row, line);
+              const disabled = Math.abs(remaining) <= 0;
+              return `
+                <tr>
+                  <td class="center"><input class="arrival-line-check" type="checkbox" data-line-id="${line.id}" ${disabled ? 'disabled' : ''} /></td>
+                  <td>${line.id}</td>
+                  <td>${line.displayName}</td>
+                  <td>${line.styleNo}</td>
+                  <td>${line.purchaseNo}</td>
+                  <td class="right">${money(line.finalAmount)}</td>
+                  <td class="right">${money(lineTicketedAmount(row, line.id))}</td>
+                  <td class="right">${money(remaining)}</td>
+                  <td>${lineTicketNos(row, line.id)}</td>
+                  <td class="right"><input class="number-input arrival-line-amount" type="number" step="0.01" data-line-id="${line.id}" value="${disabled ? 0 : remaining}" ${disabled ? 'disabled' : ''} /></td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `;
+      $('modalMask').classList.add('show');
+      $('arrivalModal').classList.add('show');
+    }
+
+    function closeArrival() {
+      $('modalMask').classList.remove('show');
+      $('arrivalModal').classList.remove('show');
+    }
+
+    function submitArrival() {
+      const row = getRecord(arrivalTargetId);
+      if (!row) return;
+      const ticketNo = $('arrivalTicketNo').value.trim();
+      const file = $('arrivalFile').files[0];
+      if (!ticketNo) {
+        toast('请填写发票号');
+        return;
+      }
+      const checkedLines = Array.from(document.querySelectorAll('.arrival-line-check:checked'));
+      if (!checkedLines.length) {
+        toast('请至少选择一条开票行');
+        return;
+      }
+      const ticketLines = checkedLines.map((check) => {
+        const lineId = Number(check.dataset.lineId);
+        const input = document.querySelector(`.arrival-line-amount[data-line-id="${lineId}"]`);
+        return { invoiceLineId: lineId, ticketAmount: Number(input.value || 0) };
+      });
+      const amountInvalid = ticketLines.some((ticketLine) => {
+        const line = row.lines.find((item) => item.id === ticketLine.invoiceLineId);
+        const remaining = line ? lineRemainingAmount(row, line) : 0;
+        return !ticketLine.ticketAmount || Math.abs(ticketLine.ticketAmount) > Math.abs(remaining);
+      });
+      if (amountInvalid) {
+        toast('行级到票金额必须非0且不能超过该行未到票金额');
+        return;
+      }
+      if (!file) {
+        toast('请上传发票附件');
+        return;
+      }
+      const amount = ticketLines.reduce((total, line) => total + Number(line.ticketAmount || 0), 0);
+      row.ticketRecords.push({
+        id: Date.now(),
+        ticketNo,
+        ticketAmount: amount,
+        attachmentName: file.name,
+        operator: '当前用户',
+        ticketTime: nowText(),
+        remark: $('arrivalRemark').value.trim(),
+        lines: ticketLines
+      });
+      row.ticketedAmount = sum(row.ticketRecords, 'ticketAmount');
+      if (Math.abs(row.ticketedAmount) >= Math.abs(row.invoiceAmount)) {
+        row.status = 'INVOICED';
+        row.ticketedAmount = row.invoiceAmount;
+      } else if (row.ticketedAmount !== 0) {
+        row.status = 'PARTIAL_TICKETED';
+      }
+      closeArrival();
+      queryRecords();
+      if (activeRecordId === row.id) renderDetail();
+      toast('到票信息已登记');
+    }
+
+    function exportInvoice() {
+      const row = activeRecord();
+      if (!row) return;
+      const header = ['开票编号', '款号', '采购单号', '发票行展示名称', '原始汇总金额', '分摊调整', '最终展示金额', '税率', '备注'];
+      const lines = row.lines.map((line) => [
+        row.invoiceNo,
+        line.styleNo,
+        line.purchaseNo,
+        line.displayName,
+        line.sourceAmount,
+        line.allocationAmount,
+        line.finalAmount,
+        `${line.taxRate}%`,
+        line.remark || ''
+      ]);
+      const csv = [header, ...lines].map((items) => items.map((item) => `"${String(item).replaceAll('"', '""')}"`).join(',')).join('\n');
+      const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${row.invoiceNo}-发票行.csv`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+      toast('已导出发票行CSV');
+    }
+
+    document.querySelectorAll('.tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        activeTab = tab.dataset.tab;
+        if (activeTab !== 'detail') selectedDetailIds = [];
+        renderTab();
+      });
+    });
+
+    $('searchBtn').addEventListener('click', queryRecords);
+    $('resetBtn').addEventListener('click', resetQuery);
+    $('closeDrawerBtn').addEventListener('click', closeDetail);
+    $('drawerMask').addEventListener('click', closeDetail);
+    $('saveLineBtn').addEventListener('click', () => toast('已模拟保存发票行调整'));
+    $('exportBtn').addEventListener('click', exportInvoice);
+    $('drawerArrivalBtn').addEventListener('click', () => openArrival(activeRecordId));
+    $('closeModalBtn').addEventListener('click', closeArrival);
+    $('cancelArrivalBtn').addEventListener('click', closeArrival);
+    $('modalMask').addEventListener('click', closeArrival);
+    $('submitArrivalBtn').addEventListener('click', submitArrival);
+
+    ['invoiceNoFilter', 'keywordFilter'].forEach((id) => {
+      $(id).addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') queryRecords();
+      });
+    });
+
+    document.querySelectorAll('.switch-btn').forEach((btn) => {
+      btn.addEventListener('click', () => switchPage(btn.dataset.page));
+    });
+
+    $('billSearchBtn').addEventListener('click', renderBillSource);
+    $('billResetBtn').addEventListener('click', () => {
+      $('billKeywordFilter').value = '';
+      $('billStatusFilter').value = '';
+      renderBillSource();
+    });
+    $('createFromBillBtn').addEventListener('click', createFromBills);
+    $('reconSelect').addEventListener('change', () => {
+      selectedReconDetailIds = [];
+      renderReconciliationSource();
+    });
+    $('reconSelectAllBtn').addEventListener('click', () => {
+      selectedReconDetailIds = activeReconciliation().details.filter(canInvoice).map((row) => row.id);
+      renderReconciliationSource();
+    });
+    $('reconClearBtn').addEventListener('click', () => {
+      selectedReconDetailIds = [];
+      renderReconciliationSource();
+    });
+    $('createFromReconBtn').addEventListener('click', createFromReconciliation);
+
+    queryRecords();
+    renderBillSource();
+    renderReconciliationSource();
+  </script>
+</body>
+</html>

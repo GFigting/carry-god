@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "codegraph": {
+      "command": "npx",
+      "args": ["@f4ww4z/mcp-codegraph-server"]
+    },
+    "mysql": {
+      "command": "node",
+      "args": ["C:/Program Files/nodejs/node_modules/@f4ww4z/mcp-mysql-server/build/index.js"],
+      "env": {
+        "MYSQL_HOST": "your-db-host",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "your-db-user",
+        "MYSQL_PASSWORD": "your-db-password",
+        "MYSQL_DATABASE": "your-database"
+      }
+    }
+  }
+}

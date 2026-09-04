@@ -1,0 +1,36 @@
+申请目的：
+  1. PRB250814-0003 / PRB251017-0001：历史成品对账单缺失半卖税金字段（is_rec_part_vat / rec_part_vat_value / rec_part_vat_amount），且预留款金额（reserve_amount）原始值为不含税金额，需补充税金并转为含税金额；账期子表预留款（REVERSE）的预计请款金额（expected_amount）同步转为含税。
+  2. PRB251220-0003：历史对账单状态和已请款金额与实际结算不一致，需修正为"复核确认"并更新请款金额；账期子表进度款（PROGRESS_AMOUNT）记录挂接结算单号、标记已请款、修正已付金额。
+
+涉及对象：
+  - 库：ls_dev
+  - 表：fc_reconciliation_product（成品对账主表）、fc_reconciliation_period_dt（账期子表）
+  - 字段：
+      * fc_reconciliation_product: is_rec_part_vat / rec_part_vat_value / rec_part_vat_amount / reserve_amount / status / requested_payment_amount
+      * fc_reconciliation_period_dt: expected_amount / is_requested / paid_amount / remark
+  - 单号：PRB250814-0003、PRB251017-0001、PRB251220-0003
+
+影响范围：
+  - fc_reconciliation_product：3 条 UPDATE（每单号 1 条）
+  - fc_reconciliation_period_dt：约 3 条 UPDATE（每单号按 period_type 过滤，各 1 条）
+  - 仅修改指定字段，不涉及其他列或关联数据
+
+验证方式：
+  执行前：运行「验证-执行前」SELECT，确认当前值与预期原始值一致，复核人工校验值计算正确。
+  执行后：运行「验证-执行后」同条件 SELECT，对比修改前后的字段值，确认与注释中标注的预期值一致。
+
+回滚/退出：
+  回滚方式：执行前对涉及行做 SELECT INTO 备份（或导出为临时表），如需回滚用备份行写回。
+  备份语句示例：
+    -- 主表备份
+    CREATE TABLE tmp_rollback_20260706_frp AS
+    SELECT * FROM fc_reconciliation_product WHERE bill_number IN ('PRB250814-0003','PRB251017-0001','PRB251220-0003');
+    -- 账期子表备份
+    CREATE TABLE tmp_rollback_20260706_frpd AS
+    SELECT frpd.* FROM fc_reconciliation_period_dt frpd
+    INNER JOIN fc_reconciliation_product frp ON frpd.reconciliation_product_id = frp.reconciliation_product_id
+    WHERE frp.bill_number IN ('PRB250814-0003','PRB251017-0001','PRB251220-0003');
+  权限到期：无（一次性修复，执行完即结束）
+
+敏感说明：
+  涉及财务金额（reserve_amount / requested_payment_amount / rec_part_vat_amount / expected_amount / paid_amount），属于经营数据。修改操作需在低峰期执行，执行后需财务复核确认。
