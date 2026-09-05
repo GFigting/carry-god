@@ -1,0 +1,39 @@
+# Task Record
+
+type: work | fix | refactor | optimize | prototype | review
+goal: GOAL-XXX
+task: TASK-XXX
+status: draft | ready | in_progress | blocked | under_review | done | cancelled
+
+intent: "One sentence describing the intended outcome"
+scope:
+  include:
+    - ""
+  exclude:
+    - ""
+
+acceptance:
+  - ""
+
+preserve:
+  - "External behavior, interfaces, or rules that must not change"
+
+evidence:
+  - "Path or command proving a claim"
+
+capabilities:
+  - "Selected skill or provider"
+
+## Decision Log
+
+- Decision:
+- Reason:
+- Rejected alternative:
+
+## Progress
+
+- [ ] Clarify scope
+- [ ] Plan the work
+- [ ] Implement or produce the artifact
+- [ ] Verify the result
+- [ ] Record remaining risk
