@@ -1,0 +1,42 @@
+{
+  "id": "TASK-20260906-001",
+  "type": "work",
+  "title": "新增导出功能",
+  "intent": "新增导出功能",
+  "status": "draft",
+  "source": "web",
+  "confidence": "high",
+  "project": "",
+  "goal": "",
+  "open_questions": [],
+  "decisions": [],
+  "artifacts": [],
+  "context_package": "",
+  "parent_task": null,
+  "subtasks": [],
+  "dependencies": [],
+  "scope": {
+    "include": [],
+    "exclude": []
+  },
+  "acceptance": [],
+  "preserve": [],
+  "evidence": [],
+  "capabilities": [],
+  "risks": [],
+  "outputs": [],
+  "findings": [],
+  "owner": "",
+  "blocker": "",
+  "unblock_condition": "",
+  "residual_risk_declared": false,
+  "next_action": "clarify",
+  "created_at": "2026-09-06T05:41:50.980Z",
+  "updated_at": "2026-09-06T05:41:51.060Z",
+  "intake": {
+    "matched_types": [
+      "work"
+    ],
+    "received_at": "2026-09-06T05:41:51.060Z"
+  }
+}

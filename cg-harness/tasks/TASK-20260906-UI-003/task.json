@@ -1,0 +1,110 @@
+{
+  "id": "TASK-20260906-UI-003",
+  "type": "prototype",
+  "title": "重设计 CG Harness Web 工作台界面",
+  "intent": "提升 Web 工作台视觉层级、可读性和任务操作效率",
+  "status": "done",
+  "source": "cli",
+  "confidence": "high",
+  "project": "",
+  "goal": "让 Harness 页面成为可持续使用的任务执行工作台，而不是信息看板",
+  "open_questions": [],
+  "decisions": [],
+  "artifacts": [
+    "D:\\GitPrograms\\Vibe-coding\\carry-god\\cg-harness\\tasks\\TASK-20260906-UI-003\\artifacts\\plan.md"
+  ],
+  "context_package": "D:\\GitPrograms\\Vibe-coding\\carry-god\\cg-harness\\tasks\\TASK-20260906-UI-003\\context\\context-package.md",
+  "parent_task": null,
+  "subtasks": [
+    "TASK-20260906-UI-003-VISUAL",
+    "TASK-20260906-UI-003-INTERACTION",
+    "TASK-20260906-UI-003-QA"
+  ],
+  "dependencies": [],
+  "scope": {
+    "include": [
+      "web/index.html"
+    ],
+    "exclude": []
+  },
+  "acceptance": [
+    {
+      "id": "A1",
+      "text": "任务列表、状态和详情层级清晰，页面不再呈现为简单表单堆叠"
+    },
+    {
+      "id": "A2",
+      "text": "桌面和窄屏下主要操作均可用且不发生内容遮挡"
+    },
+    {
+      "id": "A3",
+      "text": "原有任务流转、编辑和验收功能保持可用"
+    }
+  ],
+  "preserve": [],
+  "evidence": [
+    {
+      "id": "E-1788675281236",
+      "kind": "test",
+      "acceptance": "A1",
+      "result": "pass",
+      "command": "npm test（16 项通过）",
+      "recorded_at": "2026-09-06T06:14:41.236Z"
+    },
+    {
+      "id": "E-1788675281674",
+      "kind": "test",
+      "acceptance": "A2",
+      "result": "pass",
+      "command": "node --check cli/src/web-server.js",
+      "recorded_at": "2026-09-06T06:14:41.674Z"
+    },
+    {
+      "id": "E-1788675282070",
+      "kind": "manual",
+      "acceptance": "A3",
+      "result": "pass",
+      "command": "GET http://127.0.0.1:3213/ 返回 200",
+      "recorded_at": "2026-09-06T06:14:42.070Z"
+    }
+  ],
+  "capabilities": [],
+  "risks": [
+    "单文件页面继续膨胀，后续需要拆分前端模块"
+  ],
+  "outputs": [
+    "重设计后的工作台页面",
+    "D:\\GitPrograms\\Vibe-coding\\carry-god\\cg-harness\\tasks\\TASK-20260906-UI-003\\artifacts\\plan.md"
+  ],
+  "findings": [],
+  "owner": "",
+  "blocker": "",
+  "unblock_condition": "",
+  "residual_risk_declared": true,
+  "next_action": "learn",
+  "created_at": "2026-09-06T06:12:20.235Z",
+  "updated_at": "2026-09-06T06:14:42.831Z",
+  "plan_steps": [
+    {
+      "id": "P1",
+      "text": "设计新的布局、色彩和组件层级",
+      "status": "done",
+      "started_at": "2026-09-06T06:12:23.564Z",
+      "completed_at": "2026-09-06T06:12:23.942Z"
+    },
+    {
+      "id": "P2",
+      "text": "实现响应式工作台界面",
+      "status": "done",
+      "started_at": "2026-09-06T06:12:24.318Z",
+      "completed_at": "2026-09-06T06:14:40.367Z"
+    },
+    {
+      "id": "P3",
+      "text": "执行回归验证并登记证据",
+      "status": "done",
+      "started_at": "2026-09-06T06:14:40.629Z",
+      "completed_at": "2026-09-06T06:14:40.892Z"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+version: 1
+source_of_truth: capabilities
+capabilities:
+  - id: CGHN-CAP-001
+    name: clarify-and-brainstorm
+    stage: intake
+    trigger: goal,scope,acceptance-criteria unclear
+    input: task context and user intent
+    output: requirements summary and acceptance criteria
+    path: capabilities/clarify-and-brainstorm.md
+  - id: CGHN-CAP-002
+    name: design-deep-modules
+    stage: design
+    trigger: new boundary, interface, data flow, or architectural decision
+    input: requirements and project constraints
+    output: design and decision record
+    path: capabilities/design-deep-modules.md
+  - id: CGHN-CAP-003
+    name: implement-with-tdd
+    stage: implementation
+    trigger: behavior change or risky refactor
+    input: approved plan and acceptance criteria
+    output: implementation and covering tests
+    path: capabilities/implement-with-tdd.md
+  - id: CGHN-CAP-004
+    name: diagnose-bugs
+    stage: diagnosis
+    trigger: bug, regression, performance, or intermittent failure
+    input: symptom and reproduction
+    output: root cause, fix, and regression evidence
+    path: capabilities/diagnose-bugs.md
+  - id: CGHN-CAP-005
+    name: review-code
+    stage: review
+    trigger: review request or pre-merge gate
+    input: diff, plan, and acceptance criteria
+    output: findings ordered by severity
+    path: capabilities/review-code.md
+  - id: CGHN-CAP-006
+    name: verify-before-completion
+    stage: completion
+    trigger: any completion or success claim
+    input: acceptance criteria and changed behavior
+    output: fresh commands, results, gaps, and risks
+    path: capabilities/verify-before-completion.md
+  - id: CGHN-CAP-007
+    name: compound-learning
+    stage: completion
+    trigger: reusable lesson discovered
+    input: task record and evidence
+    output: project or framework learning
+    path: capabilities/compound-learning.md
+  - id: CGHN-CAP-008
+    name: scope-and-reuse
+    stage: intake,design,implementation
+    trigger: new module, new tool, or adjacent cleanup appears
+    input: current task and repository context
+    output: reuse decision, bounded scope, and real-path checks
+    path: capabilities/scope-and-reuse.md

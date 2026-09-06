@@ -1,0 +1,2 @@
+{"event_id":"1788673311059-feff31f9915cf","task":"TASK-20260906-001","timestamp":"2026-09-06T05:41:51.059Z","event":"task_created","actor":"cg-cli","reason":"Task initialized"}
+{"event_id":"1788673311062-2db540b16a8","task":"TASK-20260906-001","timestamp":"2026-09-06T05:41:51.062Z","event":"intake_classified","actor":"cg-web","type":"work","confidence":"high"}

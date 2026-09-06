@@ -1,25 +1,36 @@
 # /cg-fix
 
 ## Purpose
+纠正当前错误行为，并保留复现、根因和回归证据。
 
-Correct behavior that is currently wrong.
+## Self-Owned Skill Chain
+
+```text
+cg.intake -> cg.reproduce -> cg.diagnose -> cg.implement -> cg.verify -> cg.learn
+```
 
 ## Route
 
-1. Capture the expected and actual behavior.
-2. Reproduce the issue or state why reproduction is unavailable.
-3. Record a diagnostic report before changing code when the issue is complex.
-4. Investigate the cause, then apply a focused fix.
-5. Add or update regression coverage.
-6. Re-run the reproduction and update the report with evidence.
+1. `cg.intake` records expected and actual behavior.
+2. `cg.reproduce` captures stable reproduction or an explicit reproduction limit.
+3. `cg.diagnose` validates the direct root cause and rejects alternatives.
+4. `cg.implement` applies a focused fix within the declared boundary.
+5. `cg.verify` reruns reproduction and regression checks.
+6. `cg.learn` captures systemic lessons when useful.
 
-## Preferred Capabilities
+## Acceptance Gate
 
-- `superpowers:systematic-debugging`
-- `skills/diagnosing-bugs`
-- `gstack/investigate` for unclear root causes
-- `gstack/qa` for browser-facing behavior
+- Expected versus actual behavior is recorded.
+- Root cause has supporting evidence.
+- Fix boundary and changed files are listed.
+- Reproduction after fix and regression evidence are recorded.
+
+Complex, UI, data, permission, or performance bugs should also produce `bug-report.html` using the report template.
+
+## External Adapters
+
+Preferred adapters may include `superpowers:systematic-debugging`, `skills:diagnosing-bugs`, or `gstack:investigate`. Missing adapters trigger the fallback protocol.
 
 ## Output
 
-A fix, regression evidence, and `bug-report.html` for complex bugs, UI bugs, data bugs, permission bugs, performance incidents, or issues requiring screenshots.
+Focused fix, regression evidence, diagnostic report when required, and remaining risk.

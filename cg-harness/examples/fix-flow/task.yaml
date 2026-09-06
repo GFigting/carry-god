@@ -1,0 +1,110 @@
+type: fix
+goal: GOAL-EXAMPLE
+task: TASK-FIX-001
+status: done
+
+intent: "修复订单详情页保存后金额显示未更新的问题"
+owner: "example-agent"
+created: "2026-06-01"
+updated: "2026-06-01"
+
+scope:
+  include:
+    - "订单详情页保存后的金额刷新"
+    - "对应回归测试"
+  exclude:
+    - "订单金额计算规则调整"
+
+acceptance:
+  - id: AC-01
+    criterion: "保存成功后页面显示最新金额"
+    evidence_required:
+      - reproduction
+      - verification
+  - id: AC-02
+    criterion: "金额计算规则保持不变"
+    evidence_required:
+      - review
+      - verification
+
+preserve:
+  - "订单金额计算规则"
+  - "保存接口请求和响应结构"
+
+context:
+  package: "examples/fix-flow/context-package.md"
+  project: "order-ui"
+  relevant_files:
+    - "src/pages/order-detail/amount.ts"
+    - "src/pages/order-detail/amount.test.ts"
+  open_questions: []
+
+capabilities:
+  primary:
+    - cg.intake
+    - cg.reproduce
+    - cg.diagnose
+    - cg.implement
+    - cg.verify
+    - cg.learn
+  adapters:
+    - gstack:investigate
+fallback:
+  requested: gstack:investigate
+  selected: cg.diagnose
+  mode: builtin
+  reason: "external adapter unavailable in this environment"
+  capability_gap: "No automated browser/session investigation"
+
+evidence:
+  reproduction:
+    - id: EVD-001
+      category: reproduction
+      claim: "保存后页面仍显示旧金额"
+      source: "manual reproduction steps in issue record"
+      result: passed
+      captured_at: "2026-06-01"
+      limitations: []
+  implementation:
+    - id: EVD-002
+      category: implementation
+      claim: "保存成功回调刷新金额状态"
+      source: "src/pages/order-detail/amount.ts"
+      result: passed
+      captured_at: "2026-06-01"
+      limitations: []
+  verification:
+    - id: EVD-003
+      category: verification
+      claim: "回归测试和保存后刷新验证通过"
+      source: "src/pages/order-detail/amount.test.ts; manual browser check"
+      result: passed
+      captured_at: "2026-06-01"
+      limitations: []
+  review: []
+  visual: []
+  measurement: []
+  delivery: []
+
+completion_gate:
+  acceptance_covered: true
+  evidence_recorded: true
+  remaining_risk_declared: true
+
+## Decision Log
+
+- Decision: "在保存成功回调中刷新金额状态"
+- Reason: "保持接口和计算规则不变，修复显示状态未同步"
+- Rejected alternative: "重构整个订单详情状态管理，范围过大"
+
+## Progress
+
+- [x] Intake and scope
+- [x] Clarify material decisions
+- [x] Assemble context package
+- [x] Plan the work
+- [x] Implement or produce the artifact
+- [x] Verify the result
+- [x] Review when required
+- [x] Record remaining risk
+- [x] Learn or hand off when useful

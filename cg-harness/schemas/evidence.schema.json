@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CG Harness Evidence",
+  "type": "object",
+  "required": ["id", "kind", "acceptance", "result", "recorded_at"],
+  "properties": {
+    "id": { "type": "string" },
+    "kind": { "enum": ["test", "command", "screenshot", "measurement", "review", "manual", "file"] },
+    "acceptance": { "type": "string" },
+    "result": { "enum": ["pass", "verified", "fail", "skipped", "unavailable"] },
+    "path": { "type": "string" },
+    "command": { "type": "string" },
+    "recorded_at": { "type": "string" }
+  }
+}

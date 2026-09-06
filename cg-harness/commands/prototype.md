@@ -1,26 +1,33 @@
 # /cg-prototype
 
 ## Purpose
+在生产实现前验证产品、交互或视觉方向。
 
-Explore a future product, interaction, or UI direction before production implementation.
+## Self-Owned Skill Chain
+
+```text
+cg.intake -> cg.clarify -> cg.prototype -> cg.verify -> cg.review
+```
 
 ## Route
 
-1. State the decision or user question the prototype must answer.
-2. Select one concept or several variants based on uncertainty.
-3. Build a self-contained, runnable prototype.
-4. Exercise the important states and interactions in a browser when relevant.
-5. Record the selected direction, rejected options, and implementation boundary.
-6. Convert the decision into a focused `/cg-work` plan when ready.
+1. `cg.intake` records the decision question and target audience.
+2. `cg.clarify` resolves uncertain states and interactions.
+3. `cg.prototype` builds a self-contained runnable prototype.
+4. `cg.verify` exercises important states in the relevant browser or runtime.
+5. `cg.review` records the selected direction and production boundary.
 
-## Preferred Capabilities
+## Acceptance Gate
 
-- `skills/prototype`
-- `ce-prototype`
-- `gstack/design-shotgun` for multiple visual variants
-- `gstack/design-html` for a production-shaped HTML prototype
-- `gstack/qa` for browser interaction checks
+- The prototype answers a named decision question.
+- Important states and interactions are exercised.
+- Selected and rejected options are recorded.
+- Prototype-only content is separated from production scope.
+
+## External Adapters
+
+Preferred adapters may include `skills:prototype`, `ce-prototype`, `gstack:design-html`, or browser QA.
 
 ## Output
 
-`prototype.html`, optional screenshots, and `design-decision.md`. A prototype is evidence for a decision, not production code by default.
+`prototype.html`, optional screenshots, `design-decision.md`, verification evidence, and production boundary.

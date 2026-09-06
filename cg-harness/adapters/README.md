@@ -1,27 +1,21 @@
 # External Capability Adapters
 
-CG Harness does not copy or replace external skill projects. It routes to them when installed and records the selected capability in the task evidence.
+CG Harness owns the Task model, lifecycle, evidence gate, and completion decision. Adapters only connect optional external capabilities and translate their results into the CG protocol.
 
-## GGFrame
+## Adapter Rule
 
-GGFrame remains the source of truth for Goal, Task, Context, Evidence, and status. Legacy `as`, `fw`, `with`, and `mgmt` instructions are internal compatibility mechanisms, not the primary user interface.
+CG Harness does not copy external skill projects. It may call them when installed, but every result must be recorded through the CG CLI. An adapter must never edit `task.json` status directly or claim `done`.
 
-## Superpowers
+## Reference Providers
 
-Use for clarification, implementation planning, TDD, systematic debugging, and completion verification.
-
-## skills
-
-Use for small composable engineering capabilities, especially architecture improvement, codebase design, domain modeling, prototype work, and code review.
-
-## gstack
-
-Use for product and design exploration, browser QA, visual review, benchmarking, security review, release, and deployment.
-
-## compound-engineering-plugin
-
-Use as the distribution and conversion layer for supported Agent hosts. It does not own task state or business decisions.
+- GGFrame: optional source for legacy Goal and knowledge migration
+- Superpowers: clarification, planning, TDD, debugging, and verification methods
+- skills: composable engineering, architecture, domain modeling, prototype, and review methods
+- gstack: product, browser QA, visual review, benchmarking, security, release, and deployment methods
+- compound-engineering-plugin: optional distribution and host conversion layer
 
 ## Unavailable Capability
 
-If a selected provider is unavailable, fall back to an equivalent installed capability where possible. Record the fallback. Never claim an unavailable skill ran.
+If a selected provider is unavailable, use the native CG skill or an equivalent provider where possible. Record `unavailable` or `fallback`, including the reason and replacement capability. Never claim an unavailable skill ran.
+
+See `adapter-contract.md` for the structured input and output contract.

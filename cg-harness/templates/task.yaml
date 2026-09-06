@@ -3,9 +3,13 @@
 type: work | fix | refactor | optimize | prototype | review
 goal: GOAL-XXX
 task: TASK-XXX
-status: draft | ready | in_progress | blocked | under_review | done | cancelled
+status: draft | ready | in_progress | blocked | under_review | revision | done | cancelled | archived
 
 intent: "One sentence describing the intended outcome"
+owner: ""
+created: "YYYY-MM-DD"
+updated: "YYYY-MM-DD"
+
 scope:
   include:
     - ""
@@ -13,16 +17,47 @@ scope:
     - ""
 
 acceptance:
-  - ""
+  - id: AC-01
+    criterion: ""
+    evidence_required:
+      - verification
 
 preserve:
   - "External behavior, interfaces, or rules that must not change"
 
-evidence:
-  - "Path or command proving a claim"
+context:
+  package: "path/to/context-package.md"
+  project: ""
+  relevant_files:
+    - ""
+  open_questions:
+    - ""
 
 capabilities:
-  - "Selected skill or provider"
+  primary:
+    - cg.intake
+  adapters:
+    - ""
+fallback:
+  requested: ""
+  selected: ""
+  mode: preferred | equivalent | builtin | unavailable
+  reason: ""
+  capability_gap: ""
+
+evidence:
+  reproduction: []
+  implementation: []
+  verification: []
+  review: []
+  visual: []
+  measurement: []
+  delivery: []
+
+completion_gate:
+  acceptance_covered: false
+  evidence_recorded: false
+  remaining_risk_declared: false
 
 ## Decision Log
 
@@ -32,8 +67,12 @@ capabilities:
 
 ## Progress
 
-- [ ] Clarify scope
+- [ ] Intake and scope
+- [ ] Clarify material decisions
+- [ ] Assemble context package
 - [ ] Plan the work
 - [ ] Implement or produce the artifact
 - [ ] Verify the result
+- [ ] Review when required
 - [ ] Record remaining risk
+- [ ] Learn or hand off when useful

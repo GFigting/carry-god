@@ -1,0 +1,22 @@
+version: 1
+sources:
+  - source: GGFrame
+    role: governance source
+    extracted: goals, tasks, roles, workflows, quality gates, metadata discipline
+    status: primary
+  - source: skills
+    role: engineering method source
+    extracted: deep-module design, TDD, diagnosis, research and review practices
+    status: selected-and-rewritten
+  - source: superpowers
+    role: execution discipline source
+    extracted: planning, verification, delegation and review-loop principles
+    status: selected-and-rewritten
+  - source: compound-engineering-plugin
+    role: workflow inspiration source
+    extracted: brainstorm-plan-work-review-compound loop
+    status: selected-and-rewritten
+  - source: gstack
+    role: reference source
+    extracted: search-before-building, bounded scope, real-user-path QA
+    status: selected-and-rewritten; host-specific material excluded

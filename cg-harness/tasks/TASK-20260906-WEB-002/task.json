@@ -1,0 +1,104 @@
+{
+  "id": "TASK-20260906-WEB-002",
+  "type": "work",
+  "title": "按 CG Harness 流程完善 Web 工作台",
+  "intent": "按 CG Harness 流程完善 Web 工作台，使需求接入、任务补全、计划执行、关系维护和验收留证可在页面内闭环",
+  "status": "done",
+  "source": "cli",
+  "confidence": "high",
+  "project": "",
+  "goal": "",
+  "open_questions": [],
+  "decisions": [],
+  "artifacts": [
+    "D:\\GitPrograms\\Vibe-coding\\carry-god\\cg-harness\\tasks\\TASK-20260906-WEB-002\\artifacts\\plan.md"
+  ],
+  "context_package": "D:\\GitPrograms\\Vibe-coding\\carry-god\\cg-harness\\tasks\\TASK-20260906-WEB-002\\context\\context-package.md",
+  "parent_task": null,
+  "subtasks": [],
+  "dependencies": [],
+  "scope": {
+    "include": [
+      "web/index.html"
+    ],
+    "exclude": []
+  },
+  "acceptance": [
+    {
+      "id": "A1",
+      "text": "页面可以编辑任务元数据、范围、风险和阻塞信息"
+    },
+    {
+      "id": "A2",
+      "text": "页面可以创建计划步骤、启动步骤并完成步骤"
+    },
+    {
+      "id": "A3",
+      "text": "页面可以创建子任务并登记任务依赖"
+    }
+  ],
+  "preserve": [],
+  "evidence": [
+    {
+      "id": "E-1788674679458",
+      "kind": "test",
+      "acceptance": "A1",
+      "result": "pass",
+      "command": "npm test",
+      "recorded_at": "2026-09-06T06:04:39.458Z"
+    },
+    {
+      "id": "E-1788674679711",
+      "kind": "test",
+      "acceptance": "A2",
+      "result": "pass",
+      "command": "Web API 临时端口验证",
+      "recorded_at": "2026-09-06T06:04:39.711Z"
+    },
+    {
+      "id": "E-1788674679980",
+      "kind": "test",
+      "acceptance": "A3",
+      "result": "pass",
+      "command": "git diff --check",
+      "recorded_at": "2026-09-06T06:04:39.980Z"
+    }
+  ],
+  "capabilities": [],
+  "risks": [],
+  "outputs": [
+    "可操作的 Web 工作台",
+    "D:\\GitPrograms\\Vibe-coding\\carry-god\\cg-harness\\tasks\\TASK-20260906-WEB-002\\artifacts\\plan.md"
+  ],
+  "findings": [],
+  "owner": "",
+  "blocker": "",
+  "unblock_condition": "",
+  "residual_risk_declared": true,
+  "next_action": "learn",
+  "created_at": "2026-09-06T06:04:34.570Z",
+  "updated_at": "2026-09-06T06:04:40.644Z",
+  "plan_steps": [
+    {
+      "id": "P1",
+      "text": "补齐 Web 任务编辑接口",
+      "status": "done",
+      "started_at": "2026-09-06T06:04:37.433Z",
+      "completed_at": "2026-09-06T06:04:37.675Z"
+    },
+    {
+      "id": "P2",
+      "text": "完善页面端任务流程操作",
+      "status": "done",
+      "started_at": "2026-09-06T06:04:37.952Z",
+      "completed_at": "2026-09-06T06:04:38.273Z"
+    },
+    {
+      "id": "P3",
+      "text": "执行测试并登记验收证据",
+      "status": "done",
+      "started_at": "2026-09-06T06:04:38.679Z",
+      "completed_at": "2026-09-06T06:04:39.175Z"
+    }
+  ]
+}

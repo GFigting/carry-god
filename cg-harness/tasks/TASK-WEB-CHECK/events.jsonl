@@ -1,0 +1,4 @@
+{"event_id":"1788674063667-65b74978d681a","task":"TASK-WEB-CHECK","timestamp":"2026-09-06T05:54:23.667Z","event":"task_created","actor":"cg-cli","reason":"Task initialized"}
+{"event_id":"1788674063750-f81b7dd42dab9","task":"TASK-WEB-CHECK","timestamp":"2026-09-06T05:54:23.750Z","event":"plan_updated","actor":"cg-web","steps":[{"id":"P1","text":"页面补充","status":"pending"},{"id":"P2","text":"接口验证","status":"pending"}]}
+{"event_id":"1788674063780-744c51d3c0572","task":"TASK-WEB-CHECK","timestamp":"2026-09-06T05:54:23.780Z","event":"task_updated","actor":"cg-web"}
+{"event_id":"1788674063823-faa4ac0328a4d","task":"TASK-WEB-CHECK","timestamp":"2026-09-06T05:54:23.823Z","event":"subtask_added","actor":"cg-web","subtask":"TASK-WEB-CHECK-1"}
