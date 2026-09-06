@@ -4,56 +4,119 @@ capabilities:
   - id: CGHN-CAP-001
     name: clarify-and-brainstorm
     stage: intake
-    trigger: goal,scope,acceptance-criteria unclear
-    input: task context and user intent
-    output: requirements summary and acceptance criteria
+    trigger: 目标、范围或验收标准不清
+    input: 任务上下文和用户意图
+    output: 需求摘要和验收标准
     path: capabilities/clarify-and-brainstorm.md
   - id: CGHN-CAP-002
     name: design-deep-modules
     stage: design
-    trigger: new boundary, interface, data flow, or architectural decision
-    input: requirements and project constraints
-    output: design and decision record
+    trigger: 新边界、接口、数据流或架构决策
+    input: 需求和项目约束
+    output: 设计说明和决策记录
     path: capabilities/design-deep-modules.md
   - id: CGHN-CAP-003
     name: implement-with-tdd
     stage: implementation
-    trigger: behavior change or risky refactor
-    input: approved plan and acceptance criteria
-    output: implementation and covering tests
+    trigger: 行为变化或高风险重构
+    input: 已确认计划和验收标准
+    output: 实现代码和覆盖测试
     path: capabilities/implement-with-tdd.md
   - id: CGHN-CAP-004
     name: diagnose-bugs
     stage: diagnosis
-    trigger: bug, regression, performance, or intermittent failure
-    input: symptom and reproduction
-    output: root cause, fix, and regression evidence
+    trigger: 缺陷、回归、性能或间歇性故障
+    input: 症状和复现信息
+    output: 根因、修复和回归证据
     path: capabilities/diagnose-bugs.md
   - id: CGHN-CAP-005
     name: review-code
     stage: review
-    trigger: review request or pre-merge gate
-    input: diff, plan, and acceptance criteria
-    output: findings ordered by severity
+    trigger: 审查请求或合并前门禁
+    input: 变更、计划和验收标准
+    output: 按严重性排序的发现
     path: capabilities/review-code.md
   - id: CGHN-CAP-006
     name: verify-before-completion
     stage: completion
-    trigger: any completion or success claim
-    input: acceptance criteria and changed behavior
-    output: fresh commands, results, gaps, and risks
+    trigger: 任何完成或成功声明
+    input: 验收标准和行为变更
+    output: 本轮命令、结果、缺口和风险
     path: capabilities/verify-before-completion.md
   - id: CGHN-CAP-007
     name: compound-learning
     stage: completion
-    trigger: reusable lesson discovered
-    input: task record and evidence
-    output: project or framework learning
+    trigger: 发现可复用经验
+    input: 任务记录和证据
+    output: 项目或框架知识
     path: capabilities/compound-learning.md
   - id: CGHN-CAP-008
     name: scope-and-reuse
     stage: intake,design,implementation
-    trigger: new module, new tool, or adjacent cleanup appears
-    input: current task and repository context
-    output: reuse decision, bounded scope, and real-path checks
+    trigger: 出现新模块、新工具或相邻清理事项
+    input: 当前任务和仓库上下文
+    output: 复用决策、范围边界和真实路径检查
     path: capabilities/scope-and-reuse.md
+  - id: CGHN-CAP-010
+    name: domain-modeling
+    stage: intake,design,review
+    trigger: 术语、领域对象或业务规则不清
+    input: 需求、前端、后端、数据和项目词汇表
+    output: 标准术语、不变量、场景和决策
+    path: capabilities/domain-modeling.md
+  - id: CGHN-CAP-011
+    name: architecture-report
+    stage: diagnosis,design
+    trigger: 重构、架构优化或复杂缺陷
+    input: 当前结构和影响证据
+    output: 已确认的 HTML 分析报告
+    path: capabilities/architecture-report.md
+  - id: CGHN-CAP-012
+    name: plan-and-dependencies
+    stage: planning
+    trigger: 多步骤或多角色工作
+    input: 目标、未知项和约束
+    output: 垂直切片和依赖关系图
+    path: capabilities/plan-and-dependencies.md
+  - id: CGHN-CAP-013
+    name: research-and-evidence
+    stage: intake,design
+    trigger: 需要外部事实或技术取舍
+    input: 调研问题和一手资料
+    output: 带来源的结论和建议
+    path: capabilities/research-and-evidence.md
+  - id: CGHN-CAP-014
+    name: triage-and-wayfinding
+    stage: intake,planning
+    trigger: 问题不清或工作规模超过一次会话
+    input: 问题上下文和目标终点
+    output: 分诊简报或决策地图
+    path: capabilities/triage-and-wayfinding.md
+  - id: CGHN-CAP-015
+    name: prototype-and-qa
+    stage: design,review
+    trigger: 状态模型、交互或端到端行为不确定
+    input: 待回答问题和真实用户路径
+    output: 可运行原型或基于路径的质量证据
+    path: capabilities/prototype-and-qa.md
+  - id: CGHN-CAP-016
+    name: security-and-guardrails
+    stage: implementation,review,completion
+    trigger: 敏感数据或危险操作
+    input: 变更范围和风险面
+    output: 风险、护栏和确认点
+    path: capabilities/security-and-guardrails.md
+  - id: CGHN-CAP-017
+    name: release-and-retro
+    stage: completion
+    trigger: 发布或任务完成
+    input: 变更、验证和运行结果
+    output: 发布清单、回滚方案和改进措施
+    path: capabilities/release-and-retro.md
+  - id: CGHN-CAP-018
+    name: next-action
+    stage: all
+    trigger: 阶段完成、状态变化、任务阻塞或任务收尾
+    input: 当前状态、验收标准、依赖和剩余工作
+    output: 可执行的下一步行动
+    path: workflow/next-action.md

@@ -3,7 +3,7 @@ type: role
 id: CGHN-ROLE-004
 ---
 
-# Quality
+# 质量工程师
 
 ## 责任
 

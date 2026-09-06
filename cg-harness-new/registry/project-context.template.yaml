@@ -1,0 +1,30 @@
+version: 1
+description: 项目关联注册表模板；项目源码、文档、数据和部署路径必须使用绝对路径；真实配置只保存在本地
+projects:
+  项目标识:
+    display_name: 项目名称
+    domain: 项目业务领域
+    glossary: D:/绝对路径/项目目录/docs/业务上下文.md
+    frontend:
+      path: D:/绝对路径/前端项目目录
+      docs:
+        - D:/绝对路径/前端项目目录/docs/README.md
+      entrypoints: []
+    backend:
+      path: D:/绝对路径/后端项目目录
+      docs:
+        - D:/绝对路径/后端项目目录/docs/README.md
+      services: []
+      apis: []
+    data:
+      path: D:/绝对路径/数据库或迁移目录
+      schemas: []
+      migrations: []
+    operations:
+      deployment: D:/绝对路径/部署配置或文档
+      monitoring: D:/绝对路径/监控配置或文档
+      rollback: D:/绝对路径/回滚方案或文档
+    integration_rules:
+      - 前端页面或组件必须关联后端接口。
+      - 后端接口必须关联领域服务、权限和数据访问。
+      - 数据结构变更必须关联迁移、回滚和验证。

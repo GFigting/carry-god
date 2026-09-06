@@ -1,0 +1,11 @@
+version: 1
+description: 项目领域专业术语表模板；真实术语只保存在项目目录，不提交到框架仓库
+terms:
+  - term: 待填写
+    definition: 待填写业务定义
+    aliases: []
+    forbidden_aliases: []
+    frontend_names: []
+    backend_names: []
+    data_names: []
+    owner: 待填写

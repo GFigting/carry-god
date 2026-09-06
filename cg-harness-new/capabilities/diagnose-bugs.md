@@ -4,7 +4,7 @@ id: CGHN-CAP-004
 stage: diagnosis
 ---
 
-# 系统化调试
+# 系统化缺陷调试
 
 ## 循环
 

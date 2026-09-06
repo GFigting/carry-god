@@ -3,7 +3,7 @@ type: role
 id: CGHN-ROLE-002
 ---
 
-# Architect
+# 架构师
 
 ## 责任
 

@@ -1,22 +1,22 @@
 version: 1
 sources:
   - source: GGFrame
-    role: governance source
-    extracted: goals, tasks, roles, workflows, quality gates, metadata discipline
-    status: primary
+    role: 治理主线
+    extracted: 目标、任务、角色、流程、质量门禁、元数据纪律
+    status: 主来源
   - source: skills
-    role: engineering method source
-    extracted: deep-module design, TDD, diagnosis, research and review practices
-    status: selected-and-rewritten
+    role: 工程方法来源
+    extracted: 深模块设计、测试驱动开发、缺陷调试、调研和代码审查
+    status: 已选择并重写
   - source: superpowers
-    role: execution discipline source
-    extracted: planning, verification, delegation and review-loop principles
-    status: selected-and-rewritten
+    role: 执行纪律来源
+    extracted: 头脑风暴、计划、验证、派发和审查循环
+    status: 已选择并重写
   - source: compound-engineering-plugin
-    role: workflow inspiration source
-    extracted: brainstorm-plan-work-review-compound loop
-    status: selected-and-rewritten
+    role: 工作流参考来源
+    extracted: 头脑风暴、计划、实施、审查和复合学习闭环
+    status: 已选择并重写
   - source: gstack
-    role: reference source
-    extracted: search-before-building, bounded scope, real-user-path QA
-    status: selected-and-rewritten; host-specific material excluded
+    role: 方法参考来源
+    extracted: 先搜索复用、范围控制、架构报告、真实路径质量验证、安全审查和复盘
+    status: 已选择并重写；宿主相关内容排除

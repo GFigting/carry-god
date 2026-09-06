@@ -1,0 +1,10 @@
+# 本地项目关联与业务上下文，不提交到框架仓库
+/cg-harness-new/registry/project-context.yaml
+/cg-harness-new/registry/domain-glossary.yaml
+
+# 本地任务产物和项目专属配置
+/cg-harness-new/local/
+/cg-harness-new/projects/
+
+# 本地工具缓存
+/.tmp-npm-cache/

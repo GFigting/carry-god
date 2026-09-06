@@ -4,7 +4,7 @@ id: CGHN-CAP-003
 stage: implementation
 ---
 
-# TDD 实施
+# 测试驱动实施
 
 ## 循环
 
