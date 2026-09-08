@@ -30,3 +30,9 @@ id: CGHN-CAP-000
 | 需求到开发追踪 | 需求已确认，需要拆解、实现或验收追踪时 |
 
 注册信息见 `../registry/capabilities.yaml`。
+
+## 深度技能
+
+`registry/capabilities.yaml` 中的 `deep_skill` 是可选字段，指向与 capability 配套的 `skills/<名称>/SKILL.md`。存在该字段时，按 `core/loading-protocol.md` 先加载 capability 的框架门禁，再加载技能的细化步骤；轻量任务可以只使用 capability。
+
+每个 `deep_skill` 必须指向现有文件，且其 `SKILL.md` frontmatter 必须包含与目录名一致的 `name` 和非空 `description`。技能不能引用框架外部的相对资源、改变任务状态或绕过人工确认。新增或更新映射时，核对 capability 链接、注册表路径和 `registry/skill-sources.yaml` 的来源记录；发现任一缺口时不应声明技能可用。

@@ -15,3 +15,7 @@ stage: planning
 - 计划只解决当前目标，不把所有未来改进塞进本轮。
 - 默认判断、待人工确认决策和计划确认门禁以 `workflow/software-delivery.md` 为准；本能力只负责把它们落实到切片。
 - 跨前后端、数据模型、接口或高风险变更的复核职责以 `roles/delegation.md` 为准；本能力只负责将复核结论纳入计划。
+
+## 深度执行流程
+
+需要输出可执行计划时，加载 [实施计划编写](../skills/implementation-planning/SKILL.md)。它细化文件边界、切片、自检和依赖表达；计划状态、人工确认和实施门禁仍以 `workflow/software-delivery.md` 为准。

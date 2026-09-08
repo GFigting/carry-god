@@ -1,0 +1,48 @@
+version: 1
+source_repository: https://github.com/obra/superpowers
+source_license: MIT
+imported_at: 2026-09-08
+update_policy: manual-diff
+skills:
+  - local_path: skills/systematic-debugging/SKILL.md
+    source: superpowers
+    source_path: skills/systematic-debugging/SKILL.md
+    source_snapshot_commit: 5997d6fbf0f34317c9d800afce90563e3180220e
+    license: MIT
+    localization: 使用项目证据、任务记录和框架确认门禁；移除特定宿主命令与强制删除工作区代码的要求。
+  - local_path: skills/test-driven-development/SKILL.md
+    source: superpowers
+    source_path: skills/test-driven-development/SKILL.md
+    source_snapshot_commit: 5997d6fbf0f34317c9d800afce90563e3180220e
+    license: MIT
+    localization: 使用项目既有测试命令；将原型、配置和生成文件的例外交由任务范围与人工确认决定。
+  - local_path: skills/verification-before-completion/SKILL.md
+    source: superpowers
+    source_path: skills/verification-before-completion/SKILL.md
+    source_snapshot_commit: 5997d6fbf0f34317c9d800afce90563e3180220e
+    license: MIT
+    localization: 将验证结果回填到任务记录或交付摘要，并与验收标准追踪和提交规范衔接。
+  - local_path: skills/independent-code-review/SKILL.md
+    source: superpowers
+    source_path: skills/requesting-code-review/SKILL.md, skills/receiving-code-review/SKILL.md
+    source_snapshot_commit: 5997d6fbf0f34317c9d800afce90563e3180220e
+    license: MIT
+    localization: 合并独立审查与反馈处理流程；使用框架审查结论、任务状态和报告模板，取消强制派发与平台专属操作。
+  - local_path: skills/requirements-discovery/SKILL.md
+    source: superpowers
+    source_path: skills/brainstorming/SKILL.md
+    source_snapshot_commit: 5997d6fbf0f34317c9d800afce90563e3180220e
+    license: MIT
+    localization: 使用框架的需求基线、人工确认和任务状态；取消固定目录、提交和宿主工具要求。
+  - local_path: skills/implementation-planning/SKILL.md
+    source: superpowers
+    source_path: skills/writing-plans/SKILL.md
+    source_snapshot_commit: 5997d6fbf0f34317c9d800afce90563e3180220e
+    license: MIT
+    localization: 使用 AC/S 切片追踪、框架模板和确认门禁；移除固定工作树、派发方式和计划存放目录。
+  - local_path: skills/release-integration/SKILL.md
+    source: superpowers
+    source_path: skills/finishing-a-development-branch/SKILL.md
+    source_snapshot_commit: 5997d6fbf0f34317c9d800afce90563e3180220e
+    license: MIT
+    localization: 使用项目发布约定和显式授权；禁止自动合并、推送、清理分支或删除工作区。

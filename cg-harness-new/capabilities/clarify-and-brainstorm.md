@@ -21,3 +21,7 @@ stage: intake
 ## 输出
 
 需求摘要、方案比较、明确选择、未决问题和验收标准。
+
+## 深度执行流程
+
+需求模糊、存在关键取舍或需要从想法形成可确认范围时，加载 [需求发现与方案澄清](../skills/requirements-discovery/SKILL.md)。它细化任务分级、证据优先的澄清和方案比较；业务决策与实施确认仍以 `workflow/software-delivery.md` 为准。

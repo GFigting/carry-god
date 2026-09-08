@@ -17,3 +17,7 @@ stage: diagnosis
 ## 输出
 
 症状、复现、根因证据、修复、回归测试和残余风险。
+
+## 深度执行流程
+
+遇到多组件故障、间歇性问题、反复失败的修复尝试或根因不明确时，加载 [系统化缺陷调试](../skills/systematic-debugging/SKILL.md)。该技能细化调查、假设验证、停止与升级规则；本文件及 `workflow/software-delivery.md` 的任务状态、确认门禁和证据要求仍然优先。

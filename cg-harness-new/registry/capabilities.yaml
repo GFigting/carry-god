@@ -8,6 +8,7 @@ capabilities:
     input: 任务上下文和用户意图
     output: 需求摘要和验收标准
     path: capabilities/clarify-and-brainstorm.md
+    deep_skill: skills/requirements-discovery/SKILL.md
   - id: CGHN-CAP-002
     name: design-deep-modules
     stage: design
@@ -22,6 +23,7 @@ capabilities:
     input: 已确认计划和验收标准
     output: 实现代码和覆盖测试
     path: capabilities/implement-with-tdd.md
+    deep_skill: skills/test-driven-development/SKILL.md
   - id: CGHN-CAP-004
     name: diagnose-bugs
     stage: diagnosis
@@ -29,6 +31,7 @@ capabilities:
     input: 症状和复现信息
     output: 根因、修复和回归证据
     path: capabilities/diagnose-bugs.md
+    deep_skill: skills/systematic-debugging/SKILL.md
   - id: CGHN-CAP-005
     name: review-code
     stage: review
@@ -36,6 +39,7 @@ capabilities:
     input: 变更、计划和验收标准
     output: 按严重性排序的发现
     path: capabilities/review-code.md
+    deep_skill: skills/independent-code-review/SKILL.md
   - id: CGHN-CAP-006
     name: verify-before-completion
     stage: completion
@@ -43,6 +47,7 @@ capabilities:
     input: 验收标准和行为变更
     output: 本轮命令、结果、缺口和风险
     path: capabilities/verify-before-completion.md
+    deep_skill: skills/verification-before-completion/SKILL.md
   - id: CGHN-CAP-007
     name: compound-learning
     stage: completion
@@ -78,6 +83,7 @@ capabilities:
     input: 目标、未知项和约束
     output: 垂直切片和依赖关系图
     path: capabilities/plan-and-dependencies.md
+    deep_skill: skills/implementation-planning/SKILL.md
   - id: CGHN-CAP-013
     name: research-and-evidence
     stage: intake,design
@@ -113,6 +119,7 @@ capabilities:
     input: 变更、验证和运行结果
     output: 发布清单、回滚方案和改进措施
     path: capabilities/release-and-retro.md
+    deep_skill: skills/release-integration/SKILL.md
   - id: CGHN-CAP-018
     name: next-action
     stage: all
