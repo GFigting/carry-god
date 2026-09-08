@@ -6,9 +6,9 @@
 
 ## 排除类别
 
-- `GGFrame` 中的项目注册、具体项目架构速查、业务需求、业务 SQL、业务知识和历史工作记录。
-- `GGFrame` 中的 Obsidian Dataview 查询、展示仪表盘和编辑器专属配置。
-- `GGFrame/_封存` 中已退役的工作体系、旧流程和历史日志。
+- 来源资料中的项目注册、具体项目架构速查、业务需求、业务 SQL、业务知识和历史工作记录。
+- 来源资料中的 Dataview 查询、展示仪表盘和编辑器专属配置。
+- 来源资料封存区中已退役的工作体系、旧流程和历史日志。
 - `skills/in-progress` 中尚未稳定的实验性技能。
 - `superpowers` 和 `compound-engineering-plugin` 的安装器、插件 manifest、宿主转换器和发行维护文件。
 - `gstack` 中依赖特定宿主或外部运行环境的内容。

@@ -9,13 +9,45 @@ projects:
       path: D:/绝对路径/前端项目目录
       docs:
         - D:/绝对路径/前端项目目录/docs/README.md
-      entrypoints: []
+      entrypoints:
+        - name: 开发启动
+          kind: command
+          command: pnpm run dev
+          working_directory: D:/绝对路径/前端项目目录
+          url: http://127.0.0.1:5173
+          health_path: /
+          prerequisites: []
     backend:
       path: D:/绝对路径/后端项目目录
       docs:
         - D:/绝对路径/后端项目目录/docs/README.md
       services: []
       apis: []
+      health_checks:
+        - name: 就绪检查
+          kind: readiness
+          url: http://127.0.0.1:8080/actuator/health/readiness
+          method: GET
+          authentication: none
+          expected_status: 200
+          expected_body: UP
+          prerequisites: []
+        - name: 存活检查
+          kind: liveness
+          url: http://127.0.0.1:8080/actuator/health/liveness
+          method: GET
+          authentication: none
+          expected_status: 200
+          expected_body: UP
+          prerequisites: []
+      entrypoints:
+        - name: 服务启动
+          kind: spring-boot
+          command: mvn spring-boot:run
+          working_directory: D:/绝对路径/后端项目目录
+          main_class: com.example.Application
+          shorten_command_line: MANIFEST
+          prerequisites: []
     data:
       path: D:/绝对路径/数据库或迁移目录
       schemas: []

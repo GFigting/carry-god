@@ -69,7 +69,7 @@ capabilities:
     stage: diagnosis,design
     trigger: 重构、架构优化或复杂缺陷
     input: 当前结构和影响证据
-    output: 已确认的 HTML 分析报告
+    output: 已确认的 Markdown 分析报告
     path: capabilities/architecture-report.md
   - id: CGHN-CAP-012
     name: plan-and-dependencies
@@ -120,3 +120,24 @@ capabilities:
     input: 当前状态、验收标准、依赖和剩余工作
     output: 可执行的下一步行动
     path: workflow/next-action.md
+  - id: CGHN-CAP-019
+    name: requirements-inbox
+    stage: intake
+    trigger: 收到包含原型、需求文档或多个附件的一个或多个需求包
+    input: requirements-inbox 下的需求包和项目上下文
+    output: 分需求包 intake 记录、批次汇总、归属建议和归档证据
+    path: capabilities/requirements-inbox.md
+  - id: CGHN-CAP-020
+    name: code-implementation-standards
+    stage: implementation,review
+    trigger: 开始编写、修改或审查代码
+    input: 项目约定、已确认范围和行为验收标准
+    output: 符合通用边界、错误、安全、测试和可维护性要求的代码变更
+    path: capabilities/code-implementation-standards.md
+  - id: CGHN-CAP-021
+    name: commit-conventions
+    stage: implementation,review,completion
+    trigger: 准备创建、审查或收尾代码提交
+    input: 变更范围、任务关联、验证证据和项目 Git 规则
+    output: 可审阅、可追溯且带验证信息的提交
+    path: capabilities/commit-conventions.md

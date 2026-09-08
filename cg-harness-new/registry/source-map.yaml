@@ -1,6 +1,6 @@
 version: 1
 sources:
-  - source: GGFrame
+  - source: governance-reference
     role: 治理主线
     extracted: 目标、任务、角色、流程、质量门禁、元数据纪律
     status: 主来源

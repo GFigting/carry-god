@@ -10,15 +10,16 @@ id: CGHN-CORE-002
 | 场景 | 先读 | 按需读取 |
 |---|---|---|
 | 新任务 | `AGENTS.md`、工作模型 | 对应流程和模板 |
+| 项目注册或首次接入 | `workflow/project-initialization.md`、项目关联表 | 项目自身约定、能力地图、模块索引和 CodeGraph 状态 |
 | 需求不清 | `capabilities/clarify-and-brainstorm.md` | 领域资料 |
-| 架构设计 | `workflow/software-delivery.md` | `design-deep-modules.md`、角色文件 |
-| 编码实现 | 任务记录、项目约定 | `implement-with-tdd.md` |
+| 架构设计 | `workflow/software-delivery.md` | `design-deep-modules.md`、按自动路由选择角色文件 |
+| 编码实现 | 任务记录、项目约定 | `implement-with-tdd.md`、`code-implementation-standards.md`、按自动路由选择角色文件 |
 | Bug 或回归 | 症状和现有测试 | `diagnose-bugs.md` |
 | 重构 | 当前结构、影响范围和回归风险 | `workflow/bugfix-and-refactor.md`、`design-deep-modules.md` |
-| 审查 | 变更范围和验收标准 | `review-code.md` |
+| 审查 | 变更范围和验收标准 | `review-code.md`、按自动路由选择角色文件 |
 | 收尾 | 验收标准和验证结果 | `verify-before-completion.md`、`compound-learning.md` |
 | 术语或业务规则不清 | 需求、接口和数据定义 | `domain-modeling.md`、项目词汇表 |
-| 复杂重构或架构优化 | 当前结构和影响证据 | `architecture-report.md`、HTML 报告模板 |
+| 复杂重构或架构优化 | 当前结构和影响证据 | `architecture-report.md`、Markdown 报告模板 |
 | 大型任务 | 目标和关键未知 | `plan-and-dependencies.md`、`triage-and-wayfinding.md` |
 | 发布或复盘 | 交付风险和实际结果 | `release-and-retro.md` |
 | 代码结构探索 | 项目路径和架构入口 | `adapters/codex/codegraph.md` |
@@ -31,6 +32,7 @@ id: CGHN-CORE-002
 3. 若多个文件重复规定同一行为，以 `core/` 和 `workflow/` 为准。
 4. 项目约定优先于通用建议，但不能违反用户明确要求。
 5. 发现规则冲突时，记录决策、采用的规则和被舍弃的替代方案。
+6. 角色由主会话依据用户意图和当前阶段自动选择；不要求用户输入角色名。
 
 ## 项目上下文
 
