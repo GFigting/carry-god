@@ -141,3 +141,10 @@ capabilities:
     input: 变更范围、任务关联、验证证据和项目 Git 规则
     output: 可审阅、可追溯且带验证信息的提交
     path: capabilities/commit-conventions.md
+  - id: CGHN-CAP-022
+    name: requirements-to-development
+    stage: planning,implementation,review,completion
+    trigger: 需求已确认但需要拆解、实现或验收追踪
+    input: 已确认需求、验收标准、方案和项目证据
+    output: 编号化需求基线、垂直切片、代码测试追踪和缺口记录
+    path: capabilities/requirements-to-development.md
