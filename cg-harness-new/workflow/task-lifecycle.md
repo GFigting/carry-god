@@ -7,10 +7,15 @@ id: CGHN-WF-002
 
 ```text
 draft -> awaiting_confirmation -> ready -> in_progress -> review -> done
-                                  |          |              |
-                                blocked   blocked         revision
-                                  |                         |
-                               cancelled <------------------+
+  |              |                 ^          ^        |
+  |              |                 |          |        v
+  |              +---------------> draft      |     revision
+  |                                ^          |        |
+  |                                |          |        v
+  +---------------------------- blocked ------+----> in_progress
+                                   |
+                                   v
+                                cancelled
 ```
 
 ## 状态要求
@@ -30,6 +35,13 @@ draft -> awaiting_confirmation -> ready -> in_progress -> review -> done
 `blocked` 表示外部阻碍，`revision` 表示质量或需求不满足。不得用 `done` 掩盖未验证状态。
 
 `awaiting_confirmation` 的允许活动和实施门禁以 `workflow/software-delivery.md` 为准。无需计划的小范围任务可从 `draft` 直接进入 `ready`，但仍须记录采用的默认判断和待确认事项。
+
+## 状态恢复
+
+- `awaiting_confirmation` 获得人工确认后进入 `ready`；确认反馈改变目标、验收标准或关键方案时回到 `draft` 更新基线。
+- `blocked` 解除外部阻碍后，未开始实施的任务回到 `ready`，已进入实施且上下文仍有效的任务回到 `in_progress`。
+- `review` 发现需要修复的问题进入 `revision`；问题修复后回到 `in_progress` 重新验证受影响范围，再进入 `review`。
+- `cancelled` 只用于任务不再需要、外部条件长期无法满足或用户明确取消，不用于表示普通阻塞或返工。
 
 ## 下一步行动
 

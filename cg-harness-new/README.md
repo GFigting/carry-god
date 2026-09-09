@@ -22,6 +22,7 @@ status: active
 6. 每次状态变化或阶段结束时，按照 `workflow/next-action.md` 记录并输出下一步行动。
 7. 新项目或首次接入项目时，按 `workflow/project-initialization.md` 初始化项目级需求箱、报告根目录、原型设计根目录和文档入口。
 8. 需求确认后加载 `capabilities/requirements-to-development.md`，建立 `AC-*` 到切片、代码和测试的追踪基线。
+9. 修改框架规则、模板或注册表后运行 `scripts/validate-framework.ps1`，确认路径、映射和关键门禁仍一致。
 
 ## 目录
 
@@ -55,3 +56,11 @@ status: active
 启动入口规则：仅对需要由框架启动或验证的运行对象登记 `runtime`。每个入口至少包含 `name`、`command` 和 `working_directory`；需要健康检测时补充检查地址与预期结果。项目可按技术栈补充 `kind`、`url`、`health_path`、`main_class`、`shorten_command_line` 或 `prerequisites`，但不要求静态站点、脚本项目或未参与本轮任务的服务填写这些字段。
 
 运行时验证规则见 `workflow/project-initialization.md`：先探测，后启动，按需重启；项目初始化协议是该规则的唯一正文。
+
+## 框架自检
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate-framework.ps1
+```
+
+自检覆盖核心文件存在性、能力注册表路径、深度技能 frontmatter、技能来源记录、功能和缺陷任务模板的追踪字段、状态恢复规则、CodeGraph 适配器中的当前工具名称，以及本地产物忽略规则。自检不能替代人工审查，但应在修改框架协议、模板或注册表后运行。
