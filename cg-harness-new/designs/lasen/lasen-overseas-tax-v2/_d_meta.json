@@ -1,0 +1,120 @@
+{
+  "type": "design",
+  "designSystems": [],
+  "primaryDesignSystem": null,
+  "assets": {
+    "海外税务-注册与资产管理-v2": {
+      "versions": [
+        {
+          "path": "海外税务-注册与资产管理-v2.html",
+          "createdAt": "2026-09-07T09:21:07.831Z",
+          "status": "needs-review"
+        }
+      ]
+    },
+    "注册管理-LASEN风格-v3": {
+      "versions": [
+        {
+          "path": "注册管理-LASEN风格-v3.html",
+          "createdAt": "2026-09-07T09:29:06.377Z",
+          "status": "needs-review"
+        }
+      ]
+    },
+    "VAT管理-LASEN风格-v1": {
+      "versions": [
+        {
+          "path": "VAT管理-LASEN风格-v1.html",
+          "createdAt": "2026-09-08T01:42:37.683Z",
+          "status": "needs-review"
+        }
+      ]
+    },
+    "VAT管理-LASEN风格-v2": {
+      "versions": [
+        {
+          "path": "VAT管理-LASEN风格-v2.html",
+          "createdAt": "2026-09-08T03:20:00.000Z",
+          "status": "needs-review"
+        },
+        {
+          "path": "VAT管理-LASEN风格-v3.html",
+          "createdAt": "2026-09-09T09:51:20.621Z",
+          "status": "needs-review"
+        },
+        {
+          "path": "VAT管理-LASEN风格-v4.html",
+          "createdAt": "2026-09-09T10:00:10.580Z",
+          "status": "needs-review"
+        }
+      ]
+    },
+    "EPR-PPWR管理-LASEN风格-v1": {
+      "versions": [
+        {
+          "path": "EPR-PPWR管理-LASEN风格-v1.html",
+          "createdAt": "2026-09-08T02:10:00.000Z",
+          "status": "redrawn-needs-review"
+        }
+      ]
+    },
+    "授权代表管理-LASEN风格-v1": {
+      "versions": [
+        {
+          "path": "授权代表管理-LASEN风格-v1.html",
+          "createdAt": "2026-09-08T02:10:00.000Z",
+          "status": "redrawn-needs-review"
+        }
+      ]
+    },
+    "EPR-PPWR管理-LASEN风格-v2": {
+      "versions": [
+        {
+          "path": "EPR-PPWR管理-LASEN风格-v2.html",
+          "createdAt": "2026-09-08T03:00:00.000Z",
+          "status": "needs-review"
+        },
+        {
+          "path": "EPR-PPWR管理-LASEN风格-v3.html",
+          "createdAt": "2026-09-09T09:51:20.731Z",
+          "status": "needs-review"
+        },
+        {
+          "path": "EPR-PPWR管理-LASEN风格-v4.html",
+          "createdAt": "2026-09-09T10:00:10.792Z",
+          "status": "needs-review"
+        }
+      ]
+    },
+    "授权代表管理-LASEN风格-v2": {
+      "versions": [
+        {
+          "path": "授权代表管理-LASEN风格-v2.html",
+          "createdAt": "2026-09-08T03:00:00.000Z",
+          "status": "needs-review"
+        },
+        {
+          "path": "授权代表管理-LASEN风格-v3.html",
+          "createdAt": "2026-09-09T09:51:20.839Z",
+          "status": "needs-review"
+        },
+        {
+          "path": "授权代表管理-LASEN风格-v4.html",
+          "createdAt": "2026-09-09T10:00:10.988Z",
+          "status": "needs-review"
+        }
+      ]
+    },
+    "税务资产详情与新增明细-v1": {
+      "versions": [
+        {
+          "path": "税务资产详情与新增明细-v1.html",
+          "createdAt": "2026-09-10T09:18:05.036Z",
+          "status": "needs-review"
+        }
+      ]
+    }
+  },
+  "createdAt": "2026-09-07T09:21:07.833Z",
+  "updatedAt": "2026-09-10T09:29:57.138Z"
+}

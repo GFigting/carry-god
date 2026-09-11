@@ -6,5 +6,11 @@
 /cg-harness-new/local/
 /cg-harness-new/projects/
 
+# 框架运行时任务材料，只提交入口说明
+/cg-harness-new/reports/*
+!/cg-harness-new/reports/README.md
+/cg-harness-new/requirements-inbox/*
+!/cg-harness-new/requirements-inbox/README.md
+
 # 本地工具缓存
 /.tmp-npm-cache/

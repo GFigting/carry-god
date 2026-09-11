@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>授权代表管理 - 海外税务模块</title>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="https://unpkg.com/antd@5.26.6/dist/reset.css">
+  <style>
+    /* LASEN redraw: compact finance console treatment aligned with VAT management */
+    :root { --lasen-blue:#409eff; --lasen-line:#ebeef5; --lasen-fill:#f5f7fa; --lasen-text:#303133; --lasen-muted:#909399; }
+    body { min-width:1180px; background:var(--lasen-fill); color:#606266; }
+    .content { padding:16px; }
+    .asset-page { gap:14px; }
+    .asset-header { min-height:58px; align-items:center; margin-bottom:2px; }
+    .asset-title { font-size:20px; color:var(--lasen-text); font-weight:600; }
+    .asset-subtitle { color:var(--lasen-muted); }
+    .asset-page .ant-card { border:1px solid var(--lasen-line); border-radius:4px; box-shadow:none; }
+    .filter-card .ant-card-body { padding:0; }
+    .filter-grid { grid-template-columns:repeat(4,minmax(170px,1fr)); gap:12px; padding:14px 16px; }
+    .table-toolbar { min-height:46px; padding:0 16px; }
+    .table-title { color:var(--lasen-text); font-size:14px; }
+    .summary-grid { gap:10px; }
+    .summary-item { min-height:76px; border-radius:4px; border-color:var(--lasen-line); padding:11px 13px; }
+    .summary-value { margin-top:7px; font-size:15px; }
+    .detail-card .ant-card-body { padding:0 16px 16px; }
+    .cert-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+    .cert-card { border-radius:4px; border-color:var(--lasen-line); }
+    .ant-tabs-tab { padding:13px 14px !important; }
+    .ant-tabs-ink-bar { background:var(--lasen-blue) !important; }
+    .ant-btn { border-radius:4px; }
+    .ant-table-thead > tr > th { background:var(--lasen-fill) !important; }
+    .ant-table-tbody > tr:hover > td { background:#f5faff !important; }
+    body { background: #f5f7fb; }
+    .content { padding: 16px 18px 26px; }
+    .asset-page { display: grid; gap: 14px; }
+    .asset-page .ant-card { border-radius: 6px; box-shadow: 0 2px 8px rgba(15, 23, 42, .04); }
+    .asset-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    .asset-title { color: #1f2937; font-size: 22px; line-height: 30px; font-weight: 650; }
+    .asset-subtitle { margin-top: 4px; color: #6b7280; font-size: 13px; }
+    .asset-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    .filter-card .ant-card-body { padding: 14px 16px; }
+    .filter-grid { display: grid; grid-template-columns: repeat(4, minmax(180px, 1fr)); gap: 12px; align-items: end; }
+    .table-card .ant-card-body { padding: 0; }
+    .table-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
+    .table-title { color: #1f2937; font-weight: 600; }
+    .table-hint { color: #8c8c8c; font-size: 12px; }
+    .summary-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+    .summary-item { min-height: 86px; border: 1px solid #eef2f7; border-radius: 6px; padding: 12px 14px; background: #fff; }
+    .summary-label { color: #6b7280; font-size: 12px; }
+    .summary-value { margin-top: 8px; color: #111827; font-size: 16px; line-height: 22px; font-weight: 650; word-break: break-word; }
+    .detail-layout { display: grid; gap: 14px; }
+    .detail-card .ant-card-body { padding: 14px 16px 18px; }
+    .section-tools { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 12px; flex-wrap: wrap; }
+    .cert-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .cert-card { border: 1px solid #eef2f7; border-radius: 6px; padding: 12px; background: #fff; }
+    .cert-title { color: #1f2937; font-weight: 600; margin-bottom: 10px; }
+    .cert-version { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid #f0f0f0; }
+    .cert-version:first-of-type { border-top: 0; padding-top: 0; }
+    .file-name { color: #374151; font-size: 13px; word-break: break-all; }
+    .file-time { margin-top: 4px; color: #8c8c8c; font-size: 12px; }
+    .file-actions { display: inline-flex; gap: 6px; white-space: nowrap; }
+    .service-panel { display: grid; grid-template-columns: 320px 1fr; gap: 14px; align-items: start; }
+    .service-current { border: 1px solid #e6f4ff; border-radius: 6px; padding: 14px; background: #f6fbff; }
+    .service-current dl { display: grid; grid-template-columns: 96px 1fr; gap: 10px 8px; margin: 0; }
+    .service-current dt { color: #6b7280; }
+    .service-current dd { margin: 0; color: #111827; font-weight: 600; }
+    .risk-normal { color: #389e0d; background: #f6ffed; border-color: #b7eb8f; }
+    .risk-light { color: #0958d9; background: #e6f4ff; border-color: #91caff; }
+    .risk-mid { color: #d48806; background: #fffbe6; border-color: #ffe58f; }
+    .risk-high { color: #cf1322; background: #fff1f0; border-color: #ffa39e; }
+    .muted { color: #8c8c8c; }
+    @media (max-width: 1320px) {
+      .summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .cert-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 960px) {
+      .filter-grid { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
+      .service-panel { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .asset-header, .table-toolbar { flex-direction: column; align-items: flex-start; }
+      .filter-grid, .summary-grid, .cert-grid { grid-template-columns: 1fr; }
+      .asset-actions { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="logo"><span class="logo-mark">税</span><span>磐石-财务</span></div>
+      <ul class="sidebar-menu" data-sidebar></ul>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div class="breadcrumb">财务管理系统 / <strong data-crumb></strong></div>
+        <div class="top-actions"><span><span class="status-dot"></span>授权代表台账已同步</span><span>当前用户：海外税务专员</span></div>
+      </div>
+      <div class="content">
+        <div id="representative-root"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/dayjs@1.11.13/dayjs.min.js"></script>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/antd@5.26.6/dist/antd.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <script src="common.js"></script>
+  <script>initShell('授权代表管理');</script>
+  <script type="text/babel">
+    const {
+      App: AntApp,
+      Button,
+      Card,
+      DatePicker,
+      Descriptions,
+      Form,
+      Input,
+      Modal,
+      Select,
+      Space,
+      Table,
+      Tabs,
+      Tag,
+      Upload,
+      message
+    } = antd;
+    const { useMemo, useState } = React;
+
+    const today = dayjs('2026-06-12');
+    const entityOptions = ['厦门狼腾供应链有限公司', '厦门狼森供应链有限公司', '厦门拉森贸易有限公司'];
+    const regionOptions = ['欧盟', '英国', '德国', '法国'];
+    const representativeTypeOptions = ['欧盟授权代表', '英国授权代表', '本地授权代表'];
+    const agreementStatusOptions = ['有效', '即将到期', '变更中', '终止中', '已终止'];
+    const countdownOptions = [
+      { label: '90天以上', value: 'gt90' },
+      { label: '60-90天', value: '60-90' },
+      { label: '30-60天', value: '30-60' },
+      { label: '30天以内或已过期', value: 'lt30' }
+    ];
+
+    const representativeRows = [
+      {
+        key: 'AR-001',
+        representativeOrg: 'EU Compliance Partner GmbH',
+        representativeType: '欧盟授权代表',
+        entityName: '厦门狼腾供应链有限公司',
+        region: '欧盟',
+        agreementNo: 'AR-EU-7781',
+        agreementStart: '2026-01-16',
+        serviceEnd: '2027-01-15',
+        agreementStatus: '有效',
+        contactName: 'Anna Keller',
+        contactInfo: 'anna.keller@example.eu',
+        owner: '惠容',
+        storeCount: 6,
+        remark: '覆盖欧盟多站点，协议资料已完成归档。',
+        agreements: {
+          '授权代表协议': [{ name: 'AR-EU-7781-agreement.pdf', time: '2026-01-16' }],
+          '服务商协议': [{ name: 'EU-Compliance-service-contract.pdf', time: '2026-01-10' }],
+          '变更协议': [],
+          '终止证明': []
+        },
+        addressSources: [
+          ['营业执照', '厦门狼腾供应链有限公司', '厦门市湖里区创新园'],
+          ['授权代表协议', 'XIAMEN LANGTENG SUPPLY CHAIN CO., LTD', 'Berlin Compliance Street 18, Germany'],
+          ['店铺后台', 'Xiamen Langteng Supply Chain Co., Ltd', 'Amazon EU Seller Central / Xiamen Huli'],
+          ['服务商回执', 'XIAMEN LANGTENG SUPPLY CHAIN CO LTD', 'Berlin Compliance Street 18']
+        ],
+        nameCheck: '一致',
+        addressCheck: '待核对',
+        stores: [
+          ['Amazon', 'Amazon EU-Langteng01', '欧盟', 'LANGTENG', '已绑定', '欧盟主销售店铺'],
+          ['TEMU', 'TEMU-Langteng-EU', '欧盟', 'LANGTENG', '已绑定', '同步协议资料'],
+          ['SHEIN', 'SHEIN-Langteng-EU', '欧盟', 'LANGTENG', '待确认', '待确认代表覆盖范围']
+        ],
+        serviceRecords: [
+          ['续费', '12个月', 'AR-EU-renew-202601.pdf', 'AR-EU-7781-agreement.pdf', '惠容', '2026-01-16 10:20', '已同步服务到期日']
+        ],
+        changeRecords: [
+          ['代表联系人', 'Maria Roth', 'Anna Keller', '惠容', '2026-02-20 14:20', '2026-02-20', '已生效']
+        ]
+      },
+      {
+        key: 'AR-002',
+        representativeOrg: 'UK Responsible Person Ltd',
+        representativeType: '英国授权代表',
+        entityName: '厦门狼森供应链有限公司',
+        region: '英国',
+        agreementNo: 'AR-UK-1022',
+        agreementStart: '2025-08-01',
+        serviceEnd: '2026-07-31',
+        agreementStatus: '即将到期',
+        contactName: 'James Smith',
+        contactInfo: 'james.smith@example.uk',
+        owner: '陈露',
+        storeCount: 3,
+        remark: '英国授权代表服务即将到期，需确认是否续签。',
+        agreements: {
+          '授权代表协议': [{ name: 'AR-UK-1022-agreement.pdf', time: '2025-08-01' }],
+          '服务商协议': [{ name: 'UK-RP-service-contract.pdf', time: '2025-07-25' }],
+          '变更协议': [{ name: 'AR-UK-contact-change.pdf', time: '2026-03-18' }],
+          '终止证明': []
+        },
+        addressSources: [
+          ['营业执照', '厦门狼森供应链有限公司', '厦门市集美区杏林湾路'],
+          ['授权代表协议', 'XIAMEN LANGSEN SUPPLY CHAIN CO., LTD', 'London Compliance Road 22, UK'],
+          ['店铺后台', 'Xiamen Langsen Supply Chain Co., Ltd', 'Amazon UK Seller Central / Jimei'],
+          ['服务商回执', 'XIAMEN LANGSEN SUPPLY CHAIN CO LTD', 'London Compliance Road 22']
+        ],
+        nameCheck: '一致',
+        addressCheck: '不一致',
+        stores: [
+          ['Amazon', 'Amazon UK-Langsen01', '英国', 'LANGSEN', '已绑定', '地址待更新'],
+          ['TikTok Shop', 'TTS-Langsen-UK', '英国', 'LANGSEN', '已绑定', '-'],
+          ['独立站', 'UK-DTC-01', '英国', 'LASEN HOME', '待确认', '待补协议截图']
+        ],
+        serviceRecords: [
+          ['续费', '12个月', 'AR-UK-renew-202508.pdf', 'AR-UK-1022-agreement.pdf', '陈露', '2025-08-01 15:45', '下一周期续费待确认']
+        ],
+        changeRecords: [
+          ['协议状态', '有效', '即将到期', '系统', '2026-06-01 08:00', '2026-06-01', '已生效']
+        ]
+      },
+      {
+        key: 'AR-003',
+        representativeOrg: 'FR Local Compliance SAS',
+        representativeType: '本地授权代表',
+        entityName: '厦门拉森贸易有限公司',
+        region: '法国',
+        agreementNo: 'AR-FR-6610',
+        agreementStart: '2025-06-15',
+        serviceEnd: '2026-06-26',
+        agreementStatus: '终止中',
+        contactName: 'Luc Moreau',
+        contactInfo: 'luc.moreau@example.fr',
+        owner: '王岚',
+        storeCount: 2,
+        remark: '业务停止经营后已提交终止申请，等待代表机构回执。',
+        agreements: {
+          '授权代表协议': [{ name: 'AR-FR-6610-agreement.pdf', time: '2025-06-15' }],
+          '服务商协议': [{ name: 'FR-Local-service-contract.pdf', time: '2025-06-10' }],
+          '变更协议': [],
+          '终止证明': [{ name: 'AR-FR-termination-acceptance.pdf', time: '2026-05-30' }]
+        },
+        addressSources: [
+          ['营业执照', '厦门拉森贸易有限公司', '厦门市思明区软件园二期'],
+          ['授权代表协议', 'XIAMEN LASEN TRADING CO., LTD', 'Paris Compliance Ave 9, France'],
+          ['店铺后台', 'Xiamen Lasen Trading Co., Ltd', 'TEMU FR / Xiamen Software Park'],
+          ['服务商回执', 'XIAMEN LASEN TRADING CO LTD', 'Paris Compliance Ave 9']
+        ],
+        nameCheck: '一致',
+        addressCheck: '一致',
+        stores: [
+          ['TEMU', 'TEMU-Lasen-FR', '法国', 'LASEN', '已解绑', '终止后归档'],
+          ['SHEIN', 'SHEIN-Lasen-FR', '法国', 'LASEN', '已绑定', '待完成终止同步']
+        ],
+        serviceRecords: [
+          ['终止', '一次性', 'AR-FR-terminate-apply.pdf', 'AR-FR-termination-acceptance.pdf', '王岚', '2026-05-30 18:12', '审批通过，执行完成后归档']
+        ],
+        changeRecords: [
+          ['协议状态', '有效', '终止中', '王岚', '2026-05-30 18:12', '2026-06-01', '已生效']
+        ]
+      }
+    ];
+
+    function daysToExpire(row) {
+      return dayjs(row.serviceEnd).diff(today, 'day');
+    }
+
+    function riskMeta(days) {
+      if (days > 90) return { text: `${days} 天`, className: 'risk-normal' };
+      if (days >= 60) return { text: `${days} 天`, className: 'risk-light' };
+      if (days >= 30) return { text: `${days} 天`, className: 'risk-mid' };
+      return { text: days >= 0 ? `${days} 天` : `已过期 ${Math.abs(days)} 天`, className: 'risk-high' };
+    }
+
+    function statusTag(status) {
+      const map = { '有效': 'success', '即将到期': 'warning', '变更中': 'processing', '终止中': 'processing', '已终止': 'default' };
+      return <Tag color={map[status] || 'default'}>{status}</Tag>;
+    }
+
+    function simpleTag(value) {
+      const map = { '一致': 'success', '不一致': 'error', '待核对': 'warning', '已生效': 'success', '已绑定': 'success', '待确认': 'warning', '已解绑': 'default', '终止中': 'processing' };
+      return <Tag color={map[value] || 'blue'}>{value}</Tag>;
+    }
+
+    function fileActions(name) {
+      if (!name || name === '-' || name === '待上传') return <span>{name || '-'}</span>;
+      return <span className="file-actions"><Button type="link" size="small">查看</Button><Button type="link" size="small">下载</Button></span>;
+    }
+
+    function countdownMatch(days, filter) {
+      if (!filter) return true;
+      if (filter === 'gt90') return days > 90;
+      if (filter === '60-90') return days >= 60 && days <= 90;
+      if (filter === '30-60') return days >= 30 && days < 60;
+      if (filter === 'lt30') return days < 30;
+      return true;
+    }
+
+    function RepresentativePage() {
+      const [form] = Form.useForm();
+      const [filters, setFilters] = useState({});
+      const [view, setView] = useState('list');
+      const [activeRow, setActiveRow] = useState(representativeRows[0]);
+      const [activeTab, setActiveTab] = useState('base');
+      const [editMode, setEditMode] = useState('add');
+      const [editOpen, setEditOpen] = useState(false);
+      const [agreementOpen, setAgreementOpen] = useState(false);
+      const [renewOpen, setRenewOpen] = useState(false);
+      const [cancelOpen, setCancelOpen] = useState(false);
+
+      const filteredRows = useMemo(() => representativeRows.filter(row => {
+        const days = daysToExpire(row);
+        const textMatch = (value, keyword) => !keyword || String(value).toLowerCase().includes(String(keyword).toLowerCase());
+        return textMatch(row.entityName, filters.entityName)
+          && textMatch(row.agreementNo, filters.agreementNo)
+          && (!filters.region || row.region === filters.region)
+          && (!filters.representativeType || row.representativeType === filters.representativeType)
+          && (!filters.agreementStatus || row.agreementStatus === filters.agreementStatus)
+          && countdownMatch(days, filters.countdown);
+      }), [filters]);
+
+      const openDetail = row => {
+        setActiveRow(row);
+        setActiveTab('base');
+        setView('detail');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const listColumns = [
+        { title: '代表机构', dataIndex: 'representativeOrg', width: 190, ellipsis: true },
+        { title: '代表类型', dataIndex: 'representativeType', width: 130 },
+        { title: '主体', dataIndex: 'entityName', width: 190, ellipsis: true },
+        { title: '适用地区', dataIndex: 'region', width: 90 },
+        { title: '关联店铺数', dataIndex: 'storeCount', width: 100, render: value => `${value} 个` },
+        { title: '协议编号', dataIndex: 'agreementNo', width: 130 },
+        { title: '协议状态', dataIndex: 'agreementStatus', width: 100, render: statusTag },
+        { title: '服务到期日', dataIndex: 'serviceEnd', width: 112 },
+        { title: '续费倒计时', width: 112, render: (_, row) => { const meta = riskMeta(daysToExpire(row)); return <Tag className={meta.className}>{meta.text}</Tag>; } },
+        {
+          title: '操作',
+          fixed: 'right',
+          width: 200,
+          render: (_, row) => (
+            <Space size={4}>
+              <Button type="link" size="small" onClick={() => openDetail(row)}>查看详情</Button>
+              <Button type="link" size="small" onClick={() => { setActiveRow(row); setEditMode('edit'); setEditOpen(true); }}>修改</Button>
+              <Button type="link" size="small" onClick={() => { setActiveRow(row); setActiveTab('service'); setView('detail'); }}>续费/终止</Button>
+            </Space>
+          )
+        }
+      ];
+
+      const activeDays = daysToExpire(activeRow);
+      const activeRisk = riskMeta(activeDays);
+
+      const tabs = [
+        {
+          key: 'base',
+          label: '基础信息',
+          children: (
+            <Descriptions bordered column={3} size="middle" labelStyle={{ width: 120 }}>
+              {[
+                ['代表机构', activeRow.representativeOrg], ['代表类型', activeRow.representativeType], ['主体', activeRow.entityName],
+                ['适用地区', activeRow.region], ['协议编号', activeRow.agreementNo], ['协议生效日', activeRow.agreementStart],
+                ['服务到期日', activeRow.serviceEnd], ['代表联系人', activeRow.contactName], ['联系方式', activeRow.contactInfo],
+                ['协议状态', statusTag(activeRow.agreementStatus)], ['负责人', activeRow.owner], ['关联店铺数', `${activeRow.storeCount} 个`],
+                ['备注', activeRow.remark]
+              ].map(([label, value]) => <Descriptions.Item key={label} label={label}>{value}</Descriptions.Item>)}
+            </Descriptions>
+          )
+        },
+        {
+          key: 'agreements',
+          label: '协议资料',
+          children: (
+            <div className="cert-grid">
+              {Object.entries(activeRow.agreements).map(([type, files]) => (
+                <div className="cert-card" key={type}>
+                  <div className="cert-title">{type}</div>
+                  {files.length ? files.map(file => (
+                    <div className="cert-version" key={file.name}>
+                      <div><div className="file-name">{file.name}</div><div className="file-time">上传时间：{file.time}</div></div>
+                      {fileActions(file.name)}
+                    </div>
+                  )) : <span className="muted">暂无存档</span>}
+                </div>
+              ))}
+            </div>
+          )
+        },
+        {
+          key: 'address',
+          label: '地址核对',
+          children: (
+            <>
+              <Space style={{ marginBottom: 12 }}>
+                <span>公司名核对结果：{simpleTag(activeRow.nameCheck)}</span>
+                <span>地址核对结果：{simpleTag(activeRow.addressCheck)}</span>
+              </Space>
+              <Table
+                rowKey={row => row[0]}
+                pagination={false}
+                columns={[{ title: '来源', dataIndex: 0, width: 130 }, { title: '公司名', dataIndex: 1 }, { title: '地址', dataIndex: 2 }]}
+                dataSource={activeRow.addressSources}
+              />
+            </>
+          )
+        },
+        {
+          key: 'stores',
+          label: '关联店铺',
+          children: (
+            <Table
+              rowKey={row => `${row[0]}-${row[1]}`}
+              pagination={false}
+              columns={[
+                { title: '平台', dataIndex: 0, width: 110 },
+                { title: '店铺名称', dataIndex: 1 },
+                { title: '站点', dataIndex: 2, width: 110 },
+                { title: '品牌', dataIndex: 3, width: 120 },
+                { title: '绑定状态', dataIndex: 4, width: 110, render: simpleTag },
+                { title: '备注', dataIndex: 5 },
+                { title: '操作', width: 120, render: () => <Space><Button type="link" size="small">查看</Button><Button type="link" size="small">解绑</Button></Space> }
+              ]}
+              dataSource={activeRow.stores}
+            />
+          )
+        },
+        {
+          key: 'service',
+          label: '续费/终止记录',
+          children: (
+            <div className="service-panel">
+              <div className="service-current">
+                <div className="section-tools">
+                  <Button type="primary" onClick={() => setRenewOpen(true)}>发起续费</Button>
+                  <Button danger onClick={() => setCancelOpen(true)}>发起终止</Button>
+                </div>
+                <dl>
+                  <dt>协议生效日</dt><dd>{activeRow.agreementStart}</dd>
+                  <dt>服务到期日</dt><dd>{activeRow.serviceEnd}</dd>
+                  <dt>协议状态</dt><dd>{statusTag(activeRow.agreementStatus)}</dd>
+                  <dt>续费倒计时</dt><dd><Tag className={activeRisk.className}>{activeRisk.text}</Tag></dd>
+                </dl>
+              </div>
+              <Table
+                rowKey={(row, index) => `${row[0]}-${row[5]}-${index}`}
+                pagination={false}
+                scroll={{ x: 1100 }}
+                columns={[
+                  '类型', '期限', '申请附件', '证明文件', '操作人', '操作时间', '备注'
+                ].map((title, index) => ({ title, dataIndex: index, width: index >= 2 && index <= 3 ? 150 : 120, render: value => index === 2 || index === 3 ? fileActions(value) : value }))}
+                dataSource={activeRow.serviceRecords}
+              />
+            </div>
+          )
+        },
+        {
+          key: 'changes',
+          label: '变更记录',
+          children: (
+            <Table
+              rowKey={(row, index) => `${row[0]}-${row[4]}-${index}`}
+              pagination={false}
+              columns={[
+                { title: '修改字段', dataIndex: 0 },
+                { title: '修改前', dataIndex: 1 },
+                { title: '修改后', dataIndex: 2 },
+                { title: '修改人', dataIndex: 3, width: 100 },
+                { title: '修改时间', dataIndex: 4, width: 160 },
+                { title: '生效时间', dataIndex: 5, width: 120 },
+                { title: '状态', dataIndex: 6, width: 100, render: simpleTag }
+              ]}
+              dataSource={activeRow.changeRecords}
+            />
+          )
+        }
+      ];
+
+      return (
+        <AntApp>
+          <div className="asset-page">
+            <div className="asset-header">
+              <div>
+                <div className="asset-title">{view === 'list' ? '授权代表管理' : '授权代表详情'}</div>
+                <div className="asset-subtitle">{view === 'list' ? '维护授权代表机构、协议、地址核对、关联店铺和服务期。' : '通过 Tab 分区查看代表协议、地址核对、店铺和历史记录。'}</div>
+              </div>
+              <div className="asset-actions">
+                {view === 'detail' ? (
+                  <Button onClick={() => setView('list')}>返回列表</Button>
+                ) : (
+                  <>
+                    <Button type="primary" onClick={() => { setActiveRow(representativeRows[0]); setEditMode('add'); setEditOpen(true); }}>新增</Button>
+                    <Button onClick={() => setAgreementOpen(true)}>上传协议</Button>
+                    <Button onClick={() => message.success('已生成导出文件：授权代表台账.xlsx')}>导出</Button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {view === 'list' ? (
+              <>
+                <Card className="filter-card">
+                  <Form form={form} layout="vertical" onFinish={setFilters}>
+                    <div className="filter-grid">
+                      <Form.Item label="主体" name="entityName"><Input allowClear placeholder="输入主体名称" /></Form.Item>
+                      <Form.Item label="协议编号" name="agreementNo"><Input allowClear placeholder="输入协议编号" /></Form.Item>
+                      <Form.Item label="适用地区" name="region"><Select allowClear options={regionOptions.map(value => ({ value, label: value }))} /></Form.Item>
+                      <Form.Item label="代表类型" name="representativeType"><Select allowClear options={representativeTypeOptions.map(value => ({ value, label: value }))} /></Form.Item>
+                      <Form.Item label="协议状态" name="agreementStatus"><Select allowClear options={agreementStatusOptions.map(value => ({ value, label: value }))} /></Form.Item>
+                      <Form.Item label="续费倒计时" name="countdown"><Select allowClear options={countdownOptions} /></Form.Item>
+                      <Form.Item label=" " colon={false}>
+                        <Space>
+                          <Button type="primary" htmlType="submit">查询</Button>
+                          <Button onClick={() => { form.resetFields(); setFilters({}); }}>清除筛选</Button>
+                        </Space>
+                      </Form.Item>
+                    </div>
+                  </Form>
+                </Card>
+
+                <Card className="table-card">
+                  <div className="table-toolbar">
+                    <div><div className="table-title">授权代表列表</div><div className="table-hint">共 {filteredRows.length} 条，按主体、适用地区和协议状态维护授权代表资产。</div></div>
+                  </div>
+                  <Table
+                    rowKey="key"
+                    size="middle"
+                    columns={listColumns}
+                    dataSource={filteredRows}
+                    pagination={{ pageSize: 8, showSizeChanger: false }}
+                    scroll={{ x: 1320 }}
+                  />
+                </Card>
+              </>
+            ) : (
+              <div className="detail-layout">
+                <Card>
+                  <div className="summary-grid">
+                    <div className="summary-item"><div className="summary-label">主体</div><div className="summary-value">{activeRow.entityName}</div></div>
+                    <div className="summary-item"><div className="summary-label">代表类型</div><div className="summary-value">{activeRow.representativeType}</div></div>
+                    <div className="summary-item"><div className="summary-label">协议编号</div><div className="summary-value">{activeRow.agreementNo}</div></div>
+                    <div className="summary-item"><div className="summary-label">协议状态</div><div className="summary-value">{statusTag(activeRow.agreementStatus)}</div></div>
+                    <div className="summary-item"><div className="summary-label">服务到期日</div><div className="summary-value">{activeRow.serviceEnd}</div></div>
+                    <div className="summary-item"><div className="summary-label">续费倒计时</div><div className="summary-value"><Tag className={activeRisk.className}>{activeRisk.text}</Tag></div></div>
+                  </div>
+                </Card>
+                <Card className="detail-card">
+                  <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabs} />
+                </Card>
+              </div>
+            )}
+
+            <Modal title={editMode === 'add' ? '新增授权代表' : `修改授权代表：${activeRow.agreementNo}`} width={900} open={editOpen} onCancel={() => setEditOpen(false)} okText="保存" cancelText="取消" onOk={() => { setEditOpen(false); message.success('已保存授权代表信息，并生成变更记录'); }}>
+              <Form layout="vertical">
+                <div className="filter-grid">
+                  <Form.Item label="代表机构"><Input defaultValue={activeRow.representativeOrg} /></Form.Item>
+                  <Form.Item label="代表类型"><Select defaultValue={activeRow.representativeType} options={representativeTypeOptions.map(value => ({ value, label: value }))} /></Form.Item>
+                  <Form.Item label="主体"><Select defaultValue={activeRow.entityName} options={entityOptions.map(value => ({ value, label: value }))} /></Form.Item>
+                  <Form.Item label="适用地区"><Select defaultValue={activeRow.region} options={regionOptions.map(value => ({ value, label: value }))} /></Form.Item>
+                  <Form.Item label="协议编号"><Input defaultValue={activeRow.agreementNo} /></Form.Item>
+                  <Form.Item label="协议生效日"><DatePicker defaultValue={dayjs(activeRow.agreementStart)} style={{ width: '100%' }} /></Form.Item>
+                  <Form.Item label="服务到期日"><DatePicker defaultValue={dayjs(activeRow.serviceEnd)} style={{ width: '100%' }} /></Form.Item>
+                  <Form.Item label="代表联系人"><Input defaultValue={activeRow.contactName} /></Form.Item>
+                  <Form.Item label="联系方式"><Input defaultValue={activeRow.contactInfo} /></Form.Item>
+                  <Form.Item label="负责人"><Input defaultValue={activeRow.owner} /></Form.Item>
+                </div>
+                <Form.Item label="备注"><Input.TextArea rows={3} defaultValue={activeRow.remark} /></Form.Item>
+              </Form>
+            </Modal>
+
+            <Modal title="上传授权代表协议" width={680} open={agreementOpen} onCancel={() => setAgreementOpen(false)} okText="保存附件" cancelText="取消" onOk={() => { setAgreementOpen(false); message.success('已保存协议附件，并写入协议资料'); }}>
+              <Form layout="vertical">
+                <Form.Item label="协议类型"><Select defaultValue="授权代表协议" options={['授权代表协议', '服务商协议', '变更协议', '终止证明'].map(value => ({ value, label: value }))} /></Form.Item>
+                <Form.Item label="版本说明"><Input placeholder="例如：2026年度续签版本" /></Form.Item>
+                <Form.Item label="协议文件"><Upload.Dragger multiple={false} beforeUpload={() => false}><p>拖拽或点击上传协议文件</p><p className="muted">支持 PDF、图片或压缩包。</p></Upload.Dragger></Form.Item>
+              </Form>
+            </Modal>
+
+            <Modal title={`发起续费：${activeRow.agreementNo}`} width={620} open={renewOpen} onCancel={() => setRenewOpen(false)} okText="提交续费" cancelText="取消" onOk={() => { setRenewOpen(false); message.success('已更新服务到期日和续费倒计时'); }}>
+              <Form layout="vertical">
+                <Form.Item label="续费期限"><Select defaultValue="12个月" options={['6个月', '12个月', '24个月'].map(value => ({ value, label: value }))} /></Form.Item>
+                <Form.Item label="续费说明"><Input.TextArea rows={3} placeholder="填写续费原因、服务商反馈或业务备注" /></Form.Item>
+                <Form.Item label="上传申请附件"><Upload beforeUpload={() => false}><Button>选择文件</Button></Upload></Form.Item>
+              </Form>
+            </Modal>
+
+            <Modal title={`发起终止：${activeRow.agreementNo}`} width={620} open={cancelOpen} onCancel={() => setCancelOpen(false)} okText="提交终止" cancelText="取消" onOk={() => { setCancelOpen(false); message.success('审批通过并执行完成后，可登记终止证明并归档'); }}>
+              <Form layout="vertical">
+                <Form.Item label="终止原因"><Input.TextArea rows={3} placeholder="填写终止原因、业务确认信息或代表机构反馈" /></Form.Item>
+                <Form.Item label="上传申请附件"><Upload beforeUpload={() => false}><Button>选择文件</Button></Upload></Form.Item>
+                <Form.Item label="上传终止证明"><Upload beforeUpload={() => false}><Button>选择文件</Button></Upload></Form.Item>
+              </Form>
+            </Modal>
+          </div>
+        </AntApp>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('representative-root')).render(<RepresentativePage />);
+  </script>
+</body>
+</html>
