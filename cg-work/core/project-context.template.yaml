@@ -1,0 +1,24 @@
+project:
+  id: example-project
+  name: 示例项目
+  domain: 业务领域
+  root_path: D:/path/to/project
+technology:
+  stack: []
+  package_manager: null
+  test_command: null
+  build_command: null
+instructions:
+  files: []
+documents:
+  business: []
+  architecture: []
+  api: []
+runtime:
+  entrypoints: []
+  health_checks: []
+vocabulary:
+  glossary: null
+skills:
+  paths: []
+required_context: []

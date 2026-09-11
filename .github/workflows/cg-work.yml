@@ -1,0 +1,44 @@
+name: cg-work
+
+on:
+  push:
+    paths:
+      - 'cg-work/**'
+      - '.github/workflows/cg-work.yml'
+  pull_request:
+    paths:
+      - 'cg-work/**'
+      - '.github/workflows/cg-work.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: 校验 cg-work
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cg-work
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: cg-work/package-lock.json
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 运行回归测试
+        run: npm test
+
+      - name: 校验框架结构和工作流
+        run: node scripts/check-all.mjs
+
+      - name: 校验技能镜像
+        run: node scripts/check-skills.mjs
