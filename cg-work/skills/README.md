@@ -1,8 +1,10 @@
 # 技能索引
 
-本目录包含两类技能：框架自有技能和原始技能镜像。原始镜像的内容和附属资源不在 `cg-work` 中修改；镜像同步检查使用 `scripts/check-skills.mjs`，不属于日常框架检查。
+本目录包含三类技能：框架自有技能、框架本地化技能和原始技能镜像。原始镜像的内容和附属资源不在 `cg-work` 中修改；镜像同步检查使用 `scripts/check-skills.mjs`，不属于日常框架检查。
 
-框架自有技能目前只有 `project-initialization`，由本框架维护，不参与镜像哈希校验。
+框架自有技能包括 `project-initialization`、`framework-optimization` 与 `large-task-decomposition`，由本框架维护，不参与镜像哈希校验。`large-task-decomposition` 只定义本地路线图与归档约定，分别引用原始镜像技能 `wayfinder` 和 `to-tickets`，不复制其正文。
+
+框架本地化技能包括 `baoyu-design`。它复用上游设计方法，但其目录与任务记录规则由 cg-work 维护，因此不参与 `scripts/check-skills.mjs` 的镜像哈希校验。
 
 ## 核心技能
 
@@ -14,7 +16,7 @@
 
 特殊技能只在特定场景主动触发：
 
-`improve-codebase-architecture`、`grilling`、`grill-with-docs`、`handoff`、`to-questionnaire`、`wayfinder`、`to-spec`、`to-tickets`、`resolving-merge-conflicts`、`prototype`、`dispatching-parallel-agents`、`subagent-driven-development`、`executing-plans`、`writing-skills`、`gstack-review`、`qa-only`、`finishing-a-development-branch`。
+`improve-codebase-architecture`、`grilling`、`grill-with-docs`、`handoff`、`to-questionnaire`、`wayfinder`、`to-spec`、`to-tickets`、`large-task-decomposition`、`resolving-merge-conflicts`、`prototype`、`baoyu-design`、`dispatching-parallel-agents`、`subagent-driven-development`、`executing-plans`、`writing-skills`、`gstack-review`、`qa-only`、`finishing-a-development-branch`。
 
 ## 来源快照
 

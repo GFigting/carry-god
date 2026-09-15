@@ -73,7 +73,34 @@ if (!taskFile) {
       await requireReference(task.review_reference, 'review_reference', file, errors);
       await requireReference(task.verification_reference, 'verification_reference', file, errors);
     }
+    if (task.prototype_reference !== undefined) {
+      await requireReference(task.prototype_reference, 'prototype_reference', file, errors);
+      if (task.status === 'review' || task.status === 'done') {
+        await requirePrototypeDisposition(task.prototype_disposition_reference, file, errors);
+      } else if (task.prototype_disposition_reference !== undefined) {
+        await requirePrototypeDisposition(task.prototype_disposition_reference, file, errors);
+      }
+    } else if (task.prototype_disposition_reference !== undefined) {
+      errors.push('prototype_disposition_reference 只能与 prototype_reference 一起使用');
+    }
+    if (task.learning_protocol !== undefined && task.learning_protocol !== 'v1') {
+      errors.push('learning_protocol 目前只支持 v1');
+    }
+    if (task.learning_protocol === 'v1' && (task.status === 'review' || task.status === 'done')) {
+      await requireReference(task.learning_reference, 'learning_reference', file, errors);
+    } else if (task.learning_reference !== undefined) {
+      await requireReference(task.learning_reference, 'learning_reference', file, errors);
+    }
+    if (task.interaction_protocol !== undefined && task.interaction_protocol !== 'v1') {
+      errors.push('interaction_protocol 目前只支持 v1');
+    }
+    if (task.interaction_protocol === 'v1' && ['review', 'blocked', 'done'].includes(task.status)) {
+      validateNextUserAction(task.next_user_action, errors);
+    } else if (task.next_user_action !== undefined) {
+      validateNextUserAction(task.next_user_action, errors);
+    }
     if (task.status === 'done') await requireReference(task.handoff_reference, 'handoff_reference', file, errors);
+    await validateTaskReferences(task, file, errors);
   }
 
   if (errors.length) {
@@ -94,9 +121,82 @@ async function exists(target) {
 
 async function requireReference(value, key, taskFilePath, errors) {
   if (typeof value !== 'string' || !value.trim()) {
-    errors.push(`review 或 done 任务必须填写 ${key}`);
+    errors.push(`必须填写 ${key}`);
     return;
   }
   const target = path.resolve(path.dirname(taskFilePath), value);
   if (!(await exists(target))) errors.push(`${key} 指向的文件不存在：${value}`);
+}
+
+async function requirePrototypeDisposition(value, taskFilePath, errors) {
+  if (typeof value !== 'string' || !value.trim()) {
+    errors.push('必须填写 prototype_disposition_reference');
+    return;
+  }
+  const target = path.resolve(path.dirname(taskFilePath), value);
+  let content;
+  try {
+    content = await fs.readFile(target, 'utf8');
+  } catch {
+    errors.push(`prototype_disposition_reference 指向的文件不存在：${value}`);
+    return;
+  }
+  for (const heading of ['采纳结论', '实现映射', '验证映射', '未采纳项']) {
+    if (!new RegExp(`^##\\s+${heading}\\s*$`, 'm').test(content)) {
+      errors.push(`prototype_disposition_reference 缺少“${heading}”章节：${value}`);
+    }
+  }
+}
+
+async function validateTaskReferences(task, taskFilePath, errors) {
+  for (const key of ['parent_task_reference', 'roadmap_reference', 'closure_reference']) {
+    if (task[key] !== undefined) await requireNonSelfReference(task[key], key, taskFilePath, errors);
+  }
+
+  for (const key of ['depends_on', 'follow_up_task_references', 'child_task_references']) {
+    if (task[key] === undefined) continue;
+    if (!Array.isArray(task[key]) || task[key].some((value) => typeof value !== 'string' || !value.trim())) {
+      errors.push(`${key} 必须是非空路径字符串数组`);
+      continue;
+    }
+    for (const value of task[key]) await requireNonSelfReference(value, key, taskFilePath, errors);
+  }
+
+  if (task.requirements_coverage !== undefined) {
+    if (!isObject(task.requirements_coverage) || !Object.keys(task.requirements_coverage).length
+      || Object.values(task.requirements_coverage).some((value) => typeof value !== 'string' || !value.trim())) {
+      errors.push('requirements_coverage 必须是非空映射，值为需求证据路径');
+    } else {
+      for (const value of Object.values(task.requirements_coverage)) {
+        await requireNonSelfReference(value, 'requirements_coverage', taskFilePath, errors);
+      }
+    }
+  }
+
+  if (task.status === 'done' && task.roadmap_reference !== undefined) {
+    await requireReference(task.closure_reference, 'closure_reference', taskFilePath, errors);
+  }
+}
+
+async function requireNonSelfReference(value, key, taskFilePath, errors) {
+  if (typeof value !== 'string' || !value.trim()) {
+    errors.push(`${key} 必须是非空路径字符串`);
+    return;
+  }
+  const target = path.resolve(path.dirname(taskFilePath), value);
+  if (target === taskFilePath) {
+    errors.push(`${key} 不能指向任务自身`);
+    return;
+  }
+  if (!(await exists(target))) errors.push(`${key} 指向的文件不存在：${value}`);
+}
+
+function validateNextUserAction(value, errors) {
+  if (!isObject(value)) {
+    errors.push('必须填写 next_user_action');
+    return;
+  }
+  if (typeof value.required !== 'boolean') errors.push('next_user_action.required 必须是布尔值');
+  if (typeof value.action !== 'string' || !value.action.trim()) errors.push('next_user_action.action 必须是非空字符串');
+  if (typeof value.message !== 'string' || !value.message.trim()) errors.push('next_user_action.message 必须是非空字符串');
 }

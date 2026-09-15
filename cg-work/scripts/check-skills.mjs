@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 const frameworkRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const workspaceRoot = path.resolve(frameworkRoot, '..');
 
+// Only raw upstream mirrors belong here. Framework-owned and framework-localized
+// skills (for example baoyu-design) intentionally use cg-work rules and are excluded.
 export const mirrors = [
   ['superpowers/skills/brainstorming', 'brainstorming'],
   ['superpowers/skills/writing-plans', 'writing-plans'],

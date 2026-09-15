@@ -1,0 +1,40 @@
+id: 2026-09-15-project-code-standards
+status: done
+goal: 为项目规范未覆盖的场景建立可追溯、跨语言且不覆盖项目既有约定的通用代码规范。
+workflow: framework:framework-optimization
+created_at: 2026-09-15T00:00:00+08:00
+next_action: 通用项目代码规范、来源登记、格式化与必要注释门禁已验收；按框架维护规则提交并推送。
+next_user_action:
+  required: false
+  action: task_closed
+  message: 无需用户操作；框架优化已验收，正在创建并推送限定范围的提交。
+interaction_protocol: v1
+requirements_reference: ../../requirements-inbox/2026-09-15-project-code-standards.md
+documentation:
+  impact: update
+  targets:
+    - README.md
+    - core/context-loading.md
+    - core/project-context.template.yaml
+    - core/project-onboarding.md
+    - core/project-code-standards.md
+    - skills/code-review/SKILL.md
+    - core/framework-maintenance.md
+    - scripts/check-project.mjs
+    - test/check-project.test.mjs
+    - skills/project-initialization/SKILL.md
+    - local/projects/cg-work/project-context.yaml
+    - VERSION
+status_history:
+  - pending
+  - in_progress
+  - review
+  - in_progress
+  - review
+  - in_progress
+  - review
+  - done
+plan_reference: plan.md
+review_reference: review.md
+verification_reference: verification.md
+handoff_reference: handoff.md

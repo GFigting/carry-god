@@ -1,9 +1,15 @@
 # 项目接入规则
 
-项目首次接入或上下文失效时，加载 `framework:project-initialization` 执行探测和生成。技能使用 `core/project-context.template.yaml`，将结果写入 `local/projects/<project-id>/project-context.yaml`。
+## 初始化门禁
 
-`project-id` 使用项目根目录名转换得到的小写 `kebab-case` 标识；发生重名时追加稳定的仓库或组织标识。初始化报告必须记录原始项目路径、生成的 ID 和重名判断。
+项目首次接入或上下文失效时，必须使用 `framework:project-initialization`。初始化只允许探测和生成本地框架产物；在用户确认新的或更新后的上下文前，不得修改项目代码、项目规则、CI、Git 配置或依赖，也不得启动服务、执行迁移或创建凭据。
 
-项目上下文是所有开发工作流的前置输入。先检查路径和文档是否存在，再根据任务阶段加载 `required_context` 和 `skills.paths`。项目技能必须由项目仓库维护，不复制到 `cg-work/skills/`。
+已有上下文失效时先生成差异报告，等待确认后再更新；不得直接覆盖。初始化任务保持 `pending`，后续开发工作流只能在确认后开始。
 
-接入完成标准是上下文可读、路径有效、规则入口明确、项目技能路径可解析且不包含敏感数据。已有上下文失效时先生成差异报告，用户确认后再更新；不直接覆盖已有上下文。
+## 项目关联不变量
+
+项目上下文是所有开发工作流的前置输入，唯一来源为 `local/projects/<project-id>/project-context.yaml`。`project-id` 使用项目根目录名转换得到的小写 `kebab-case` 标识；发生重名时追加稳定的仓库或组织标识。初始化报告必须记录原始项目路径、生成的 ID 和重名判断。
+
+每个已初始化项目必须拥有原始需求箱，并把绝对路径登记为 `requirements.inbox_path`；任务计划、审查和验证证据仍只保存在 `tasks/<task-id>/`。项目上下文、需求箱和初始化报告不得写入密钥、令牌、密码、生产数据或完整个人信息。
+
+项目上下文、需求箱和报告路径必须有效；项目规则入口明确；项目代码规范文件使用可选的 `coding_standards.files` 以绝对路径登记并由校验器检查存在性；项目技能路径可解析并由项目仓库维护，不复制到 `cg-work/skills/`。后续加载按 `required_context`、`coding_standards.files` 和 `skills.paths` 执行。

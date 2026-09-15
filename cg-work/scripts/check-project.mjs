@@ -30,7 +30,7 @@ if (!contextFile) {
     if (!isObject(context)) {
       errors.push('项目上下文必须是 YAML 映射对象');
     } else {
-      const requiredTopLevel = ['project', 'technology', 'instructions', 'documents', 'runtime', 'vocabulary', 'skills', 'required_context'];
+      const requiredTopLevel = ['project', 'technology', 'instructions', 'documents', 'runtime', 'requirements', 'vocabulary', 'skills', 'required_context'];
       for (const key of requiredTopLevel) {
         if (!(key in context)) errors.push(`缺少顶层字段：${key}`);
       }
@@ -54,15 +54,25 @@ if (!contextFile) {
       }
 
       const instructions = objectField(context, 'instructions', errors);
+      const codingStandards = context.coding_standards === undefined ? null : objectField(context, 'coding_standards', errors);
       const documents = objectField(context, 'documents', errors);
       const runtime = objectField(context, 'runtime', errors);
+      const requirements = objectField(context, 'requirements', errors);
       const skills = objectField(context, 'skills', errors);
+      const verification = context.verification === undefined ? null : objectField(context, 'verification', errors);
+      const inboxPath = stringField(requirements, 'inbox_path', 'requirements.inbox_path', errors);
 
       await checkAbsolutePaths(instructions?.files, 'instructions.files', errors);
+      if (codingStandards) await checkAbsolutePaths(codingStandards.files, 'coding_standards.files', errors);
       for (const key of ['business', 'architecture', 'api']) await checkAbsolutePaths(documents?.[key], `documents.${key}`, errors);
       await checkAbsolutePaths(runtime?.entrypoints, 'runtime.entrypoints', errors);
       await checkAbsolutePaths(runtime?.health_checks, 'runtime.health_checks', errors, { allowUrls: true });
       await checkAbsolutePaths(context.required_context, 'required_context', errors);
+      if (inboxPath) {
+        if (!path.isAbsolute(inboxPath)) errors.push('requirements.inbox_path 必须是绝对路径');
+        else if (path.basename(inboxPath) !== 'requirements-inbox') errors.push('requirements.inbox_path 必须指向 requirements-inbox 目录');
+        else if (!(await exists(inboxPath))) errors.push(`requirements.inbox_path 不存在：${inboxPath}`);
+      }
 
       if (skills && !Array.isArray(skills.paths)) {
         errors.push('skills.paths 必须是列表');
@@ -73,6 +83,8 @@ if (!contextFile) {
           else if (!(await exists(path.resolve(projectRoot, value)))) errors.push(`技能路径不存在：${value}`);
         }
       }
+      await checkRepositories(context.repositories, errors);
+      checkVerificationProfiles(verification, errors);
     }
   }
 
@@ -81,6 +93,54 @@ if (!contextFile) {
     process.exitCode = 1;
   } else if (content !== undefined) {
     console.log(`项目上下文校验通过：${file}`);
+  }
+}
+
+async function checkRepositories(repositories, errors) {
+  if (repositories === undefined) return;
+  if (!Array.isArray(repositories)) {
+    errors.push('repositories 必须是列表');
+    return;
+  }
+  const ids = new Set();
+  for (const item of repositories) {
+    if (!isObject(item)) {
+      errors.push('repositories 中的条目必须是映射对象');
+      continue;
+    }
+    const id = stringField(item, 'id', 'repositories[].id', errors);
+    stringField(item, 'role', 'repositories[].role', errors);
+    const rootPath = stringField(item, 'root_path', 'repositories[].root_path', errors);
+    if (id && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)) errors.push(`repositories[].id 必须使用小写 kebab-case：${id}`);
+    if (id && !ids.add(id)) errors.push(`repositories[].id 不可重复：${id}`);
+    if (rootPath && !path.isAbsolute(rootPath)) errors.push(`repositories[].root_path 必须是绝对路径：${rootPath}`);
+    else if (rootPath && !(await exists(rootPath))) errors.push(`repositories[].root_path 不存在：${rootPath}`);
+  }
+}
+
+function checkVerificationProfiles(verification, errors) {
+  if (verification === null) return;
+  if (!Array.isArray(verification.profiles)) {
+    errors.push('verification.profiles 必须是列表');
+    return;
+  }
+  const ids = new Set();
+  const outcomes = new Set(['required', 'environment_limited', 'not_applicable']);
+  for (const item of verification.profiles) {
+    if (!isObject(item)) {
+      errors.push('verification.profiles 中的条目必须是映射对象');
+      continue;
+    }
+    const id = stringField(item, 'id', 'verification.profiles[].id', errors);
+    stringField(item, 'stage', 'verification.profiles[].stage', errors);
+    stringField(item, 'command', 'verification.profiles[].command', errors);
+    const outcome = stringField(item, 'outcome', 'verification.profiles[].outcome', errors);
+    if (id && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)) errors.push(`verification.profiles[].id 必须使用小写 kebab-case：${id}`);
+    if (id && !ids.add(id)) errors.push(`verification.profiles[].id 不可重复：${id}`);
+    if (outcome && !outcomes.has(outcome)) errors.push(`verification.profiles[].outcome 无效：${outcome}`);
+    if (item.limitation !== undefined && (typeof item.limitation !== 'string' || !item.limitation.trim())) {
+      errors.push('verification.profiles[].limitation 必须是非空字符串');
+    }
   }
 }
 

@@ -8,8 +8,8 @@
 | 高风险决策挑战 | `grilling`、`grill-with-docs` | 用户主动要求或确认 |
 | 跨会话交接 | `handoff` | 用户要求交接 |
 | 领域专家信息收集 | `to-questionnaire` | 确认收件人和问题范围 |
-| 多会话路线图 | `wayfinder` | 确认长期范围 |
-| 需求转规格或任务 | `to-spec`、`to-tickets` | 确认目标系统 |
+| 多会话路线图 | `wayfinder`、`large-task-decomposition` | 确认长期范围；关键决策明确后再创建研发任务 |
+| 需求转规格或任务 | `to-spec`、`to-tickets` | 确认目标系统；大任务先有路线图 |
 | 合并冲突 | `resolving-merge-conflicts` | 需确认冲突处理策略 |
 | 原型验证 | `prototype` | 确认原型不进入生产 |
 | 并行或跨会话执行 | `dispatching-parallel-agents`、`subagent-driven-development`、`executing-plans` | 确认协作范围 |

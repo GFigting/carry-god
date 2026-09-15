@@ -1,0 +1,32 @@
+id: 2026-09-14-large-task-decomposition-closure
+status: done
+goal: 建立大任务从决策地图到父子任务、覆盖追踪和关闭归档的框架闭环，并同步技能路径。
+workflow: framework:framework-optimization
+created_at: 2026-09-14T00:00:00+08:00
+next_action: 新的大需求首次进入路线图时，按 large-task-decomposition 工作流建立覆盖与关闭索引。
+requirements_reference: ../../requirements-inbox/2026-09-14-large-task-decomposition-and-closure.md
+documentation:
+  impact: update
+  targets:
+    - README.md
+    - core/operating-model.md
+    - core/context-loading.md
+    - core/framework-maintenance.md
+    - core/special-operations.md
+    - workflows/README.md
+    - workflows/feature-development.md
+    - workflows/large-task-decomposition.md
+    - skills/large-task-decomposition/SKILL.md
+    - scripts/check-task.mjs
+    - scripts/README.md
+    - local/README.md
+learning_protocol: v1
+status_history:
+  - pending
+  - in_progress
+  - review
+  - done
+review_reference: review.md
+verification_reference: verification.md
+learning_reference: learning.md
+handoff_reference: handoff.md

@@ -8,7 +8,7 @@ const isKebab = (name) => name === '.gitkeep' || name === '.gitignore'
   || /^(README|AGENTS|SKILL|VERSION)(\.md)?$/.test(name)
   || /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name)
   || /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\.[a-z0-9]+)+$/.test(name);
-const isLocal = (relative) => relative === 'local/projects' || relative.startsWith('local/projects/');
+const isLocal = (relative) => relative === 'local' || relative.startsWith('local/');
 const isSkill = (relative) => relative === 'skills' || relative.startsWith('skills/');
 
 async function exists(file) {
@@ -45,7 +45,7 @@ async function walk(dir) {
     if (entry.isDirectory() && entry.name === 'node_modules') continue;
     const target = path.join(dir, entry.name);
     const relative = path.relative(root, target).replaceAll(path.sep, '/');
-    if (!isSkill(relative) && !isKebab(entry.name)) errors.push(`invalid name: ${relative}`);
+    if (!isLocal(relative) && !isSkill(relative) && !isKebab(entry.name)) errors.push(`invalid name: ${relative}`);
     if (entry.isDirectory()) {
       if (!isLocal(relative) && !isSkill(relative) && !(await exists(path.join(target, 'README.md')))) errors.push(`missing README.md: ${relative}`);
       await walk(target);
@@ -56,6 +56,7 @@ async function walk(dir) {
 }
 
 await walk(root);
+await checkRequirementsInboxes();
 const workflowFiles = (await fs.readdir(path.join(root, 'workflows'), { withFileTypes: true }))
   .filter((entry) => entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'README.md')
   .map((entry) => entry.name)
@@ -82,10 +83,37 @@ for (const file of workflowFiles) {
 
 if (!(await exists(path.join(root, 'core', 'project-context.template.yaml')))) errors.push('missing project context template');
 const ignore = await fs.readFile(path.join(root, '.gitignore'), 'utf8');
-if (!ignore.includes('/local/projects/*') || !ignore.includes('!/local/projects/.gitkeep')) errors.push('invalid local project ignore boundary');
+for (const requiredIgnoreRule of [
+  '/local/projects/*',
+  '!/local/projects/.gitkeep',
+  '!/local/projects/*/',
+  '/local/projects/*/*',
+  '!/local/projects/*/requirements-inbox/',
+  '!/local/projects/*/requirements-inbox/README.md',
+  '!/local/projects/*/requirements-inbox/.gitkeep',
+]) {
+  if (!ignore.includes(requiredIgnoreRule)) errors.push(`missing local project ignore rule: ${requiredIgnoreRule}`);
+}
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exitCode = 1;
 } else {
   console.log('cg-work checks passed');
+}
+
+async function checkRequirementsInboxes() {
+  const projectsRoot = path.join(root, 'local', 'projects');
+  for (const entry of await fs.readdir(projectsRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const projectRoot = path.join(projectsRoot, entry.name);
+    if (!(await exists(path.join(projectRoot, 'project-context.yaml')))) continue;
+    const inbox = path.join(projectRoot, 'requirements-inbox');
+    if (!(await exists(inbox))) {
+      errors.push(`missing requirements-inbox: local/projects/${entry.name}`);
+      continue;
+    }
+    for (const name of ['README.md', '.gitkeep']) {
+      if (!(await exists(path.join(inbox, name)))) errors.push(`missing requirements-inbox file: local/projects/${entry.name}/requirements-inbox/${name}`);
+    }
+  }
 }

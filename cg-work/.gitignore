@@ -1,3 +1,16 @@
 /local/projects/*
 !/local/projects/.gitkeep
+!/local/projects/*/
+/local/projects/*/*
+!/local/projects/*/requirements-inbox/
+!/local/projects/*/requirements-inbox/README.md
+!/local/projects/*/requirements-inbox/.gitkeep
+# cg-work 自身是框架受管项目；其上下文、任务和报告可随框架提交。
+!/local/projects/cg-work/**
+# 需求包含真实项目资料，所有项目（包括 cg-work）均保持本地。
+/local/projects/cg-work/requirements-inbox/*
+!/local/projects/cg-work/requirements-inbox/README.md
+!/local/projects/cg-work/requirements-inbox/.gitkeep
+# 本机工具副本可能包含个人路径或运行参数，不进入框架提交。
+/local/tools/
 node_modules/
