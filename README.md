@@ -5,7 +5,7 @@ AI 软件开发 Harness 集合。
 ## 项目结构
 
 ```text
-cg-harness/                    统一用户入口、路由和任务模板
+cg-work/                       当前唯一推荐的 AI 开发框架（核心规则、工作流、技能、校验）
 GGFrame/                       Goal、Task、Context、Evidence 治理框架
 superpowers/                   澄清、计划、TDD、调试和验证方法论
 skills/                        小粒度、可组合的工程技能
@@ -34,4 +34,4 @@ compound-engineering-plugin/   跨平台技能分发、转换和测试基础设�
 - 修复、重构、优化和原型分别建模，使用不同的验收标准。
 - 能力不可用时记录降级结果，不声称执行过未安装的技能。
 
-详细设计和路由见 [`cg-harness/README.md`](cg-harness/README.md)。
+详细规则见 [`cg-work/README.md`](cg-work/README.md)。
