@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
 const isKebab = (name) => name === '.gitkeep' || name === '.gitignore'
-  || /^(README|AGENTS|SKILL|VERSION)(\.md)?$/.test(name)
+  || /^(README|AGENTS|CLAUDE|SKILL|VERSION)(\.md)?$/.test(name)
   || /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name)
   || /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\.[a-z0-9]+)+$/.test(name);
 const isLocal = (relative) => relative === 'local' || relative.startsWith('local/');
