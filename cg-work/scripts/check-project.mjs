@@ -62,16 +62,17 @@ if (!contextFile) {
       const verification = context.verification === undefined ? null : objectField(context, 'verification', errors);
       const inboxPath = stringField(requirements, 'inbox_path', 'requirements.inbox_path', errors);
 
-      await checkAbsolutePaths(instructions?.files, 'instructions.files', errors);
-      if (codingStandards) await checkAbsolutePaths(codingStandards.files, 'coding_standards.files', errors);
-      for (const key of ['business', 'architecture', 'api']) await checkAbsolutePaths(documents?.[key], `documents.${key}`, errors);
-      await checkAbsolutePaths(runtime?.entrypoints, 'runtime.entrypoints', errors);
-      await checkAbsolutePaths(runtime?.health_checks, 'runtime.health_checks', errors, { allowUrls: true });
-      await checkAbsolutePaths(context.required_context, 'required_context', errors);
+      await checkAbsolutePaths(instructions?.files, 'instructions.files', errors, { base: projectRoot });
+      if (codingStandards) await checkAbsolutePaths(codingStandards.files, 'coding_standards.files', errors, { base: projectRoot });
+      for (const key of ['business', 'architecture', 'api']) await checkAbsolutePaths(documents?.[key], `documents.${key}`, errors, { base: projectRoot });
+      await checkAbsolutePaths(runtime?.entrypoints, 'runtime.entrypoints', errors, { base: projectRoot });
+      await checkAbsolutePaths(runtime?.health_checks, 'runtime.health_checks', errors, { allowUrls: true, base: projectRoot });
+      await checkAbsolutePaths(context.required_context, 'required_context', errors, { base: projectRoot });
       if (inboxPath) {
-        if (!path.isAbsolute(inboxPath)) errors.push('requirements.inbox_path 必须是绝对路径');
-        else if (path.basename(inboxPath) !== 'requirements-inbox') errors.push('requirements.inbox_path 必须指向 requirements-inbox 目录');
-        else if (!(await exists(inboxPath))) errors.push(`requirements.inbox_path 不存在：${inboxPath}`);
+        const inboxResolved = path.isAbsolute(inboxPath) ? inboxPath : (projectRoot ? path.resolve(projectRoot, inboxPath) : '');
+        if (!inboxResolved) errors.push('requirements.inbox_path 必须相对于 project.root_path');
+        else if (path.basename(inboxResolved) !== 'requirements-inbox') errors.push('requirements.inbox_path 必须指向 requirements-inbox 目录');
+        else if (!(await exists(inboxResolved))) errors.push(`requirements.inbox_path 不存在：${inboxResolved}`);
       }
 
       if (skills && !Array.isArray(skills.paths)) {
@@ -169,7 +170,7 @@ function stringField(parent, key, label, errors) {
   return parent[key].trim();
 }
 
-async function checkAbsolutePaths(values, label, errors, { allowUrls = false } = {}) {
+async function checkAbsolutePaths(values, label, errors, { allowUrls = false, base = '' } = {}) {
   if (values === undefined) return;
   if (!Array.isArray(values)) {
     errors.push(`${label} 必须是列表`);
@@ -178,8 +179,10 @@ async function checkAbsolutePaths(values, label, errors, { allowUrls = false } =
   for (const value of values) {
     if (typeof value !== 'string' || !value.trim()) errors.push(`${label} 中的条目必须是非空字符串`);
     else if (allowUrls && /^(https?:|mailto:)/.test(value)) continue;
-    else if (!path.isAbsolute(value)) errors.push(`登记的项目路径必须是绝对路径：${value}`);
-    else if (!(await exists(value))) errors.push(`登记的路径不存在：${value}`);
+    else if (path.isAbsolute(value)) {
+      if (!(await exists(value))) errors.push(`登记的路径不存在：${value}`);
+    } else if (!base) errors.push(`登记的项目路径必须相对于 project.root_path：${value}`);
+    else if (!(await exists(path.resolve(base, value)))) errors.push(`登记的路径不存在：${path.resolve(base, value)}`);
   }
 }
 

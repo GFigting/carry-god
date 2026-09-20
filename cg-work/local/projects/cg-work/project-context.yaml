@@ -2,7 +2,7 @@ project:
   id: cg-work
   name: cg-work
   domain: AI 软件开发工作框架
-  root_path: D:/songgf/Projects/all-work/carry-god/cg-work
+  root_path: D:/GitPrograms/Vibe-coding/carry-god/cg-work
 technology:
   stack:
     - Node.js
@@ -12,27 +12,27 @@ technology:
   build_command: null
 instructions:
   files:
-    - D:/songgf/Projects/all-work/carry-god/cg-work/AGENTS.md
+    - ./AGENTS.md
 coding_standards:
   files:
-    - D:/songgf/Projects/all-work/carry-god/cg-work/AGENTS.md
-    - D:/songgf/Projects/all-work/carry-god/cg-work/core/project-code-standards.md
+    - ./AGENTS.md
+    - ./core/project-code-standards.md
 documents:
   business:
-    - D:/songgf/Projects/all-work/carry-god/cg-work/README.md
+    - ./README.md
   architecture:
-    - D:/songgf/Projects/all-work/carry-god/cg-work/core/operating-model.md
-    - D:/songgf/Projects/all-work/carry-god/cg-work/core/context-loading.md
+    - ./core/operating-model.md
+    - ./core/context-loading.md
   api: []
 runtime:
   entrypoints: []
   health_checks: []
 requirements:
-  inbox_path: D:/songgf/Projects/all-work/carry-god/cg-work/local/projects/cg-work/requirements-inbox
+  inbox_path: ./local/projects/cg-work/requirements-inbox
 vocabulary:
   glossary: null
 skills:
   paths: []
 required_context:
-  - D:/songgf/Projects/all-work/carry-god/cg-work/AGENTS.md
-  - D:/songgf/Projects/all-work/carry-god/cg-work/README.md
+  - ./AGENTS.md
+  - ./README.md

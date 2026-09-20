@@ -108,3 +108,20 @@ test('全量校验拒绝缺少原始需求箱的已初始化项目', async () =>
     await rm(projectDirectory, { recursive: true, force: true });
   }
 });
+
+test('接受相对 project.root_path 的项目路径', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'cg-work-project-'));
+  await writeFile(path.join(root, 'AGENTS.md'), '# agents\n');
+  await writeFile(path.join(root, 'README.md'), '# readme\n');
+  const requirementsInbox = path.join(root, 'requirements-inbox');
+  await mkdir(requirementsInbox);
+  const contextDir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-context-'));
+  const projectDir = path.join(contextDir, 'sample-project');
+  await mkdir(projectDir);
+  const file = path.join(projectDir, 'project-context.yaml');
+  await writeFile(file, `project:\n  id: sample-project\n  root_path: ${root}\ntechnology:\n  stack: []\ninstructions:\n  files:\n    - ./AGENTS.md\ncoding_standards:\n  files:\n    - ./AGENTS.md\ndocuments:\n  business:\n    - ./README.md\n  architecture: []\n  api: []\nruntime:\n  entrypoints: []\n  health_checks: []\nrequirements:\n  inbox_path: ./requirements-inbox\nvocabulary:\n  glossary: null\nskills:\n  paths: []\nrequired_context:\n  - ./AGENTS.md\n  - ./README.md\n`);
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
+  await rm(root, { recursive: true, force: true });
+  await rm(contextDir, { recursive: true, force: true });
+});
