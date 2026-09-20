@@ -9,7 +9,7 @@
 
 加载项目规则时，优先读取 `instructions.files` 与 `coding_standards.files` 登记的项目规则，以及仓库工具配置；对于项目未覆盖的事项，再应用 [项目通用代码规范](project-code-standards.md)。该规范约束计划、编码和提交前自查，不限于最终审查。
 
-原始需求先存入 `requirements.inbox_path` 所指向的本地需求箱；需求箱保存未经拆分的需求包、附件和澄清材料。复杂需求先判断是否需要 `framework:large-task-decomposition`：需要时，在 `roadmaps/<roadmap-id>/` 保存决策地图的本地索引、覆盖关系和关闭记录；创建开发任务后，任务记录、计划、审查、验证和学习证据仍只保存在 `tasks/<task-id>/`。使用持续学习协议的任务还须读取 [持续学习与经验沉淀](continuous-learning.md)。具体约束见 [项目接入规则](project-onboarding.md)。
+原始需求先存入 `requirements.inbox_path` 所指向的本地需求箱；需求箱保存未经拆分的需求包、附件和澄清材料。符合 [工作模型的低风险变更](operating-model.md#低风险变更) 不创建需求箱或任务记录，直接按 `framework:low-risk-change` 完成最小验证。其他需求先判断是否需要 `framework:large-task-decomposition`：需要时，在 `roadmaps/<roadmap-id>/` 保存决策地图的本地索引、覆盖关系和关闭记录；创建开发任务后，任务记录、计划、审查、验证和学习证据仍只保存在 `tasks/<task-id>/`。使用持续学习协议的任务还须读取 [持续学习与经验沉淀](continuous-learning.md)。具体约束见 [项目接入规则](project-onboarding.md)。
 
 项目技能路径使用 `skills.paths` 声明，路径相对于 `project.root_path` 解析。例如 `.cg-work/skills` 对应项目根目录下的 `.cg-work/skills/`。先加载 `cg-work/skills/` 中的框架技能，再加载这些路径中的项目技能。
 

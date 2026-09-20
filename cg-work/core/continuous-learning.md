@@ -4,7 +4,7 @@
 
 ## 协议与兼容性
 
-新任务在 `task.yaml` 中声明 `learning_protocol: v1`。该协议对历史任务兼容：未声明该字段的既有记录无需迁移，也不会因本规则失效。
+标准新任务在 `task.yaml` 中声明 `learning_protocol: v1`。`framework:bugfix` 的 `execution_profile: lightweight` 不声明该协议：这类任务的范围已限定为无可复用经验的既有行为恢复；一旦出现值得沉淀的经验，必须转为标准任务。该协议对历史任务兼容：未声明该字段的既有记录无需迁移，也不会因本规则失效。
 
 使用 `v1` 的任务在进入 `review` 或 `done` 前必须填写 `learning_reference`，并指向任务目录内的 `learning.md`。校验器负责检查该引用和文件存在性。
 

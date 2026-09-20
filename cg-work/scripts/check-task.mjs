@@ -7,6 +7,7 @@ const taskFile = process.argv[2];
 const frameworkRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const workflowRoot = path.join(frameworkRoot, 'workflows');
 const allowedStatuses = new Set(['pending', 'in_progress', 'review', 'done', 'blocked', 'cancelled']);
+const executionProfiles = new Set(['lightweight']);
 const transitions = {
   pending: new Set(['in_progress', 'blocked', 'cancelled']),
   in_progress: new Set(['review', 'blocked', 'cancelled']),
@@ -51,6 +52,15 @@ if (!taskFile) {
       if (!(await exists(path.join(workflowRoot, `${workflowName}.md`)))) errors.push(`未知工作流：${task.workflow}`);
     }
 
+    if (task.execution_profile !== undefined && (typeof task.execution_profile !== 'string' || !executionProfiles.has(task.execution_profile))) {
+      errors.push(`执行模式无效：${task.execution_profile}`);
+    }
+    const isLightweight = task.execution_profile === 'lightweight';
+    if (isLightweight && task.workflow !== 'framework:bugfix') {
+      errors.push('lightweight 执行模式只适用于 framework:bugfix');
+    }
+    if (isLightweight) validateLightweightScope(task, errors);
+
     if (task.documentation === undefined || !isObject(task.documentation)) {
       errors.push('task.documentation 必须是映射对象');
     } else if (!['add', 'update', 'none'].includes(task.documentation.impact)) {
@@ -69,7 +79,9 @@ if (!taskFile) {
       if (task.status_history.at(-1) !== task.status) errors.push('status_history 必须以 task.status 结尾');
     }
 
-    if (task.status === 'review' || task.status === 'done') {
+    if (isLightweight && (task.status === 'review' || task.status === 'done')) {
+      validateLightweightEvidence(task.lightweight_evidence, errors);
+    } else if (task.status === 'review' || task.status === 'done') {
       await requireReference(task.review_reference, 'review_reference', file, errors);
       await requireReference(task.verification_reference, 'verification_reference', file, errors);
     }
@@ -86,7 +98,9 @@ if (!taskFile) {
     if (task.learning_protocol !== undefined && task.learning_protocol !== 'v1') {
       errors.push('learning_protocol 目前只支持 v1');
     }
-    if (task.learning_protocol === 'v1' && (task.status === 'review' || task.status === 'done')) {
+    if (isLightweight && task.learning_protocol !== undefined) {
+      errors.push('lightweight 任务不得声明 learning_protocol；请将可复用经验升级为标准任务记录');
+    } else if (task.learning_protocol === 'v1' && (task.status === 'review' || task.status === 'done')) {
       await requireReference(task.learning_reference, 'learning_reference', file, errors);
     } else if (task.learning_reference !== undefined) {
       await requireReference(task.learning_reference, 'learning_reference', file, errors);
@@ -99,7 +113,7 @@ if (!taskFile) {
     } else if (task.next_user_action !== undefined) {
       validateNextUserAction(task.next_user_action, errors);
     }
-    if (task.status === 'done') await requireReference(task.handoff_reference, 'handoff_reference', file, errors);
+    if (task.status === 'done' && !isLightweight) await requireReference(task.handoff_reference, 'handoff_reference', file, errors);
     await validateTaskReferences(task, file, errors);
   }
 
@@ -199,4 +213,32 @@ function validateNextUserAction(value, errors) {
   if (typeof value.required !== 'boolean') errors.push('next_user_action.required 必须是布尔值');
   if (typeof value.action !== 'string' || !value.action.trim()) errors.push('next_user_action.action 必须是非空字符串');
   if (typeof value.message !== 'string' || !value.message.trim()) errors.push('next_user_action.message 必须是非空字符串');
+}
+
+function validateLightweightEvidence(value, errors) {
+  if (!isObject(value)) {
+    errors.push('lightweight 任务进入审查或完成前必须填写 lightweight_evidence');
+    return;
+  }
+  for (const key of ['root_cause', 'scope', 'verification', 'review', 'integration_decision']) {
+    if (typeof value[key] !== 'string' || !value[key].trim()) {
+      errors.push(`lightweight_evidence.${key} 必须是非空字符串`);
+    }
+  }
+}
+
+function validateLightweightScope(task, errors) {
+  for (const key of [
+    'prototype_reference',
+    'prototype_disposition_reference',
+    'roadmap_reference',
+    'closure_reference',
+    'parent_task_reference',
+    'depends_on',
+    'follow_up_task_references',
+    'child_task_references',
+    'requirements_coverage'
+  ]) {
+    if (task[key] !== undefined) errors.push(`lightweight 任务不得声明 ${key}`);
+  }
 }

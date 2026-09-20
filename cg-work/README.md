@@ -6,10 +6,10 @@
 
 1. 读取 `AGENTS.md` 和本文件。
 2. 检查 `local/projects/<project-id>/project-context.yaml`；缺失或失效时先执行项目初始化并等待确认。
-3. 将原始需求包存入 `local/projects/<project-id>/requirements-inbox/`，再创建 `local/projects/<project-id>/tasks/<task-id>/task.yaml`，初始状态为 `pending`。
-4. 从 `workflows/` 选择项目初始化、功能、缺陷、重构、审查、框架优化或大任务拆分流程。
+3. 先按 `core/operating-model.md` 识别低风险变更：纯文案、样式或静态布局调整使用 `framework:low-risk-change`，不创建需求箱、task 或自动化测试；其他变更再将原始需求包存入 `local/projects/<project-id>/requirements-inbox/`，并创建 `pending` task。
+4. 从 `workflows/` 选择项目初始化、低风险变更、功能、缺陷、重构、审查、框架优化或大任务拆分流程。
 5. 按流程声明加载 `skills/` 中的 required skills。
-6. 在同一任务目录保存计划、审查、验证、学习证据、风险和下一步行动；大任务额外在 `roadmaps/` 保存决策、覆盖与关闭索引。
+6. 标准任务在同一任务目录保存计划、审查、验证、学习证据、风险和下一步行动；满足 `workflows/bugfix.md` 轻量条件的缺陷仅在 `task.yaml` 保留根因、范围、验证、自审和集成结论。大任务额外在 `roadmaps/` 保存决策、覆盖与关闭索引。
    若创建原型，记录原型引用及其采纳结论、实现映射和验证映射。
 7. 通过新鲜验证和审查后，再确定集成方式并将任务标记为 `done`。
 8. 运行 `scripts/check-all.mjs`，确认框架结构和工作流引用有效；任务或项目上下文更新后分别运行 `scripts/check-task.mjs` 和 `scripts/check-project.mjs`；维护技能镜像时另行运行 `scripts/check-skills.mjs`。

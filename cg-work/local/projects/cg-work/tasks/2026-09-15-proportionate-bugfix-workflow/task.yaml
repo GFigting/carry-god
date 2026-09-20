@@ -1,0 +1,39 @@
+id: 2026-09-15-proportionate-bugfix-workflow
+status: done
+goal: 为小型确定性缺陷及纯展示调整建立与风险相称的最小执行路径，同时保留必要验证。
+workflow: framework:framework-optimization
+created_at: 2026-09-15T00:00:00+08:00
+next_action: 任务已关闭；后续按低风险路径或标准工作流分流。
+requirements_reference: ../../requirements-inbox/2026-09-15-proportionate-bugfix-workflow.md
+documentation:
+  impact: update
+  targets:
+    - AGENTS.md
+    - README.md
+    - core/continuous-learning.md
+    - workflows/bugfix.md
+    - workflows/README.md
+    - workflows/feature-development.md
+    - workflows/low-risk-change.md
+    - core/operating-model.md
+    - core/context-loading.md
+    - VERSION
+  not_needed_reason: ''
+learning_protocol: v1
+review_reference: review.md
+verification_reference: verification.md
+learning_reference: learning.md
+interaction_protocol: v1
+next_user_action:
+  required: false
+  action: none
+  message: 任务已关闭，框架内容已准备提交；后续按新工作流分流。
+status_history:
+  - pending
+  - in_progress
+  - review
+  - in_progress
+  - review
+  - done
+plan_reference: plan.md
+handoff_reference: handoff.md

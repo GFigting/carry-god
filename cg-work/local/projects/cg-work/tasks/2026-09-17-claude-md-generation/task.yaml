@@ -1,0 +1,30 @@
+id: 2026-09-17-claude-md-generation
+status: done
+goal: 为 cg-work 框架新增 CLAUDE.md 自动加载说明，使 Claude 及兼容 Agent 在仓库根目录按框架约定工作，内容须与 AGENTS.md / README.md / core/ 一致。
+workflow: framework:framework-optimization
+created_at: 2026-09-17T09:14:00+08:00
+next_action: 任务已关闭。CLAUDE.md 以最小薄指针形态落地并已提交推送；后续无需操作。
+requirements_reference: ../../requirements-inbox/2026-09-17-claude-md-generation.md
+documentation:
+  impact: update
+  targets:
+    - CLAUDE.md
+    - scripts/check-all.mjs
+    - core/naming-and-submission.md
+  not_needed_reason: ''
+learning_protocol: v1
+review_reference: review.md
+verification_reference: verification.md
+learning_reference: learning.md
+interaction_protocol: v1
+next_user_action:
+  required: false
+  action: none
+  message: 任务已关闭，无需操作；CLAUDE.md 已提交推送，后续变更将创建新任务。
+status_history:
+  - pending
+  - in_progress
+  - review
+  - done
+plan_reference: plan.md
+handoff_reference: handoff.md

@@ -41,6 +41,66 @@ test('完成任务前必须有审查证据', async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
+test('接受有完整任务内证据的轻量缺陷审查任务', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-10-missing-import');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-09-10-missing-import\nstatus: review\ngoal: Restore missing import\nworkflow: framework:bugfix\nexecution_profile: lightweight\ncreated_at: 2026-09-10\ndocumentation:\n  impact: none\n  not_needed_reason: Existing behavior only\nnext_action: User acceptance\nlightweight_evidence:\n  root_cause: getDictLabel was called without importing it\n  scope: One existing page module; no interface, data, permission, or external side effect\n  verification: node --test test/missing-import.test.mjs passed\n  review: Reviewed the one-line import diff\n  integration_decision: Keep in the current working tree\n');
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('拒绝缺少验证证据的轻量缺陷审查任务', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-10-missing-import');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-09-10-missing-import\nstatus: review\ngoal: Restore missing import\nworkflow: framework:bugfix\nexecution_profile: lightweight\ncreated_at: 2026-09-10\ndocumentation:\n  impact: none\n  not_needed_reason: Existing behavior only\nnext_action: User acceptance\nlightweight_evidence:\n  root_cause: getDictLabel was called without importing it\n  scope: One existing page module; no interface, data, permission, or external side effect\n  review: Reviewed the one-line import diff\n  integration_decision: Keep in the current working tree\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /lightweight_evidence\.verification/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('拒绝在轻量缺陷中声明学习协议', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-10-missing-import');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-09-10-missing-import\nstatus: pending\ngoal: Restore missing import\nworkflow: framework:bugfix\nexecution_profile: lightweight\ncreated_at: 2026-09-10\nlearning_protocol: v1\ndocumentation:\n  impact: none\n  not_needed_reason: Existing behavior only\nnext_action: Verify\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /lightweight 任务不得声明 learning_protocol/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('拒绝在非缺陷工作流中使用轻量执行模式', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-10-small-feature');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-09-10-small-feature\nstatus: pending\ngoal: Add a field\nworkflow: framework:feature-development\nexecution_profile: lightweight\ncreated_at: 2026-09-10\ndocumentation:\n  impact: none\n  not_needed_reason: Existing behavior only\nnext_action: Verify\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /lightweight 执行模式只适用于 framework:bugfix/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('拒绝为轻量缺陷声明原型', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-10-missing-import');
+  await mkdir(taskDir);
+  await writeFile(path.join(taskDir, 'prototype.html'), '<html></html>\n');
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-09-10-missing-import\nstatus: pending\ngoal: Restore missing import\nworkflow: framework:bugfix\nexecution_profile: lightweight\ncreated_at: 2026-09-10\ndocumentation:\n  impact: none\n  not_needed_reason: Existing behavior only\nnext_action: Verify\nprototype_reference: prototype.html\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /lightweight 任务不得声明 prototype_reference/);
+  await rm(dir, { recursive: true, force: true });
+});
+
 test('学习协议任务进入审查前必须有学习记录', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
   const taskDir = path.join(dir, '2026-09-10-project-initialization');
