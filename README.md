@@ -23,6 +23,7 @@ compound-engineering-plugin/   跨平台技能分发、转换和测试基础设�
 - `/cg-optimize`：针对明确指标进行优化
 - `/cg-prototype`：创建产品、交互或 UI 原型
 - `/cg-review`：审查、验证、总结和知识沉淀
+- `cg-work/`：统一的框架规则、工作流、原始技能镜像、项目上下文和维护校验
 
 也可以直接使用自然语言，Harness 按意图自动路由。
 

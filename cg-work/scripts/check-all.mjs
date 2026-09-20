@@ -42,7 +42,7 @@ async function checkMarkdownLinks(file) {
 
 async function walk(dir) {
   for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
-    if (entry.isDirectory() && entry.name === 'node_modules') continue;
+    if (entry.isDirectory() && (entry.name === 'node_modules' || entry.name === '.workbuddy')) continue;
     const target = path.join(dir, entry.name);
     const relative = path.relative(root, target).replaceAll(path.sep, '/');
     if (!isLocal(relative) && !isSkill(relative) && !isKebab(entry.name)) errors.push(`invalid name: ${relative}`);
