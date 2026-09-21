@@ -86,6 +86,7 @@ if (!taskFile) {
     } else if (task.status === 'review' || task.status === 'done') {
       await requireReference(task.review_reference, 'review_reference', file, errors);
       await requireReference(task.verification_reference, 'verification_reference', file, errors);
+      if (task.execution_profile === 'standard') await validateStandardsPreflight(task, file, errors);
     }
     if (task.prototype_reference !== undefined) {
       await requireReference(task.prototype_reference, 'prototype_reference', file, errors);
@@ -160,6 +161,22 @@ async function requirePrototypeDisposition(value, taskFilePath, errors) {
   for (const heading of ['采纳结论', '实现映射', '验证映射', '未采纳项']) {
     if (!new RegExp(`^##\\s+${heading}\\s*$`, 'm').test(content)) {
       errors.push(`prototype_disposition_reference 缺少“${heading}”章节：${value}`);
+    }
+  }
+}
+async function validateStandardsPreflight(task, taskFilePath, errors) {
+  for (const key of ['plan_reference', 'verification_reference']) {
+    await requireReference(task[key], key, taskFilePath, errors);
+    if (typeof task[key] !== 'string' || !task[key].trim()) continue;
+    const target = path.resolve(path.dirname(taskFilePath), task[key]);
+    let content;
+    try {
+      content = await fs.readFile(target, 'utf8');
+    } catch {
+      continue;
+    }
+    if (!/standards_preflight/i.test(content)) {
+      errors.push(`standard 任务的 ${key} 必须包含 standards_preflight 段落：${task[key]}`);
     }
   }
 }

@@ -58,6 +58,24 @@ test('拒绝未知执行模式并提示可用值', async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
+test('显式 standard 任务进入审查前必须记录 standards_preflight', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-21-missing-standards-preflight');
+  await mkdir(taskDir);
+  await writeFile(path.join(taskDir, 'plan.md'), '# Plan\n\nImplementation details\n');
+  await writeFile(path.join(taskDir, 'verification.md'), '# Verification\n\nTests passed\n');
+  await writeFile(path.join(taskDir, 'review.md'), '# Review\n');
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(
+    file,
+    'id: 2026-09-21-missing-standards-preflight\nstatus: review\ngoal: Require preflight evidence\nworkflow: framework:feature-development\nexecution_profile: standard\ncreated_at: 2026-09-21\nnext_action: Verify\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nplan_reference: plan.md\nreview_reference: review.md\nverification_reference: verification.md\n'
+  );
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /standards_preflight/);
+  await rm(dir, { recursive: true, force: true });
+});
+
 test('完成任务前必须有审查证据', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
   const taskDir = path.join(dir, '2026-09-10-project-initialization');

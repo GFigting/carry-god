@@ -25,3 +25,4 @@ conditional_skills:
 ### 标准缺陷
 
 标准缺陷加载 `framework:systematic-debugging`、`framework:test-driven-development` 和 `framework:code-review`：先复现并取得根因证据，再评估业务文档影响、编写回归测试、实施最小修复、同步文档（如有影响）、审查并验证。验证通过后进入统一收尾流程。
+标准缺陷在编码前也必须完成 `standards_preflight`：判断修复涉及的状态、类型、路由、接口、阈值和重复业务字面量是否应抽取为常量或枚举；提交前记录项目工具结果或当前差异人工检查。审查只复核前置判断和例外理由。
