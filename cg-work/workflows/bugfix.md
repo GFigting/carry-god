@@ -14,7 +14,7 @@ conditional_skills:
 
 # 缺陷修复
 
-先按 [工作模型的低风险变更](../core/operating-model.md#低风险变更) 筛选：纯展示问题且不涉及行为时改用 `framework:low-risk-change`，不得创建需求箱或任务记录。其余缺陷创建 `pending` 任务记录后，再选择执行模式。
+先按 [工作模型的低风险变更](../core/operating-model.md#低风险变更) 筛选：纯展示问题且不涉及行为时改用 `framework:low-risk-change`，不得创建需求箱或任务记录。其余缺陷创建 `pending` 任务记录后，再选择执行模式。标准缺陷可显式声明 `execution_profile: standard`；省略该字段也按标准路径处理。
 
 ### 轻量缺陷
 

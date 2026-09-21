@@ -29,6 +29,35 @@ test('接受待处理的初始化任务', async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
+test('接受显式 standard 执行模式并按标准任务处理', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-21-explicit-standard');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(
+    file,
+    'id: 2026-09-21-explicit-standard\nstatus: pending\ngoal: Make standard mode explicit\nworkflow: framework:feature-development\nexecution_profile: standard\ncreated_at: 2026-09-21\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Verify\n'
+  );
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('拒绝未知执行模式并提示可用值', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-21-invalid-profile');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(
+    file,
+    'id: 2026-09-21-invalid-profile\nstatus: pending\ngoal: Reject unknown mode\nworkflow: framework:feature-development\nexecution_profile: fast\ncreated_at: 2026-09-21\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Verify\n'
+  );
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /可选值：standard、lightweight/);
+  await rm(dir, { recursive: true, force: true });
+});
+
 test('完成任务前必须有审查证据', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
   const taskDir = path.join(dir, '2026-09-10-project-initialization');

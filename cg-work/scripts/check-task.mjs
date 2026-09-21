@@ -7,7 +7,9 @@ const taskFile = process.argv[2];
 const frameworkRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const workflowRoot = path.join(frameworkRoot, 'workflows');
 const allowedStatuses = new Set(['pending', 'in_progress', 'review', 'done', 'blocked', 'cancelled']);
-const executionProfiles = new Set(['lightweight']);
+// `standard` is explicit opt-in for the default path; omitted values remain
+// valid for backwards compatibility with historical task records.
+const executionProfiles = new Set(['standard', 'lightweight']);
 const transitions = {
   pending: new Set(['in_progress', 'blocked', 'cancelled']),
   in_progress: new Set(['review', 'blocked', 'cancelled']),
@@ -53,7 +55,7 @@ if (!taskFile) {
     }
 
     if (task.execution_profile !== undefined && (typeof task.execution_profile !== 'string' || !executionProfiles.has(task.execution_profile))) {
-      errors.push(`执行模式无效：${task.execution_profile}`);
+      errors.push(`执行模式无效：${task.execution_profile}（可选值：standard、lightweight）`);
     }
     const isLightweight = task.execution_profile === 'lightweight';
     if (isLightweight && task.workflow !== 'framework:bugfix') {

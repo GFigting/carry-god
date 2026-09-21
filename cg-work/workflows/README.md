@@ -15,6 +15,15 @@
 
 原型采纳门禁：任务声明 `prototype_reference` 时，进入 `review` 或 `done` 前必须以 `prototype_disposition_reference` 引用采纳记录。记录必须有“采纳结论”“实现映射”“验证映射”“未采纳项”四节；格式见 `core/prototype-disposition.template.md`。未创建原型的任务不受此门禁影响。
 
+## 执行模式
+
+任务可通过 `execution_profile` 显式声明执行模式：
+
+- `standard`：标准任务路径，保留计划、审查、验证和学习证据门禁。
+- `lightweight`：仅适用于 `framework:bugfix` 的轻量缺陷，使用 `task.yaml` 内的精简证据替代独立记录。
+
+省略 `execution_profile` 仍表示标准任务，用于兼容历史任务记录；新任务可显式填写 `standard` 以避免歧义。
+
 ## 轻量缺陷路径
 
 仅 `framework:bugfix` 可声明 `execution_profile: lightweight`。适用条件、禁止项和证据字段以 [缺陷修复流程](bugfix.md) 为唯一来源；任务校验器负责执行这些门禁。
