@@ -14,6 +14,17 @@ The issue tracker should have been provided to you. If `docs/agents/issue-tracke
 
 ## Process
 
+## Plan review mode
+
+当任务尚未开始实施、且用户要求或工作流要求审核 `plan.md` 时，使用计划审核模式，不审查实现代码。主 Agent 提供计划文件、原始需求引用和项目规范来源，并分别运行两条独立审核线：
+
+- **Spec axis**：检查需求覆盖、验收标准、范围遗漏和越界；每条意见给出计划或需求依据。
+- **Standards axis**：检查计划结构、依赖、步骤、风险、验证可执行性和项目规范；每条意见给出规则依据。
+
+两条审核线均使用“问题—依据—建议”的短格式返回。主 Agent 负责合并重复意见、修订 `plan.md`，并在其“计划审核”章节记录审核来源、结论和未采纳项。用户需要决定业务取舍时，子智能体只能提出问题，不代替用户做决定。
+
+计划审核不创建 `plan-review.md`，也不改变任务状态机；实现完成后的代码审查仍按下文的 Standards/Spec 双轴流程执行。
+
 ### 1. Pin the fixed point
 
 Whatever the user said is the fixed point (a commit SHA, branch name, tag, `main`, `HEAD~5`, etc.). If they didn't specify one, ask for it.

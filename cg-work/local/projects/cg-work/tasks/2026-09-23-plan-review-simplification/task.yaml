@@ -1,0 +1,28 @@
+id: 2026-09-23-plan-review-simplification
+status: done
+goal: 简化并明确实施计划审核、实现审查和验证证据的职责边界。
+workflow: framework:framework-optimization
+created_at: 2026-09-23T00:00:00+08:00
+requirements_reference: ../../requirements-inbox/2026-09-23-plan-review-simplification.md
+documentation:
+  impact: update
+  targets:
+    - workflows/feature-development.md
+    - core/operating-model.md
+    - README.md
+interaction_protocol: v1
+next_action: 更新计划模板说明、功能开发流程和框架入口文档，并运行结构校验与测试。
+next_user_action:
+  required: false
+  action: task_closed
+  message: 计划审核简化规则已完成并纳入路线图关闭记录。
+review_reference: review.md
+verification_reference: verification.md
+roadmap_reference: ../../roadmaps/2026-09-23-agentic-delivery-governance/roadmap.yaml
+handoff_reference: handoff.md
+closure_reference: ../../roadmaps/2026-09-23-agentic-delivery-governance/closure.md
+status_history:
+  - pending
+  - in_progress
+  - review
+  - done

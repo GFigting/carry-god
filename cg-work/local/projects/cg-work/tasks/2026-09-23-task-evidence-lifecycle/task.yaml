@@ -1,0 +1,33 @@
+id: 2026-09-23-task-evidence-lifecycle
+status: done
+goal: 明确标准任务各类证据文件的生成时机、最小内容和用户验收闭环。
+workflow: framework:feature-development
+created_at: 2026-09-23T00:00:00+08:00
+requirements_reference: ../../requirements-inbox/2026-09-23-agentic-delivery-governance.md
+roadmap_reference: ../../roadmaps/2026-09-23-agentic-delivery-governance/roadmap.yaml
+depends_on:
+  - ../2026-09-23-agent-review-protocol/task.yaml
+requirements_coverage:
+  evidence_lifecycle: ../../requirements-inbox/2026-09-23-agentic-delivery-governance.md
+documentation:
+  impact: update
+  targets:
+    - core/operating-model.md
+    - core/context-loading.md
+    - README.md
+next_action: 在协作审核协议确定后补充证据生命周期说明。
+interaction_protocol: v1
+next_user_action:
+  required: false
+  action: task_closed
+  message: 任务证据生命周期已确认并交接；业务周报不属于本框架路线图。
+review_reference: review.md
+verification_reference: verification.md
+handoff_reference: handoff.md
+closure_reference: ../../roadmaps/2026-09-23-agentic-delivery-governance/closure.md
+status_history:
+  - pending
+  - in_progress
+  - review
+  - done
+plan_reference: plan.md
