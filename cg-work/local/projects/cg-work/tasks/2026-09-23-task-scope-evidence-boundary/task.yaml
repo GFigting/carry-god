@@ -1,0 +1,30 @@
+id: 2026-09-23-task-scope-evidence-boundary
+status: review
+goal: 防止新验收范围复用旧任务导致计划、审查和验证证据边界丢失。
+workflow: framework:framework-optimization
+execution_profile: standard
+created_at: 2026-09-23T00:00:00+08:00
+requirements_reference: ../../requirements-inbox/2026-09-23-agentic-delivery-governance.md
+scope_decision:
+  mode: independent
+  rationale: 新增任务范围决策与校验规则，需要独立的框架变更证据。
+documentation:
+  impact: update
+  targets:
+    - README.md
+    - core/operating-model.md
+    - core/context-loading.md
+    - scripts/check-task.mjs
+next_action: 等待用户验收框架规则，并决定是否集成当前工作区改动。
+interaction_protocol: v1
+next_user_action:
+  required: true
+  action: verify_task_scope_evidence_rules
+  message: 请确认范围变化任务是否按新规则创建独立 task，并检查 check-task 校验结果；当前改动尚未提交或推送。
+plan_reference: plan.md
+review_reference: review.md
+verification_reference: verification.md
+status_history:
+  - pending
+  - in_progress
+  - review

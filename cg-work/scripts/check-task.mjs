@@ -71,6 +71,8 @@ if (!taskFile) {
       errors.push('impact 为 none 时必须填写 task.documentation.not_needed_reason');
     }
 
+    if (task.scope_decision !== undefined) await validateScopeDecision(task, file, errors);
+
     if (Array.isArray(task.status_history)) {
       for (let index = 1; index < task.status_history.length; index += 1) {
         const previous = task.status_history[index - 1];
@@ -164,6 +166,7 @@ async function requirePrototypeDisposition(value, taskFilePath, errors) {
     }
   }
 }
+
 async function validateStandardsPreflight(task, taskFilePath, errors) {
   for (const key of ['plan_reference', 'verification_reference']) {
     await requireReference(task[key], key, taskFilePath, errors);
@@ -182,7 +185,7 @@ async function validateStandardsPreflight(task, taskFilePath, errors) {
 }
 
 async function validateTaskReferences(task, taskFilePath, errors) {
-  for (const key of ['parent_task_reference', 'roadmap_reference', 'closure_reference']) {
+  for (const key of ['parent_task_reference', 'roadmap_reference', 'closure_reference', 'requirements_reference']) {
     if (task[key] !== undefined) await requireNonSelfReference(task[key], key, taskFilePath, errors);
   }
 
@@ -208,6 +211,28 @@ async function validateTaskReferences(task, taskFilePath, errors) {
 
   if (task.status === 'done' && task.roadmap_reference !== undefined) {
     await requireReference(task.closure_reference, 'closure_reference', taskFilePath, errors);
+  }
+}
+
+async function validateScopeDecision(task, taskFilePath, errors) {
+  const decision = task.scope_decision;
+  if (!isObject(decision)) {
+    errors.push('scope_decision 必须是映射对象');
+    return;
+  }
+  if (!['independent', 'continuation'].includes(decision.mode)) {
+    errors.push('scope_decision.mode 必须是 independent 或 continuation');
+  }
+  if (typeof decision.rationale !== 'string' || !decision.rationale.trim()) {
+    errors.push('scope_decision.rationale 必须说明为何新建或延续任务');
+  }
+  if (decision.mode === 'continuation') {
+    await requireNonSelfReference(decision.prior_task_reference, 'scope_decision.prior_task_reference', taskFilePath, errors);
+    if (['in_progress', 'review', 'done'].includes(task.status)) {
+      await requireReference(task.plan_reference, 'plan_reference', taskFilePath, errors);
+    }
+  } else if (decision.prior_task_reference !== undefined) {
+    errors.push('independent 任务不得填写 scope_decision.prior_task_reference');
   }
 }
 

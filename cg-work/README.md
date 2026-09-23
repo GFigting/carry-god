@@ -39,7 +39,7 @@
 
 `cg-work/` 内框架内容默认全部提交；只有 `local/projects/` 下的真实项目数据、原始需求、任务、报告和运行产物不提交。项目业务规则、密钥和生产数据不得写入框架。
 
-需求箱保存未经拆分的原始需求，不是按 task 计数的任务清单。同一需求包可以关联多个 task；task 通过 `requirements_reference` 指向来源，避免重复复制需求。
+需求箱保存未经拆分的原始需求，不是按 task 计数的任务清单。同一需求包可以关联多个 task；task 通过 `requirements_reference` 指向来源，避免重复复制需求。新增业务规则、接口/数据结构或独立验收标准时必须创建新 task，不能只在旧 task 上追加 `next_action`；可用 `scope_decision` 记录新建或延续决策，确保计划、审查和验证证据独立。
 
 项目上下文只有一个来源：`local/projects/<project-id>/project-context.yaml`。不要在工作流、技能或其他目录复制一份项目上下文。
 

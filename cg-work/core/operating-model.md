@@ -23,6 +23,12 @@ pending -> in_progress -> review -> done
 - `blocked`：缺少信息、权限、环境或外部依赖；记录阻塞原因和解除条件。
 - `cancelled`：用户明确取消；记录取消原因和已有产物位置。
 
+### 需求范围变化与任务拆分
+
+同一原始需求包可以被多个任务复用，但任务不是可无限追加范围的工作日志。出现新的业务规则、接口/数据结构变化、独立验收标准或明显不同的交付物时，必须创建新任务，并通过 `requirements_reference` 复用原始需求来源；不得只修改旧任务的 `next_action` 或继续堆叠旧的 `plan.md`。
+
+任务需要延续既有范围时，可在 `task.yaml` 声明 `scope_decision.mode: continuation`，同时填写 `prior_task_reference`、`rationale`，并为当前任务维护独立的计划和验证证据。新范围任务可声明 `scope_decision.mode: independent`，说明拆分理由。该字段用于让 `check-task.mjs` 检查拆分决策和证据边界。
+
 允许的状态转移：
 
 | 当前状态 | 可转移到 |

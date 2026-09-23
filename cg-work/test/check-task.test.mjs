@@ -29,6 +29,30 @@ test('接受待处理的初始化任务', async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
+test('范围变化任务必须声明独立任务决策', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-23-independent-scope');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-09-23-independent-scope\nstatus: pending\ngoal: Split a changed acceptance scope\nworkflow: framework:feature-development\ncreated_at: 2026-09-23\nscope_decision:\n  mode: independent\n  rationale: New acceptance criteria require separate evidence\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Start\n');
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('范围延续任务必须指向前置任务并说明差异', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-23-continuation-scope');
+  await mkdir(taskDir);
+  await writeFile(path.join(dir, 'parent-task.yaml'), 'id: parent\n');
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-09-23-continuation-scope\nstatus: pending\ngoal: Continue the same acceptance scope\nworkflow: framework:feature-development\ncreated_at: 2026-09-23\nscope_decision:\n  mode: continuation\n  prior_task_reference: ../parent-task.yaml\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Start\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /scope_decision.*rationale|范围决策.*rationale/);
+  await rm(dir, { recursive: true, force: true });
+});
+
 test('接受显式 standard 执行模式并按标准任务处理', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
   const taskDir = path.join(dir, '2026-09-21-explicit-standard');
@@ -73,6 +97,20 @@ test('显式 standard 任务进入审查前必须记录 standards_preflight', as
   const result = await run(file);
   assert.notEqual(result.code, 0);
   assert.match(result.output, /standards_preflight/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('接受复用已有需求箱原始需求的任务引用', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-10-reuse-requirement');
+  const inboxDir = path.join(dir, 'requirements-inbox');
+  await mkdir(taskDir);
+  await mkdir(inboxDir);
+  await writeFile(path.join(inboxDir, 'REQ-1.md'), '# 原始需求\n');
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-09-10-reuse-requirement\nstatus: pending\ngoal: Implement one part of a shared requirement\nworkflow: framework:feature-development\ncreated_at: 2026-09-10\nrequirements_reference: ../requirements-inbox/REQ-1.md\ndocumentation:\n  impact: none\n  not_needed_reason: No documentation impact\nnext_action: Verify\n');
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
   await rm(dir, { recursive: true, force: true });
 });
 
