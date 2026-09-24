@@ -15,6 +15,8 @@
 7. 通过新鲜验证和审查后，再确定集成方式并将任务标记为 `done`。
 8. 运行 `scripts/check-all.mjs`，确认框架结构和工作流引用有效；任务或项目上下文更新后分别运行 `scripts/check-task.mjs` 和 `scripts/check-project.mjs`；维护技能镜像时另行运行 `scripts/check-skills.mjs`。
 
+涉及新旧模型、历史数据、字段删除、接口兼容或数据迁移时，先区分模块生命周期与本次变更性质；新模块默认采用新模型，不自动兼容未发布旧实现。任何历史数据迁移、删除或语义转换必须提供选项并取得用户确认，再将选择记录为任务决策。
+
 工作流使用 `framework:<skill-name>` 引用框架技能，使用 `project:<skill-name>` 引用项目技能。项目技能目录由项目上下文的 `skills.paths` 指定，并相对于项目根路径解析。
 
 ## 目录边界
