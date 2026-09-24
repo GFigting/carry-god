@@ -42,6 +42,15 @@ pending -> in_progress -> review -> done
 
 不得跳过 `review` 直接进入 `done`。`done` 和 `cancelled` 是终态。
 
+### 任务元数据摘要
+
+任务可选使用以下字段补充机器可校验的摘要信息；未声明时保持历史任务兼容：
+
+- `acceptance_summary`：非空字符串数组，记录任务级可观察验收条件的短摘要。详细验收仍保存在需求包或 `plan.md`，该字段不替代它们。
+- `open_decisions`：未决事项数组。每项必须包含 kebab-case 的唯一 `id`、非空 `question` 和布尔 `blocking`；`blocking: true` 表示该事项阻塞当前任务推进，需要在 `next_user_action` 中提供解除动作。
+
+`next_action` 表示 Agent 的内部下一步；`next_user_action` 表示面向用户的动作提示，两者可以同时存在但职责不同。
+
 ## 计划、审查与验证的边界
 
 - `plan.md`：说明实施方案；复杂或用户要求审查时，在同一文件增加“计划审核”章节，记录需求覆盖、范围、依赖、步骤、验收标准和风险检查结论。

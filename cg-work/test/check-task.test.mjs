@@ -29,6 +29,29 @@ test('接受待处理的初始化任务', async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
+test('拒绝格式错误的验收摘要和未决事项', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-24-invalid-task-metadata');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-09-24-invalid-task-metadata\nstatus: pending\ngoal: Reject invalid task metadata\nworkflow: framework:feature-development\ncreated_at: 2026-09-24\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Verify\nacceptance_summary: invalid\nopen_decisions:\n  - id: invalid-decision\n    question: Missing blocking flag\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /acceptance_summary|open_decisions/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('接受合法的验收摘要和未决事项', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-09-24-valid-task-metadata');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-09-24-valid-task-metadata\nstatus: pending\ngoal: Accept task metadata\nworkflow: framework:feature-development\ncreated_at: 2026-09-24\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Verify\nacceptance_summary:\n  - The task has a verifiable acceptance summary\nopen_decisions:\n  - id: confirm-scope\n    question: Confirm the scope before implementation\n    blocking: true\n');
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
+  await rm(dir, { recursive: true, force: true });
+});
+
 test('范围变化任务必须声明独立任务决策', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
   const taskDir = path.join(dir, '2026-09-23-independent-scope');

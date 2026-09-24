@@ -71,6 +71,9 @@ if (!taskFile) {
       errors.push('impact 为 none 时必须填写 task.documentation.not_needed_reason');
     }
 
+    validateAcceptanceSummary(task.acceptance_summary, errors);
+    validateOpenDecisions(task.open_decisions, errors);
+
     if (task.scope_decision !== undefined) await validateScopeDecision(task, file, errors);
 
     if (Array.isArray(task.status_history)) {
@@ -257,6 +260,42 @@ function validateNextUserAction(value, errors) {
   if (typeof value.required !== 'boolean') errors.push('next_user_action.required 必须是布尔值');
   if (typeof value.action !== 'string' || !value.action.trim()) errors.push('next_user_action.action 必须是非空字符串');
   if (typeof value.message !== 'string' || !value.message.trim()) errors.push('next_user_action.message 必须是非空字符串');
+}
+
+function validateAcceptanceSummary(value, errors) {
+  if (value === undefined) return;
+  if (!Array.isArray(value) || value.length === 0 || value.some((item) => typeof item !== 'string' || !item.trim())) {
+    errors.push('acceptance_summary 必须是非空字符串数组');
+  }
+}
+
+function validateOpenDecisions(value, errors) {
+  if (value === undefined) return;
+  if (!Array.isArray(value)) {
+    errors.push('open_decisions 必须是数组');
+    return;
+  }
+  const ids = new Set();
+  value.forEach((decision, index) => {
+    const prefix = `open_decisions[${index}]`;
+    if (!isObject(decision)) {
+      errors.push(`${prefix} 必须是映射对象`);
+      return;
+    }
+    if (typeof decision.id !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(decision.id)) {
+      errors.push(`${prefix}.id 必须使用 kebab-case`);
+    } else if (ids.has(decision.id)) {
+      errors.push(`${prefix}.id 不得重复：${decision.id}`);
+    } else {
+      ids.add(decision.id);
+    }
+    if (typeof decision.question !== 'string' || !decision.question.trim()) {
+      errors.push(`${prefix}.question 必须是非空字符串`);
+    }
+    if (typeof decision.blocking !== 'boolean') {
+      errors.push(`${prefix}.blocking 必须是布尔值`);
+    }
+  });
 }
 
 function validateLightweightEvidence(value, errors) {
