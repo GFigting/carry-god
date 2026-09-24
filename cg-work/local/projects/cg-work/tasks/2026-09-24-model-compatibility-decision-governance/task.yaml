@@ -1,0 +1,42 @@
+id: 2026-09-24-model-compatibility-decision-governance
+project_id: cg-work
+goal: 将新模块模型优先、历史兼容决策和用户确认门禁纳入框架通用规则。
+workflow: framework:framework-optimization
+status: done
+created_at: 2026-09-24T16:00:00+08:00
+next_action: 已完成框架规则更新，等待后续任务按新决策门禁执行。
+requirements_reference: ../../requirements-inbox/2026-09-24-model-compatibility-decision-governance.md
+scope_decision:
+  mode: independent
+  rationale: 新增框架级需求治理规则，具有独立验收标准。
+decisions:
+  - id: new-model-first
+    decision: 新模块默认采用当前确认的新模型，不自动兼容未发布旧实现。
+    confirmed_by: user
+  - id: user-choice-for-history
+    decision: 历史数据迁移、删除、语义转换和旧接口兼容必须先提供选项并取得用户确认。
+    confirmed_by: user
+acceptance_summary:
+  - core/operating-model.md 明确区分模块生命周期与本次变更性质。
+  - 框架明确新模块默认不兼容未发布旧实现。
+  - 历史数据策略必须用户确认并记录决策。
+documentation:
+  impact: update
+  targets:
+    - core/operating-model.md
+    - README.md
+    - VERSION
+interaction_protocol: v1
+next_user_action:
+  required: false
+  action: task_closed
+  message: 框架已补充新模块模型优先与历史兼容决策门禁，后续任务可直接引用。
+plan_reference: plan.md
+review_reference: review.md
+verification_reference: verification.md
+handoff_reference: handoff.md
+status_history:
+  - pending
+  - in_progress
+  - review
+  - done
