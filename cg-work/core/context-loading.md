@@ -1,9 +1,11 @@
 # 上下文加载
 
-先检查 `local/projects/<project-id>/project-context.yaml` 是否存在且有效。
+先运行 `framework:project-discovery` 判断当前请求属于既有项目、新项目或信息不足，并取得用户对识别摘要的确认；在完成该门禁前，不创建项目任务或修改项目。
+
+对既有项目，再检查 `local/projects/<project-id>/project-context.yaml` 是否存在且有效。
 
 - 存在且有效：读取上下文，再按任务阶段加载项目规则、业务文档、架构文档、接口文档和项目技能路径。
-- 不存在或失效：按 [项目接入规则](project-onboarding.md) 执行 `framework:project-initialization`。
+- 不存在或失效：按 [项目接入规则](project-onboarding.md) 执行 `framework:project-initialization`。新项目必须在识别摘要确认后才进入初始化。
 
 项目上下文创建时使用 `core/project-context.template.yaml`。
 

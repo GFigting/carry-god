@@ -52,6 +52,7 @@
 
 | 文件 | 使用场景 |
 |---|---|
+| `project-discovery.md` | 在上下文加载前判断既有项目、新项目或信息不足，并在确认后路由 |
 | `feature-development.md` | 新功能和行为变更 |
 | `low-risk-change.md` | 纯文案、样式和静态布局调整 |
 | `bugfix.md` | 缺陷、回归和性能问题 |

@@ -5,11 +5,12 @@
 ## 使用顺序
 
 1. 读取 `AGENTS.md` 和本文件。
-2. 检查 `local/projects/<project-id>/project-context.yaml`；缺失或失效时先执行项目初始化并等待确认。
-3. 先按 `core/operating-model.md` 识别低风险变更：纯文案、样式或静态布局调整使用 `framework:low-risk-change`，不创建需求箱、task 或自动化测试；其他变更先复用已有原始需求包，只有没有对应需求包时才新增到 `local/projects/<project-id>/requirements-inbox/`，再创建 `pending` task 并记录 `requirements_reference`。
-4. 从 `workflows/` 选择项目初始化、低风险变更、功能、缺陷、重构、审查、框架优化或大任务拆分流程。
+2. 先执行 `framework:project-discovery`：通过一问一答判断请求属于既有项目、新项目或信息不足，并等待用户确认识别摘要。
+3. 对既有项目检查 `local/projects/<project-id>/project-context.yaml`；对新项目确认后执行 `framework:project-initialization`，缺失或失效时等待初始化确认。
+4. 再按 `core/operating-model.md` 识别低风险变更：纯文案、样式或静态布局调整使用 `framework:low-risk-change`，不创建需求箱、task 或自动化测试；其他变更先复用已有原始需求包，只有没有对应需求包时才新增到 `local/projects/<project-id>/requirements-inbox/`，再创建 `pending` task 并记录 `requirements_reference`。
 5. 按流程声明加载 `skills/` 中的 required skills。
-6. 标准任务在同一任务目录保存计划、审查、验证、学习证据、风险和下一步行动；跨模块、高风险或用户要求审查的任务在 `plan.md` 内增加计划审核章节，不另建计划审查文件；满足 `workflows/bugfix.md` 轻量条件的缺陷仅在 `task.yaml` 保留根因、范围、验证、自审和集成结论。大任务额外在 `roadmaps/` 保存决策、覆盖与关闭索引。
+6. 进入工作流前展示决策预检简报；低风险或可逆事项可自动继续，高风险或不可逆事项等待用户确认，并在需要时再加载 `grilling` 或其他特殊技能。
+7. 标准任务在同一任务目录保存计划、审查、验证、学习证据、风险和下一步行动；跨模块、高风险或用户要求审查的任务在 `plan.md` 内增加计划审核章节，不另建计划审查文件；满足 `workflows/bugfix.md` 轻量条件的缺陷仅在 `task.yaml` 保留根因、范围、验证、自审和集成结论。大任务额外在 `roadmaps/` 保存决策、覆盖与关闭索引。
    任务产物按生命周期逐步生成：先有需求包和 `task.yaml`，实施时补 `plan.md`，完成实现后补 `review.md` 与 `verification.md`，需要时再补 `learning.md` 和 `handoff.md`；详见 [任务证据生命周期](core/operating-model.md#任务证据生命周期)。
    若创建原型，记录原型引用及其采纳结论、实现映射和验证映射。
 7. 通过新鲜验证和审查后，再确定集成方式并将任务标记为 `done`。

@@ -5,6 +5,12 @@ description: Grill the user relentlessly about a plan, decision, or idea. Use wh
 
 Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
 
+## Visible preflight
+
+Before starting the first grilling round, show the user a decision preflight brief. It must state the risk (`low`, `medium`, `high`, and `irreversible` when applicable), the assumptions already made, the recommended path, meaningful alternatives, and whether their confirmation is required. This is the Agent's recommendation, not a user decision.
+
+Do not silently invoke grilling for a high-risk decision. If the preflight is `high` or `irreversible`, stop after the brief and wait for explicit confirmation to begin the interview. A `low` or reversible `medium` preflight may proceed after the brief when grilling was already requested or the workflow explicitly selected it.
+
 Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled: the questions you can ask _now_ without guessing at answers you haven't heard yet. Ask the whole frontier in one round: number each question and give your recommended answer. Then wait for the user's answers before the next round.
 
 Format a round like so:
