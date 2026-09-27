@@ -18,6 +18,8 @@
 
 `improve-codebase-architecture`、`grilling`、`grill-with-docs`、`handoff`、`to-questionnaire`、`wayfinder`、`to-spec`、`to-tickets`、`large-task-decomposition`、`resolving-merge-conflicts`、`prototype`、`baoyu-design`、`dispatching-parallel-agents`、`subagent-driven-development`、`executing-plans`、`writing-skills`、`gstack-review`、`qa-only`、`finishing-a-development-branch`。
 
+`product-management` 是框架自有的产品定义技能，用于将产品问题、用户需求或业务目标整理为可验收的需求、优先级、路线图和版本验收结论。它显式调用，不自动加载到所有开发任务。
+
 ## 来源快照
 
 本次镜像来源均来自当前仓库，来源快照提交为 `5997d6fbf0f34317c9d800afce90563e3180220e`。具体映射和校验规则见 `scripts/check-skills.mjs`；新增或同步技能时只更新该映射和本节快照信息，不修改镜像内容。
