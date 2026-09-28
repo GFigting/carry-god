@@ -6,6 +6,8 @@
 
 项目接入：已支持 `--project fms`，从 FMS 项目上下文读取 `fms-server`、`fms-job`，并在未显式覆盖时使用 `dev` 基线和 `fms` scope；LASEN 默认值保持不变。
 
+结构调整：项目默认值已拆到现有工具目录下的 `project-defaults.mjs`，未新增多级路径。
+
 ## 安全检查
 
 - 已拒绝绝对路径、仓库外路径、非普通文件和已存在需求分支。

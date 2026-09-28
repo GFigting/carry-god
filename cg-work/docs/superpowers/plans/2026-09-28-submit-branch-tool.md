@@ -51,6 +51,7 @@
 
 - [x] 读取 `local/projects/<project>/project-context.yaml`，解析仓库清单和验证 profile。
 - [x] 支持 `--project fms`，默认使用 `dev` 基线和 `fms` scope。
+- [x] 将项目默认值拆到现有工具目录下的 `project-defaults.mjs`，不新增多级路径。
 - [x] 支持 `--repo` 选择仓库，默认按项目上下文处理；保留 Windows 登记路径并解析为本地路径。
 - [x] 实现 targeted/full/none 验证选择，输出每个命令的状态和限制。
 - [x] 文档 README 增加安装前提、命令示例、commit 格式、删除测试/整理文档参数和安全边界。

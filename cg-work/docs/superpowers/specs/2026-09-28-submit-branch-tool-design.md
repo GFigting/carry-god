@@ -48,7 +48,7 @@ node local/tools/submit-branch/submit-branch.mjs <requirement-url> \
 
 - `--project` 默认 `lasen`。
 - `--base` 默认 `prep-3.0`；显式传入时优先使用参数。
-- `--project fms` 使用 FMS 项目上下文，默认基线为 `dev`、scope 为 `fms`；其他项目可通过项目上下文接入，并可用 `--base`、`--scope` 覆盖默认值。
+- `--project fms` 使用 FMS 项目上下文，默认基线为 `dev`、scope 为 `fms`；项目差异配置平铺在工具目录的 `project-defaults.mjs`，其他项目可通过项目上下文接入，并可用 `--base`、`--scope` 覆盖默认值。
 - 分支名从 URL 中的 `reqNo` 参数提取，并要求形如 `R\d{6}-\d{3}`；无法提取时直接失败，用户可用 `--branch`（后续扩展）显式提供。
 - `--type` 默认 `feat`，允许 `feat`、`fix`、`types`、`perf`、`refactor`、`docs`、`test`、`chore`。
 - `--scope` 默认使用项目/仓库标识；显式传入时覆盖默认值。
