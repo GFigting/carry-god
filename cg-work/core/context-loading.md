@@ -17,6 +17,8 @@
 
 项目技能路径使用 `skills.paths` 声明，路径相对于 `project.root_path` 解析。例如 `.cg-work/skills` 对应项目根目录下的 `.cg-work/skills/`。先加载 `cg-work/skills/` 中的框架技能，再加载这些路径中的项目技能。登记的项目规则与文档路径（`instructions.files`、`coding_standards.files`、`documents.*`、`required_context`、`requirements.inbox_path`）同样相对于 `project.root_path` 解析，绝对路径亦可直接使用——优先相对写法以保证跨机/跨目录可移植。
 
+Superpowers 的计划、设计和审查文件属于任务产物。Agent 应从当前工作区查找 `local/projects/*/project-context.yaml`，读取各文件的 `project.root_path` 并匹配当前项目；唯一匹配时自动选用该上下文，找不到或匹配多个时才请求用户选择。随后使用匹配项目下的 `local/projects/<project-id>/tasks/<task-id>/`：计划写入 `plan.md`，设计说明写入 `design.md`，审查和验证分别写入 `review.md`、`verification.md`。任务状态和引用以同目录的 `task.yaml` 为准。
+
 单仓项目继续以 `project.root_path` 作为主仓库。存在前后端或多个独立仓库时，可在可选的 `repositories` 中登记每个仓库的稳定 `id`、`role` 和绝对 `root_path`；`project.root_path` 不因此失效。执行验证前，先读取可选的 `verification.profiles`：每项声明 `stage`、`command`、`outcome` 及可选 `limitation`。`required` 表示该阶段应执行，`environment_limited` 表示必须保留未完成原因而不能写为通过，`not_applicable` 表示该任务不适用。profile 是项目验证入口的唯一记录处，不替代任务内的新鲜验证证据。
 
 启动、停止或重启项目时，必须先读取项目上下文的 `runtime.entrypoints` 和相关 `runtime.health_checks`。`runtime.entrypoints` 每项可以是可执行命令（例如 `npm run dev`、`mvn spring-boot:run`），也可以是已存在的启动脚本路径；优先执行上下文登记的入口，不得凭经验另造启动命令。框架工具可以将入口指向 `tools/` 下的共享脚本。若入口为空、路径失效或命令需要未登记的参数，先记录环境限制并请求补充上下文，不得静默绕过上下文启动。
