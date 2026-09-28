@@ -14,6 +14,7 @@ acceptance_summary:
   - commit 标题支持需求号、可选任务号和摘要，正文只有需求链接。
   - 测试删除与文档整理仅对显式指定的仓库内路径生效。
   - 工具固定放在 local/tools/submit-branch/，提供 dry-run 和验证状态。
+  - 支持通过项目上下文接入 FMS，默认使用 dev 基线和 fms scope。
 documentation:
   impact: add
   targets:

@@ -17,6 +17,7 @@
 - 创建分支前必须 fetch 指定远端基线并记录实际 SHA。
 - 删除测试类和更新文档必须由显式参数指定，禁止模糊扫描或仓库外路径。
 - 默认不执行 push、merge、deploy 或 PR/MR 创建。
+- 支持从项目上下文接入 `fms`，并按项目使用不同默认基线和 scope。
 
 ### Task 1: 参数与提交消息纯函数
 
@@ -49,6 +50,7 @@
 - Test: `local/tools/submit-branch/submit-branch.test.mjs`
 
 - [x] 读取 `local/projects/<project>/project-context.yaml`，解析仓库清单和验证 profile。
+- [x] 支持 `--project fms`，默认使用 `dev` 基线和 `fms` scope。
 - [x] 支持 `--repo` 选择仓库，默认按项目上下文处理；保留 Windows 登记路径并解析为本地路径。
 - [x] 实现 targeted/full/none 验证选择，输出每个命令的状态和限制。
 - [x] 文档 README 增加安装前提、命令示例、commit 格式、删除测试/整理文档参数和安全边界。
