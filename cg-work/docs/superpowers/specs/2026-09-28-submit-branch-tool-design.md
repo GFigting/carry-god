@@ -60,11 +60,10 @@ Commit 标题格式：
 <type>(<scope>): <requirement-no>[<task-no>] <summary>
 ```
 
-Commit body 至少包含：
+Commit body 固定只包含需求链接：
 
 ```text
-需求链接：<requirement-url>
-基线：<remote>/<base>@<base-sha>
+<requirement-url>
 ```
 
 ## 执行流程
@@ -76,7 +75,7 @@ Commit body 至少包含：
 5. 仅执行用户显式指定的测试删除和文档更新；所有路径必须位于对应仓库内。
 6. 根据验证模式执行项目上下文登记的验证命令；`none` 不执行验证但在结果中明确标记。
 7. 输出变更摘要、验证结果、commit 预览；非 dry-run 时创建一个本地 commit。
-8. 输出分支名、基线 SHA、commit SHA、需求链接和未执行的推送/合并动作。
+8. 输出分支名、基线 SHA、commit SHA、需求链接和未执行的推送/合并动作；基线信息不写入 commit body。
 
 ## 安全与错误处理
 
