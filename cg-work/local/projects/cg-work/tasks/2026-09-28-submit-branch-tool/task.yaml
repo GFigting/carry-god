@@ -19,8 +19,6 @@ documentation:
   impact: add
   targets:
     - local/tools/submit-branch/README.md
-    - docs/superpowers/specs/2026-09-28-submit-branch-tool-design.md
-    - docs/superpowers/plans/2026-09-28-submit-branch-tool.md
 interaction_protocol: v1
 next_user_action:
   required: true
