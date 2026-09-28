@@ -14,6 +14,7 @@ conditional_skills:
   - framework:improve-codebase-architecture
   - framework:grilling
   - framework:grill-with-docs
+  - framework:docs-maintainer
 ---
 
 # 重构
