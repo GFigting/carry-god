@@ -42,6 +42,8 @@
 
 文档同步门禁：业务规则、用户流程、接口、数据模型或架构发生变化时，`documentation.impact` 必须为 `update` 或 `add`，并记录受影响文档和变更内容；确认现有文档仍准确时使用 `none` 并填写 `not_needed_reason`。`not_assessed` 不能进入 `done`。
 
+当 `documentation.impact` 为 `update` 或 `add`，或用户明确要求整理、同步或审阅文档时，条件加载 `framework:docs-maintainer`；仅确认无需更新时不加载该技能。
+
 ## 低风险变更路径
 
 `framework:low-risk-change` 用于纯文案、样式、静态布局或不改变行为的可访问性标记调整。适用条件与最低验证以 [工作模型](../core/operating-model.md#低风险变更) 为唯一来源；该路径不创建需求箱、task 或自动化测试。任何行为、路由、接口、数据、权限、配置语义、依赖或外部副作用变化都不适用，必须切换到对应标准工作流。

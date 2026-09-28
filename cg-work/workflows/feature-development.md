@@ -15,6 +15,7 @@ optional_skills:
 conditional_skills:
   - framework:project-initialization
   - framework:large-task-decomposition
+  - framework:docs-maintainer
 ---
 
 # 功能开发
