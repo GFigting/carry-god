@@ -23,7 +23,7 @@
 ## CLI 契约
 
 ```text
-node tools/submit-branch/submit-branch.mjs <requirement-url> \
+node local/tools/submit-branch/submit-branch.mjs <requirement-url> \
   --summary <summary> \
   [--project lasen] \
   [--base prep-3.0] \
@@ -47,7 +47,7 @@ node tools/submit-branch/submit-branch.mjs <requirement-url> \
 默认值与规则：
 
 - `--project` 默认 `lasen`。
-- `--base` 默认从 `project-context.yaml` 的仓库约定读取；显式传入时优先使用参数。
+- `--base` 默认 `prep-3.0`；显式传入时优先使用参数。
 - 分支名从 URL 中的 `reqNo` 参数提取，并要求形如 `R\d{6}-\d{3}`；无法提取时直接失败，用户可用 `--branch`（后续扩展）显式提供。
 - `--type` 默认 `feat`，允许 `feat`、`fix`、`types`、`perf`、`refactor`、`docs`、`test`、`chore`。
 - `--scope` 默认使用项目/仓库标识；显式传入时覆盖默认值。
@@ -73,7 +73,7 @@ Commit body 固定只包含需求链接：
 3. 对每个目标仓库执行 `git fetch <remote> <base>`，读取远端基线 SHA。
 4. 校验本地分支名未存在，创建 `<requirement-no>` 分支并指向远端基线。
 5. 仅执行用户显式指定的测试删除和文档更新；所有路径必须位于对应仓库内。
-6. 根据验证模式执行项目上下文登记的验证命令；`none` 不执行验证但在结果中明确标记。
+6. 根据验证模式执行基础 diff 检查；`targeted` 标记通过，`none` 不执行验证，`full` 列出项目上下文 profile 并明确标记 skipped，避免擅自运行需要模块参数或交互环境的命令。
 7. 输出变更摘要、验证结果、commit 预览；非 dry-run 时创建一个本地 commit。
 8. 输出分支名、基线 SHA、commit SHA、需求链接和未执行的推送/合并动作；基线信息不写入 commit body。
 
@@ -90,7 +90,7 @@ Commit body 固定只包含需求链接：
 
 - 单元测试覆盖参数解析、需求编号提取、commit 标题/body 生成、路径安全校验和 dry-run 行为。
 - 集成测试使用临时 Git 仓库验证 fetch 基线、分支创建、指定测试删除、文档追加和 commit 生成。
-- 工具本身执行 `node --test tools/submit-branch/*.test.mjs`；框架改动继续执行 `node --test test/*.test.mjs`。
+- 工具本身执行 `node --test local/tools/submit-branch/*.test.mjs`；框架改动继续执行 `node --test test/*.test.mjs`。
 
 ## 自审结论
 

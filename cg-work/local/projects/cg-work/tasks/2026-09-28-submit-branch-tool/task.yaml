@@ -1,0 +1,36 @@
+id: 2026-09-28-submit-branch-tool
+status: review
+goal: 根据需求链接从最新远端基线创建需求编号分支，并生成规范本地提交的本机工具。
+workflow: framework:feature-development
+execution_profile: standard
+created_at: 2026-09-28T15:00:00+08:00
+next_action: 等待用户验收本机工具的参数和生成结果。
+requirements_reference: ../../requirements-inbox/2026-09-28-submit-branch-tool.md
+scope_decision:
+  mode: independent
+  rationale: 新增本机提交工具、参数约定和安全边界，属于独立可验收的框架工具能力。
+acceptance_summary:
+  - 从 fetch 后的远端基线创建以需求编号命名的本地分支。
+  - commit 标题支持需求号、可选任务号和摘要，正文只有需求链接。
+  - 测试删除与文档整理仅对显式指定的仓库内路径生效。
+  - 工具固定放在 local/tools/submit-branch/，提供 dry-run 和验证状态。
+documentation:
+  impact: add
+  targets:
+    - local/tools/submit-branch/README.md
+    - docs/superpowers/specs/2026-09-28-submit-branch-tool-design.md
+    - docs/superpowers/plans/2026-09-28-submit-branch-tool.md
+interaction_protocol: v1
+next_user_action:
+  required: true
+  action: review_submit_branch_tool
+  message: 请在 local/tools/submit-branch/ 试运行工具；确认参数和输出后，我再将任务标记为 done。
+learning_protocol: v1
+plan_reference: plan.md
+review_reference: review.md
+verification_reference: verification.md
+learning_reference: learning.md
+status_history:
+  - pending
+  - in_progress
+  - review
