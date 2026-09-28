@@ -1,0 +1,22 @@
+id: 2026-09-13-local-design-storage-policy
+status: review
+goal: 将 cg-work 的设计产物目录统一为 local/projects/<project-id>/design，并使 baoyu-design 的维护归类、校验器、版本与迁移说明一致。
+workflow: framework:framework-optimization
+created_at: 2026-09-13T00:00:00+08:00
+next_action: 等待用户验收框架本地化技能与设计目录协议；验收后确定保留和集成方式。
+requirements_reference: ../../requirements-inbox/2026-09-13-local-design-storage-policy.md
+documentation:
+  impact: update
+  targets:
+    - core/framework-maintenance.md
+    - README.md
+    - skills/README.md
+    - scripts/check-all.mjs
+    - scripts/check-skills.mjs
+plan_reference: plan.md
+review_reference: review.md
+verification_reference: verification.md
+status_history:
+  - pending
+  - in_progress
+  - review

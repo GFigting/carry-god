@@ -1,0 +1,16 @@
+id: <roadmap-id>
+status: active
+destination: <完成后可交付或可决策的结果>
+requirements_reference: <相对 requirements-inbox 的原始需求包路径>
+decisions:
+  confirmed: []
+  open: []
+  out_of_scope: []
+task_references: []
+dependencies: []
+coverage_reference: coverage.md
+closure_reference: null
+next_user_action:
+  required: false
+  action: <用户需要执行的动作；无操作时为 continue_progress>
+  message: <面向用户的一句明确提示>

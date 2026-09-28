@@ -1,0 +1,23 @@
+id: 2026-09-11-consolidate-layering
+status: review
+goal: 收敛项目初始化与框架优化的 core、workflow、skill 职责，消除重复规则而保持现有流程和产物兼容。
+workflow: framework:refactor
+created_at: 2026-09-11T00:00:00+08:00
+next_action: 等待用户验收沉淀后的 framework-optimization 技能；验收后记录集成方式并归档任务。
+documentation:
+  impact: update
+  targets:
+    - core/project-onboarding.md
+    - core/framework-maintenance.md
+    - workflows/project-initialization.md
+    - workflows/framework-optimization.md
+    - skills/project-initialization/SKILL.md
+    - skills/framework-optimization/SKILL.md
+status_history:
+  - pending
+  - in_progress
+  - review
+  - in_progress
+  - review
+review_reference: review.md
+verification_reference: verification.md

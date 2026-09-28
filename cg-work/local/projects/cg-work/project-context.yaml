@@ -1,0 +1,38 @@
+project:
+  id: cg-work
+  name: cg-work
+  domain: AI 软件开发工作框架
+  root_path: D:/GitPrograms/Vibe-coding/carry-god/cg-work
+technology:
+  stack:
+    - Node.js
+    - ECMAScript modules
+  package_manager: npm
+  test_command: npm test
+  build_command: null
+instructions:
+  files:
+    - ./AGENTS.md
+coding_standards:
+  files:
+    - ./AGENTS.md
+    - ./core/project-code-standards.md
+documents:
+  business:
+    - ./README.md
+  architecture:
+    - ./core/operating-model.md
+    - ./core/context-loading.md
+  api: []
+runtime:
+  entrypoints: []
+  health_checks: []
+requirements:
+  inbox_path: ./local/projects/cg-work/requirements-inbox
+vocabulary:
+  glossary: null
+skills:
+  paths: []
+required_context:
+  - ./AGENTS.md
+  - ./README.md

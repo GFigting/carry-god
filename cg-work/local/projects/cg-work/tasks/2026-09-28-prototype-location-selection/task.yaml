@@ -1,0 +1,32 @@
+id: 2026-09-28-prototype-location-selection
+status: review
+goal: 为多页面原型增加原项目路径与框架项目路径的可选存储策略，并登记原项目原型入口。
+workflow: framework:framework-optimization
+created_at: 2026-09-28T00:00:00+08:00
+next_action: 等待用户验收路径选择规则；确认后决定保留和集成方式。
+requirements_reference: ../../requirements-inbox/2026-09-28-prototype-location-selection.md
+scope_decision:
+  mode: independent
+  rationale: 新增原型存储位置选择和项目上下文字段，验收标准独立于历史设计目录统一任务。
+documentation:
+  impact: update
+  targets:
+    - README.md
+    - core/framework-maintenance.md
+    - core/context-loading.md
+    - core/project-context.template.yaml
+    - skills/prototype/SKILL.md
+    - scripts/check-project.mjs
+    - test/check-project.test.mjs
+interaction_protocol: v1
+next_user_action:
+  required: false
+  action: continue
+  message: Agent 将继续实施路径规则并运行框架、项目和任务校验。
+plan_reference: plan.md
+review_reference: review.md
+verification_reference: verification.md
+status_history:
+  - pending
+  - in_progress
+  - review

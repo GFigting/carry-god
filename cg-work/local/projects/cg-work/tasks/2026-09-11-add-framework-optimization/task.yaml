@@ -1,0 +1,18 @@
+id: 2026-09-11-add-framework-optimization
+status: review
+goal: 为 cg-work 建立框架优化专用工作流和执行技能，使框架规则、流程、模板、校验与技能注册的演进有独立的兼容性和验证门禁。
+workflow: framework:feature-development
+created_at: 2026-09-11T00:00:00+08:00
+next_action: 等待用户验收框架优化流程；验收后记录集成方式并归档任务。
+documentation:
+  impact: update
+  targets:
+    - workflows/README.md
+    - skills/README.md
+    - core/framework-maintenance.md
+status_history:
+  - pending
+  - in_progress
+  - review
+review_reference: review.md
+verification_reference: verification.md

@@ -1,0 +1,32 @@
+id: 2026-09-23-agent-review-protocol
+status: done
+goal: 定义子智能体对计划、需求和规范的审查职责、输入输出与主 Agent 汇总方式。
+workflow: framework:feature-development
+created_at: 2026-09-23T00:00:00+08:00
+requirements_reference: ../../requirements-inbox/2026-09-23-agentic-delivery-governance.md
+roadmap_reference: ../../roadmaps/2026-09-23-agentic-delivery-governance/roadmap.yaml
+depends_on:
+  - ../2026-09-23-plan-template-review-checklist/task.yaml
+requirements_coverage:
+  agent_review: ../../requirements-inbox/2026-09-23-agentic-delivery-governance.md
+documentation:
+  impact: update
+  targets:
+    - workflows/feature-development.md
+    - skills/code-review/SKILL.md
+next_action: 在计划模板确认后定义协作审核协议。
+interaction_protocol: v1
+next_user_action:
+  required: false
+  action: task_closed
+  message: 子智能体协作审核协议已确认并交接。
+review_reference: review.md
+verification_reference: verification.md
+handoff_reference: handoff.md
+closure_reference: ../../roadmaps/2026-09-23-agentic-delivery-governance/closure.md
+status_history:
+  - pending
+  - in_progress
+  - review
+  - done
+plan_reference: plan.md

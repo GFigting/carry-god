@@ -1,0 +1,33 @@
+project:
+  id: example-project
+  name: 示例项目
+  domain: 业务领域
+  root_path: D:/path/to/project
+repositories: []
+technology:
+  stack: []
+  package_manager: null
+  test_command: null
+  build_command: null
+instructions:
+  files: []
+coding_standards:
+  files: []
+documents:
+  business: []
+  architecture: []
+  api: []
+runtime:
+  entrypoints: []
+  health_checks: []
+prototypes:
+  paths: []
+verification:
+  profiles: []
+requirements:
+  inbox_path: D:/path/to/cg-work/local/projects/example-project/requirements-inbox
+vocabulary:
+  glossary: null
+skills:
+  paths: []
+required_context: []

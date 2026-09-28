@@ -1,0 +1,18 @@
+id: 2026-09-13-multi-repository-verification-profiles
+status: in_progress
+goal: 让 cg-work 项目上下文可声明多个仓库与分层验证入口，并为 LASEN 登记后端长耗时测试和前端内存受限类型检查的可审计策略。
+workflow: framework:framework-optimization
+created_at: 2026-09-13T00:00:00+08:00
+next_action: 校验变更地图后，扩展项目上下文模板与校验器，并登记 LASEN 前后端验证配置。
+requirements_reference: ../../requirements-inbox/2026-09-13-multi-repository-verification-profiles.md
+documentation:
+  impact: update
+  targets:
+    - core/context-loading.md
+    - core/project-context.template.yaml
+    - scripts/check-project.mjs
+plan_reference: plan.md
+verification_reference: verification.md
+status_history:
+  - pending
+  - in_progress

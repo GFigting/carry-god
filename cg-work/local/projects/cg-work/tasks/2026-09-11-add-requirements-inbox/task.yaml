@@ -1,0 +1,20 @@
+id: 2026-09-11-add-requirements-inbox
+status: review
+goal: 为 cg-work 的已初始化项目建立原始需求箱入口，并使初始化流程和框架校验强制维护该入口。
+workflow: framework:feature-development
+created_at: 2026-09-11T00:00:00+08:00
+next_action: 等待用户验收需求箱目录、上下文登记与校验规则；验收后记录集成方式并归档任务。
+documentation:
+  impact: update
+  targets:
+    - README.md
+    - local/README.md
+    - core/context-loading.md
+    - core/project-context.template.yaml
+    - skills/project-initialization/SKILL.md
+status_history:
+  - pending
+  - in_progress
+  - review
+review_reference: review.md
+verification_reference: verification.md
