@@ -20,6 +20,8 @@ documents:
 runtime:
   entrypoints: []
   health_checks: []
+prototypes:
+  paths: []
 verification:
   profiles: []
 requirements:

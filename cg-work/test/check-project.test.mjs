@@ -33,6 +33,37 @@ test('接受有效的项目上下文', async () => {
   await rm(contextDir, { recursive: true, force: true });
 });
 
+test('接受登记项目仓库内原型路径和入口', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'cg-work-project-'));
+  const contextDir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-context-'));
+  const projectDir = path.join(contextDir, 'sample-project');
+  await mkdir(projectDir);
+  await mkdir(path.join(root, 'prototypes', 'demo'), { recursive: true });
+  await writeFile(path.join(root, 'prototypes', 'demo', 'index.html'), '<!doctype html>\n');
+  await mkdir(path.join(root, 'requirements-inbox'));
+  const file = path.join(projectDir, 'project-context.yaml');
+  await writeFile(file, `project:\n  id: sample-project\n  root_path: ${root}\ntechnology:\n  stack: []\ninstructions:\n  files: []\ndocuments:\n  business: []\n  architecture: []\n  api: []\nruntime:\n  entrypoints: []\n  health_checks: []\nprototypes:\n  paths:\n    - id: demo\n      path: ./prototypes/demo\n      entrypoint: ./prototypes/demo/index.html\nrequirements:\n  inbox_path: ./requirements-inbox\nvocabulary:\n  glossary: null\nskills:\n  paths: []\nrequired_context: []\n`);
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
+  await rm(root, { recursive: true, force: true });
+  await rm(contextDir, { recursive: true, force: true });
+});
+
+test('拒绝不存在的项目原型入口', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'cg-work-project-'));
+  const contextDir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-context-'));
+  const projectDir = path.join(contextDir, 'sample-project');
+  await mkdir(projectDir);
+  await mkdir(path.join(root, 'requirements-inbox'));
+  const file = path.join(projectDir, 'project-context.yaml');
+  await writeFile(file, `project:\n  id: sample-project\n  root_path: ${root}\ntechnology:\n  stack: []\ninstructions:\n  files: []\ndocuments:\n  business: []\n  architecture: []\n  api: []\nruntime:\n  entrypoints: []\n  health_checks: []\nprototypes:\n  paths:\n    - id: demo\n      path: ./prototypes/demo\n      entrypoint: ./prototypes/demo/index.html\nrequirements:\n  inbox_path: ./requirements-inbox\nvocabulary:\n  glossary: null\nskills:\n  paths: []\nrequired_context: []\n`);
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /登记的路径不存在/);
+  await rm(root, { recursive: true, force: true });
+  await rm(contextDir, { recursive: true, force: true });
+});
+
 test('拒绝重复的 YAML 键', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-context-'));
   const projectDir = path.join(dir, 'sample-project');

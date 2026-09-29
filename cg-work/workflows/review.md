@@ -10,7 +10,6 @@ optional_skills:
   - framework:finishing-a-development-branch
 conditional_skills:
   - framework:project-initialization
-  - framework:docs-maintainer
 ---
 
 # 审查

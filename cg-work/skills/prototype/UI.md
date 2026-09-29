@@ -53,6 +53,8 @@ Draft each variant. Hold each one to:
 
 Variants must be **structurally different**: different layout, different information hierarchy, different primary affordance, not just different colours. Three slightly-tweaked card grids isn't a UI prototype, it's wallpaper. If two drafts come out too similar, redo one with explicit "do not use a card grid" guidance.
 
+Use realistic content while comparing variants: long titles, missing images, empty lists, loading states and error states. A variant that only works with ideal placeholder content has not answered the design question.
+
 ### 3. Wire them together
 
 Create a single switcher component on the route:
@@ -94,6 +96,8 @@ Put the switcher in a single shared component so both sub-shapes can reuse it. L
 ### 5. Hand it over
 
 Surface the URL (and the `?variant=` keys). The user will flip through whenever they get to it. The interesting feedback is usually **"I want the header from B with the sidebar from C"**, which is the actual design they want.
+
+Record the chosen viewport sizes, the winning variant's layout rules, asset sources and the states that were checked in the implementation contract. Use fixed viewport screenshots or an equivalent visual check before calling the variant ready for production implementation.
 
 ### 6. Capture the answer and clean up
 

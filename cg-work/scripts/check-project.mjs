@@ -57,6 +57,7 @@ if (!contextFile) {
       const codingStandards = context.coding_standards === undefined ? null : objectField(context, 'coding_standards', errors);
       const documents = objectField(context, 'documents', errors);
       const runtime = objectField(context, 'runtime', errors);
+      const prototypes = context.prototypes === undefined ? null : objectField(context, 'prototypes', errors);
       const requirements = objectField(context, 'requirements', errors);
       const skills = objectField(context, 'skills', errors);
       const verification = context.verification === undefined ? null : objectField(context, 'verification', errors);
@@ -67,6 +68,7 @@ if (!contextFile) {
       for (const key of ['business', 'architecture', 'api']) await checkAbsolutePaths(documents?.[key], `documents.${key}`, errors, { base: projectRoot });
       await checkAbsolutePaths(runtime?.entrypoints, 'runtime.entrypoints', errors, { base: projectRoot });
       await checkAbsolutePaths(runtime?.health_checks, 'runtime.health_checks', errors, { allowUrls: true, base: projectRoot });
+      await checkPrototypePaths(prototypes, projectRoot, errors);
       await checkAbsolutePaths(context.required_context, 'required_context', errors, { base: projectRoot });
       if (inboxPath) {
         const inboxResolved = path.isAbsolute(inboxPath) ? inboxPath : (projectRoot ? path.resolve(projectRoot, inboxPath) : '');
@@ -116,6 +118,31 @@ async function checkRepositories(repositories, errors) {
     if (id && !ids.add(id)) errors.push(`repositories[].id 不可重复：${id}`);
     if (rootPath && !path.isAbsolute(rootPath)) errors.push(`repositories[].root_path 必须是绝对路径：${rootPath}`);
     else if (rootPath && !(await exists(rootPath))) errors.push(`repositories[].root_path 不存在：${rootPath}`);
+  }
+}
+
+async function checkPrototypePaths(prototypes, projectRoot, errors) {
+  if (prototypes === null) return;
+  if (!Array.isArray(prototypes.paths)) {
+    errors.push('prototypes.paths 必须是列表');
+    return;
+  }
+  const ids = new Set();
+  for (const item of prototypes.paths) {
+    if (!isObject(item)) {
+      errors.push('prototypes.paths 中的条目必须是映射对象');
+      continue;
+    }
+    const id = stringField(item, 'id', 'prototypes.paths[].id', errors);
+    const prototypePath = stringField(item, 'path', 'prototypes.paths[].path', errors);
+    const entrypoint = stringField(item, 'entrypoint', 'prototypes.paths[].entrypoint', errors);
+    if (id && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)) errors.push(`prototypes.paths[].id 必须使用小写 kebab-case：${id}`);
+    if (id && !ids.add(id)) errors.push(`prototypes.paths[].id 不可重复：${id}`);
+    for (const [value, label] of [[prototypePath, 'prototypes.paths[].path'], [entrypoint, 'prototypes.paths[].entrypoint']]) {
+      if (!value) continue;
+      if (path.isAbsolute(value)) errors.push(`${label} 必须相对于 project.root_path：${value}`);
+      else if (projectRoot && !(await exists(path.resolve(projectRoot, value)))) errors.push(`登记的路径不存在：${path.resolve(projectRoot, value)}`);
+    }
   }
 }
 

@@ -26,14 +26,14 @@ export const mirrors = [
   ['skills/skills/engineering/domain-modeling', 'domain-modeling'],
   ['skills/skills/engineering/research', 'research'],
   ['skills/skills/engineering/prototype', 'prototype'],
-  ['skills/skills/engineering/code-review', 'code-review'],
+  // code-review is locally maintained and intentionally excluded from mirror checks.
   ['skills/skills/engineering/improve-codebase-architecture', 'improve-codebase-architecture'],
   ['skills/skills/engineering/resolving-merge-conflicts', 'resolving-merge-conflicts'],
   ['skills/skills/engineering/wayfinder', 'wayfinder'],
   ['skills/skills/engineering/to-spec', 'to-spec'],
   ['skills/skills/engineering/to-tickets', 'to-tickets'],
   ['skills/skills/engineering/grill-with-docs', 'grill-with-docs'],
-  ['skills/skills/productivity/grilling', 'grilling'],
+  // grilling is locally maintained and intentionally excluded from mirror checks.
   ['skills/skills/productivity/handoff', 'handoff'],
   ['skills/skills/productivity/to-questionnaire', 'to-questionnaire'],
   ['gstack/review', 'gstack-review'],

@@ -57,6 +57,13 @@ if (!taskFile) {
     if (task.execution_profile !== undefined && (typeof task.execution_profile !== 'string' || !executionProfiles.has(task.execution_profile))) {
       errors.push(`执行模式无效：${task.execution_profile}（可选值：standard、lightweight）`);
     }
+    const isCompact = task.artifact_profile === 'compact';
+    if (task.artifact_profile !== undefined && task.artifact_profile !== 'compact') {
+      errors.push(`artifact_profile 无效：${task.artifact_profile}（可选值：compact）`);
+    }
+    if (isCompact && (task.status === 'review' || task.status === 'done')) {
+      await validateCompactArtifacts(task, file, errors);
+    }
     const isLightweight = task.execution_profile === 'lightweight';
     if (isLightweight && task.workflow !== 'framework:bugfix') {
       errors.push('lightweight 执行模式只适用于 framework:bugfix');
@@ -88,13 +95,18 @@ if (!taskFile) {
 
     if (isLightweight && (task.status === 'review' || task.status === 'done')) {
       validateLightweightEvidence(task.lightweight_evidence, errors);
-    } else if (task.status === 'review' || task.status === 'done') {
+    } else if (!isCompact && (task.status === 'review' || task.status === 'done')) {
       await requireReference(task.review_reference, 'review_reference', file, errors);
       await requireReference(task.verification_reference, 'verification_reference', file, errors);
       if (task.execution_profile === 'standard') await validateStandardsPreflight(task, file, errors);
     }
     if (task.prototype_reference !== undefined) {
       await requireReference(task.prototype_reference, 'prototype_reference', file, errors);
+      if (task.status === 'in_progress' || task.status === 'review' || task.status === 'done') {
+        await requirePrototypeContract(task.prototype_contract_reference, file, errors);
+      } else if (task.prototype_contract_reference !== undefined) {
+        await requirePrototypeContract(task.prototype_contract_reference, file, errors);
+      }
       if (task.status === 'review' || task.status === 'done') {
         await requirePrototypeDisposition(task.prototype_disposition_reference, file, errors);
       } else if (task.prototype_disposition_reference !== undefined) {
@@ -108,7 +120,8 @@ if (!taskFile) {
     }
     if (isLightweight && task.learning_protocol !== undefined) {
       errors.push('lightweight 任务不得声明 learning_protocol；请将可复用经验升级为标准任务记录');
-    } else if (task.learning_protocol === 'v1' && (task.status === 'review' || task.status === 'done')) {
+    } else if (!isCompact && task.learning_protocol === 'v1'
+      && (task.status === 'review' || task.status === 'done')) {
       await requireReference(task.learning_reference, 'learning_reference', file, errors);
     } else if (task.learning_reference !== undefined) {
       await requireReference(task.learning_reference, 'learning_reference', file, errors);
@@ -121,7 +134,7 @@ if (!taskFile) {
     } else if (task.next_user_action !== undefined) {
       validateNextUserAction(task.next_user_action, errors);
     }
-    if (task.status === 'done' && !isLightweight) await requireReference(task.handoff_reference, 'handoff_reference', file, errors);
+    if (task.status === 'done' && !isLightweight && !isCompact) await requireReference(task.handoff_reference, 'handoff_reference', file, errors);
     await validateTaskReferences(task, file, errors);
   }
 
@@ -150,6 +163,16 @@ async function requireReference(value, key, taskFilePath, errors) {
   if (!(await exists(target))) errors.push(`${key} 指向的文件不存在：${value}`);
 }
 
+async function validateCompactArtifacts(task, taskFilePath, errors) {
+  if (!isObject(task.artifacts) || typeof task.artifacts.primary !== 'string' || !task.artifacts.primary.trim()) {
+    errors.push('compact 任务必须填写 artifacts.primary 主产物');
+    return;
+  }
+  const target = path.resolve(path.dirname(taskFilePath), task.artifacts.primary);
+  if (target === taskFilePath) errors.push('artifacts.primary 不能指向任务自身');
+  else if (!(await exists(target))) errors.push(`artifacts.primary 指向的文件不存在：${task.artifacts.primary}`);
+}
+
 async function requirePrototypeDisposition(value, taskFilePath, errors) {
   if (typeof value !== 'string' || !value.trim()) {
     errors.push('必须填写 prototype_disposition_reference');
@@ -166,6 +189,26 @@ async function requirePrototypeDisposition(value, taskFilePath, errors) {
   for (const heading of ['采纳结论', '实现映射', '验证映射', '未采纳项']) {
     if (!new RegExp(`^##\\s+${heading}\\s*$`, 'm').test(content)) {
       errors.push(`prototype_disposition_reference 缺少“${heading}”章节：${value}`);
+    }
+  }
+}
+
+async function requirePrototypeContract(value, taskFilePath, errors) {
+  if (typeof value !== 'string' || !value.trim()) {
+    errors.push('必须填写 prototype_contract_reference');
+    return;
+  }
+  const target = path.resolve(path.dirname(taskFilePath), value);
+  let content;
+  try {
+    content = await fs.readFile(target, 'utf8');
+  } catch {
+    errors.push(`prototype_contract_reference 指向的文件不存在：${value}`);
+    return;
+  }
+  for (const heading of ['问题与目标', '状态与场景', '视觉与响应式约束', '资源与依赖', '交互与业务规则', '验收映射']) {
+    if (!new RegExp(`^##\\s+${heading}\\s*$`, 'm').test(content)) {
+      errors.push(`prototype_contract_reference 缺少“${heading}”章节：${value}`);
     }
   }
 }
@@ -313,6 +356,7 @@ function validateLightweightEvidence(value, errors) {
 function validateLightweightScope(task, errors) {
   for (const key of [
     'prototype_reference',
+    'prototype_contract_reference',
     'prototype_disposition_reference',
     'roadmap_reference',
     'closure_reference',

@@ -4,7 +4,7 @@
 
 框架自有技能包括 `project-initialization`、`framework-optimization` 与 `large-task-decomposition`，由本框架维护，不参与镜像哈希校验。`large-task-decomposition` 只定义本地路线图与归档约定，分别引用原始镜像技能 `wayfinder` 和 `to-tickets`，不复制其正文。
 
-框架本地化技能包括 `baoyu-design`、`docs-maintainer`。它们可以复用上游方法，但目录、任务记录和文档同步规则由 cg-work 维护，因此不参与 `scripts/check-skills.mjs` 的镜像哈希校验。`docs-maintainer` 在任务文档影响为 `update/add` 或用户明确要求文档维护时按条件加载。
+框架本地化技能包括 `baoyu-design`。它复用上游设计方法，但其目录与任务记录规则由 cg-work 维护，因此不参与 `scripts/check-skills.mjs` 的镜像哈希校验。
 
 ## 核心技能
 

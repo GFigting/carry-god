@@ -17,7 +17,7 @@
 
 项目技能路径使用 `skills.paths` 声明，路径相对于 `project.root_path` 解析。例如 `.cg-work/skills` 对应项目根目录下的 `.cg-work/skills/`。先加载 `cg-work/skills/` 中的框架技能，再加载这些路径中的项目技能。登记的项目规则与文档路径（`instructions.files`、`coding_standards.files`、`documents.*`、`required_context`、`requirements.inbox_path`）同样相对于 `project.root_path` 解析，绝对路径亦可直接使用——优先相对写法以保证跨机/跨目录可移植。
 
-Superpowers 的计划、设计和审查文件属于任务产物。Agent 应从当前工作区查找 `local/projects/*/project-context.yaml`，读取各文件的 `project.root_path` 并匹配当前项目；唯一匹配时自动选用该上下文，找不到或匹配多个时才请求用户选择。随后使用匹配项目下的 `local/projects/<project-id>/tasks/<task-id>/`：计划写入 `plan.md`，设计说明写入 `design.md`，审查和验证分别写入 `review.md`、`verification.md`。任务状态和引用以同目录的 `task.yaml` 为准。
+依赖业务项目代码的多页面原型可以放在 `<project.root_path>/prototypes/<design-name>/`。此类原型必须在项目上下文的可选 `prototypes.paths` 中登记 `id`、相对 `path` 和 `entrypoint`；这些路径均相对于 `project.root_path`，并由 `scripts/check-project.mjs` 校验。放在 `local/projects/<project-id>/design/<design-name>/` 的框架目录原型不写入该字段，直接由任务的 `prototype_reference` 引用。
 
 单仓项目继续以 `project.root_path` 作为主仓库。存在前后端或多个独立仓库时，可在可选的 `repositories` 中登记每个仓库的稳定 `id`、`role` 和绝对 `root_path`；`project.root_path` 不因此失效。执行验证前，先读取可选的 `verification.profiles`：每项声明 `stage`、`command`、`outcome` 及可选 `limitation`。`required` 表示该阶段应执行，`environment_limited` 表示必须保留未完成原因而不能写为通过，`not_applicable` 表示该任务不适用。profile 是项目验证入口的唯一记录处，不替代任务内的新鲜验证证据。
 

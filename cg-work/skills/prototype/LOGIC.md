@@ -47,6 +47,8 @@ Lay it out with a clean hierarchy, top to bottom:
 
 Choose scenarios that demonstrate the awkward cases, the ones hard to reason about on paper: the happy path, a tricky edge case, an attempt at something that should be illegal.
 
+Include representative data, not only ideal values: empty collections, long labels, delayed responses, invalid input and failure states when they are relevant to the question. Record those cases in the implementation contract so they are not lost when the reducer or state machine is moved into the real module.
+
 Keep it beautiful but restrained: clean typography, generous spacing, one accent colour. No animations, no gimmicks: nothing that competes with the state and the buttons.
 
 ### 4. Hand it over
@@ -56,6 +58,8 @@ Send them the file, or open it for them. They'll click through the walkthroughs 
 ### 5. Capture the answer and the prototype
 
 Once the prototype has answered its question, capture the answer, then capture the prototype the way the [SKILL](SKILL.md) describes. The logic-specific mapping: the validated reducer / machine / function set lifts into the real module (the decision, absorbed); the HTML shell rides along to the throwaway branch that keeps the prototype as a primary source, and being one self-contained file, it stays trivially re-runnable there.
+
+Before implementation starts, complete the implementation contract's scenario and acceptance tables. Every important transition must map to a production rule and a fresh verification step.
 
 ## Anti-patterns
 

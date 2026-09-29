@@ -4,6 +4,8 @@
 
 原型是 Artifact 的一种。任务声明 `prototype_reference` 后，原型不能只作为演示文件保留：进入 `review` 或 `done` 前，必须通过 `prototype_disposition_reference` 指向任务目录内的采纳记录，说明采纳结论、原型到实现的映射、原型到验证证据的映射，以及未采纳项及原因。记录格式见 [原型采纳记录模板](prototype-disposition.template.md)。
 
+为减少原型到项目的实现偏差，声明 `prototype_reference` 的任务在进入 `in_progress` 前必须通过 `prototype_contract_reference` 指向实现契约，并在进入 `review` 或 `done` 时保持有效。契约至少说明问题与目标、状态与场景、视觉与响应式约束、资源与依赖、交互与业务规则和验收映射。格式见 [原型实现契约模板](prototype-implementation-contract.template.md)。
+
 Learning 是由任务执行中的观察形成、经审查判定去向的经验记录。它不替代需求、计划、审查或验证；具体的连续记录、证据和提升规则见 [持续学习与经验沉淀](continuous-learning.md)。
 
 任务状态为：
@@ -68,6 +70,10 @@ pending -> in_progress -> review -> done
 计划审核不是新的任务状态，也不要求新增独立文件；子智能体的意见由主 Agent 汇总后写回 `plan.md`。
 
 ## 任务证据生命周期
+
+新任务可声明 `artifact_profile: compact`，采用“任务索引 + 一个主产物”的轻量证据模型：`task.yaml` 保存机器可读状态和产物索引，`artifacts.primary` 指向按任务意图选择的 `product.md`、`plan.md`、`review.md` 或 `research.md` 等主产物。进入 `review` 或 `done` 时，compact 任务只要求主产物存在；验证、学习和交接结论默认写回主产物或 `task.yaml`，不强制生成独立文件。
+
+未声明 `artifact_profile` 的任务继续按下表的历史标准规则校验，保证已有任务兼容。主产物不是按状态预创建，而是在出现独立的信息复用、评审或交接需求时生成。
 
 标准任务的证据按阶段逐步生成，不要求创建任务时一次性生成全部文件：
 
