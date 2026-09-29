@@ -11,13 +11,14 @@ const files = {
   bugfix: 'workflows/bugfix.md',
 };
 
-test('任何原项目提交都要求验证后删除全部测试并记录清单', async () => {
+test('原项目提交默认保留测试，授权后才允许清理并记录证据', async () => {
   const content = await readFile(files.submission, 'utf8');
   assert.match(content, /当提交目标是原项目业务仓库时/);
-  assert.match(content, /原项目提交必须先完成必要验证，再删除原项目仓库中的全部测试文件/);
+  assert.match(content, /测试文件默认保留，不因提交动作自动删除或排除/);
+  assert.match(content, /用户或任务范围明确授权清理/);
+  assert.match(content, /删除前先完成必要验证/);
   assert.match(content, /任务验证或交接记录中保存删除清单/);
-  assert.match(content, /复核提交差异中不再有测试文件/);
-  assert.match(content, /不依赖用户是否使用“提交全部内容”措辞/);
+  assert.match(content, /复核提交差异/);
 });
 
 test('原项目测试删除规则不扩展到 cg-work 框架测试', async () => {
@@ -39,8 +40,11 @@ test('入口和工作流同步提交范围与验证顺序', async () => {
   const content = await Promise.all(Object.values(files).map((file) => readFile(file, 'utf8')));
   for (const source of content) {
     assert.match(source, /原项目/);
-    assert.match(source, /删除/);
+    assert.match(source, /(?:测试文件默认保留|默认保留测试文件)/);
+    assert.match(source, /明确授权/);
   }
-  assert.match(content[0], /先完成必要验证，再删除/);
-  assert.match(content[4], /先完成验证，删除原项目全部测试文件，记录删除清单并复核无测试残留/);
+  assert.match(content[0], /删除前先完成必要验证/);
+  assert.match(content[4], /先完成验证/);
+  assert.match(content[4], /记录删除清单/);
+  assert.match(content[4], /复核提交差异/);
 });
