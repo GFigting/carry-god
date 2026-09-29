@@ -61,6 +61,7 @@ if (!contextFile) {
       const requirements = objectField(context, 'requirements', errors);
       const skills = objectField(context, 'skills', errors);
       const verification = context.verification === undefined ? null : objectField(context, 'verification', errors);
+      const submission = context.submission === undefined ? null : objectField(context, 'submission', errors);
       const inboxPath = stringField(requirements, 'inbox_path', 'requirements.inbox_path', errors);
 
       await checkAbsolutePaths(instructions?.files, 'instructions.files', errors, { base: projectRoot });
@@ -70,6 +71,7 @@ if (!contextFile) {
       await checkAbsolutePaths(runtime?.health_checks, 'runtime.health_checks', errors, { allowUrls: true, base: projectRoot });
       await checkPrototypePaths(prototypes, projectRoot, errors);
       await checkAbsolutePaths(context.required_context, 'required_context', errors, { base: projectRoot });
+      await checkSubmission(submission, errors);
       if (inboxPath) {
         const inboxResolved = path.isAbsolute(inboxPath) ? inboxPath : (projectRoot ? path.resolve(projectRoot, inboxPath) : '');
         if (!inboxResolved) errors.push('requirements.inbox_path 必须相对于 project.root_path');
@@ -119,6 +121,16 @@ async function checkRepositories(repositories, errors) {
     if (rootPath && !path.isAbsolute(rootPath)) errors.push(`repositories[].root_path 必须是绝对路径：${rootPath}`);
     else if (rootPath && !(await exists(rootPath))) errors.push(`repositories[].root_path 不存在：${rootPath}`);
   }
+}
+
+async function checkSubmission(submission, errors) {
+  if (submission === null) return;
+  const tool = stringField(submission, 'tool', 'submission.tool', errors);
+  stringField(submission, 'command', 'submission.command', errors);
+  await checkAbsolutePaths(submission.instructions, 'submission.instructions', errors);
+  if (tool && !(await exists(tool))) errors.push(`submission.tool 不存在：${tool}`);
+  if (submission.defaults !== undefined && !isObject(submission.defaults)) errors.push('submission.defaults 必须是映射对象');
+  if (submission.policies !== undefined && !isObject(submission.policies)) errors.push('submission.policies 必须是映射对象');
 }
 
 async function checkPrototypePaths(prototypes, projectRoot, errors) {

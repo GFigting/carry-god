@@ -30,4 +30,18 @@ vocabulary:
   glossary: null
 skills:
   paths: []
+submission:
+  tool: D:/path/to/cg-work/local/tools/submit-branch/submit-branch.mjs
+  instructions:
+    - D:/path/to/cg-work/local/tools/submit-branch/README.md
+  command: node local/tools/submit-branch/submit-branch.mjs
+  defaults:
+    base: null
+    remote: origin
+    scope: null
+    verify: targeted
+  policies:
+    push: explicit_confirmation
+    merge: explicit_confirmation
+    deploy: explicit_confirmation
 required_context: []
