@@ -102,6 +102,11 @@ if (!taskFile) {
     }
     if (task.prototype_reference !== undefined) {
       await requireReference(task.prototype_reference, 'prototype_reference', file, errors);
+      if (task.status === 'in_progress' || task.status === 'review' || task.status === 'done') {
+        await requirePrototypeContract(task.prototype_contract_reference, file, errors);
+      } else if (task.prototype_contract_reference !== undefined) {
+        await requirePrototypeContract(task.prototype_contract_reference, file, errors);
+      }
       if (task.status === 'review' || task.status === 'done') {
         await requirePrototypeDisposition(task.prototype_disposition_reference, file, errors);
       } else if (task.prototype_disposition_reference !== undefined) {
@@ -184,6 +189,26 @@ async function requirePrototypeDisposition(value, taskFilePath, errors) {
   for (const heading of ['采纳结论', '实现映射', '验证映射', '未采纳项']) {
     if (!new RegExp(`^##\\s+${heading}\\s*$`, 'm').test(content)) {
       errors.push(`prototype_disposition_reference 缺少“${heading}”章节：${value}`);
+    }
+  }
+}
+
+async function requirePrototypeContract(value, taskFilePath, errors) {
+  if (typeof value !== 'string' || !value.trim()) {
+    errors.push('必须填写 prototype_contract_reference');
+    return;
+  }
+  const target = path.resolve(path.dirname(taskFilePath), value);
+  let content;
+  try {
+    content = await fs.readFile(target, 'utf8');
+  } catch {
+    errors.push(`prototype_contract_reference 指向的文件不存在：${value}`);
+    return;
+  }
+  for (const heading of ['问题与目标', '状态与场景', '视觉与响应式约束', '资源与依赖', '交互与业务规则', '验收映射']) {
+    if (!new RegExp(`^##\\s+${heading}\\s*$`, 'm').test(content)) {
+      errors.push(`prototype_contract_reference 缺少“${heading}”章节：${value}`);
     }
   }
 }
@@ -331,6 +356,7 @@ function validateLightweightEvidence(value, errors) {
 function validateLightweightScope(task, errors) {
   for (const key of [
     'prototype_reference',
+    'prototype_contract_reference',
     'prototype_disposition_reference',
     'roadmap_reference',
     'closure_reference',

@@ -4,6 +4,8 @@
 
 原型是 Artifact 的一种。任务声明 `prototype_reference` 后，原型不能只作为演示文件保留：进入 `review` 或 `done` 前，必须通过 `prototype_disposition_reference` 指向任务目录内的采纳记录，说明采纳结论、原型到实现的映射、原型到验证证据的映射，以及未采纳项及原因。记录格式见 [原型采纳记录模板](prototype-disposition.template.md)。
 
+为减少原型到项目的实现偏差，声明 `prototype_reference` 的任务在进入 `in_progress` 前必须通过 `prototype_contract_reference` 指向实现契约，并在进入 `review` 或 `done` 时保持有效。契约至少说明问题与目标、状态与场景、视觉与响应式约束、资源与依赖、交互与业务规则和验收映射。格式见 [原型实现契约模板](prototype-implementation-contract.template.md)。
+
 Learning 是由任务执行中的观察形成、经审查判定去向的经验记录。它不替代需求、计划、审查或验证；具体的连续记录、证据和提升规则见 [持续学习与经验沉淀](continuous-learning.md)。
 
 任务状态为：

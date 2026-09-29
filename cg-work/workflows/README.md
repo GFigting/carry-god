@@ -15,7 +15,7 @@
 
 验证失败或审查发现问题时回到 `in_progress`；缺少外部条件进入 `blocked`；用户取消进入 `cancelled`。不得跳过 `review` 直接标记 `done`。
 
-原型采纳门禁：任务声明 `prototype_reference` 时，进入 `review` 或 `done` 前必须以 `prototype_disposition_reference` 引用采纳记录。记录必须有“采纳结论”“实现映射”“验证映射”“未采纳项”四节；格式见 `core/prototype-disposition.template.md`。未创建原型的任务不受此门禁影响。
+原型落地门禁：任务声明 `prototype_reference` 时，进入 `in_progress` 前必须以 `prototype_contract_reference` 引用实现契约，并在 `review` 或 `done` 时保持有效；进入 `review` 或 `done` 前还必须以 `prototype_disposition_reference` 引用采纳记录。实现契约必须有“问题与目标”“状态与场景”“视觉与响应式约束”“资源与依赖”“交互与业务规则”“验收映射”六节；采纳记录必须有“采纳结论”“实现映射”“验证映射”“未采纳项”四节。格式分别见 `core/prototype-implementation-contract.template.md` 和 `core/prototype-disposition.template.md`。未创建原型的任务不受此门禁影响。
 
 ## 执行模式
 
