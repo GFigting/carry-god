@@ -45,6 +45,15 @@ test('入口和工作流同步提交范围与验证顺序', async () => {
   }
   assert.match(content[0], /删除前先完成必要验证/);
   assert.match(content[4], /先完成验证/);
-  assert.match(content[4], /记录删除清单/);
+  assert.match(content[4], /记录(?:类\/方法)?删除清单/);
   assert.match(content[4], /复核提交差异/);
+});
+
+test('测试类和方法只为可观察行为或独立契约生成', async () => {
+  const content = await readFile(files.submission, 'utf8');
+  assert.match(content, /测试类与测试方法生成标准/);
+  assert.match(content, /新的可观察行为、业务规则、边界条件、异常路径/);
+  assert.match(content, /优先在已有测试类中补充/);
+  assert.match(content, /不为 getter\/setter、简单映射、直通委托/);
+  assert.match(content, /缺陷修复通常必须补充/);
 });
