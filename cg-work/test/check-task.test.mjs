@@ -208,15 +208,18 @@ test('拒绝在轻量缺陷中声明学习协议', async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
-test('拒绝在非缺陷工作流中使用轻量执行模式', async () => {
+test('轻量档适用于 bugfix 与 feature-development：功能类证据免填 root_cause', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
   const taskDir = path.join(dir, '2026-09-10-small-feature');
   await mkdir(taskDir);
   const file = path.join(taskDir, 'task.yaml');
   await writeFile(file, 'id: 2026-09-10-small-feature\nstatus: pending\ngoal: Add a field\nworkflow: framework:feature-development\nexecution_profile: lightweight\ncreated_at: 2026-09-10\ndocumentation:\n  impact: none\n  not_needed_reason: Existing behavior only\nnext_action: Verify\n');
   const result = await run(file);
-  assert.notEqual(result.code, 0);
-  assert.match(result.output, /lightweight 执行模式只适用于 framework:bugfix/);
+  assert.equal(result.code, 0, result.output);
+
+  await writeFile(file, 'id: 2026-09-10-small-feature\nstatus: review\ngoal: Add a field\nworkflow: framework:feature-development\nexecution_profile: lightweight\ncreated_at: 2026-09-10\ndocumentation:\n  impact: none\n  not_needed_reason: Existing behavior only\nnext_action: User acceptance\nlightweight_evidence:\n  scope: One module entry point; no rule, migration, or external side effect\n  verification: node --test test/*.test.mjs passed\n  review: Reviewed the small diff\n  integration_decision: Keep in the current working tree\n');
+  const reviewed = await run(file);
+  assert.equal(reviewed.code, 0, '功能类轻量证据免填 root_cause：' + reviewed.output);
   await rm(dir, { recursive: true, force: true });
 });
 

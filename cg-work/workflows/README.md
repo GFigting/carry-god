@@ -38,9 +38,9 @@
 
 `standards_preflight` 是标准任务计划/验证记录中的统一证据段落，不新增任务 YAML 必填字段；历史任务无需迁移。
 
-## 轻量缺陷路径
+## 轻量档路径
 
-仅 `framework:bugfix` 可声明 `execution_profile: lightweight`。适用条件、禁止项和证据字段以 [缺陷修复流程](bugfix.md) 为唯一来源；任务校验器负责执行这些门禁。
+`framework:bugfix` 与 `framework:feature-development` 可声明 `execution_profile: lightweight`。适用条件、禁止项和证据字段以对应工作流（[缺陷修复](bugfix.md)、[功能开发](feature-development.md)）为唯一来源；任务校验器负责执行这些门禁。
 
 文档同步门禁：业务规则、用户流程、接口、数据模型或架构发生变化时，`documentation.impact` 必须为 `update` 或 `add`，并记录受影响文档和变更内容；确认现有文档仍准确时使用 `none` 并填写 `not_needed_reason`。`not_assessed` 不能进入 `done`。
 
@@ -48,14 +48,14 @@
 
 `framework:low-risk-change` 用于纯文案、样式、静态布局或不改变行为的可访问性标记调整。适用条件与最低验证以 [工作模型](../core/operating-model.md#低风险变更) 为唯一来源；该路径不创建需求箱、task 或自动化测试。任何行为、路由、接口、数据、权限、配置语义、依赖或外部副作用变化都不适用，必须切换到对应标准工作流。
 
-持续学习门禁：历史标准任务可声明 `learning_protocol: v1` 并引用 `learning.md`；compact 任务将可复用经验写入主产物或 `task.yaml`，不强制单独学习文件。`framework:bugfix` 的轻量缺陷不得声明该协议，发现可复用经验时必须转为标准任务。规则、格式和提升边界见 [持续学习与经验沉淀](../core/continuous-learning.md)。
+持续学习门禁：历史标准任务可声明 `learning_protocol: v1` 并引用 `learning.md`；compact 任务将可复用经验写入主产物或 `task.yaml`，不强制单独学习文件。轻量档任务不得声明该协议，发现可复用经验时必须转为标准任务。规则、格式和提升边界见 [持续学习与经验沉淀](../core/continuous-learning.md)。
 
 用户下一步提醒：新任务必须声明 `interaction_protocol: v1` 并维护 `next_user_action`。进入 `review`、`blocked` 或 `done` 时，该对象必须说明是否需要用户操作、动作标识和一条可直接执行的提示；路线图没有可执行前沿任务时也必须更新同名字段。
 
 | 文件 | 使用场景 |
 |---|---|
 | `project-discovery.md` | 在上下文加载前判断既有项目、新项目或信息不足，并在确认后路由 |
-| `feature-development.md` | 新功能和行为变更 |
+| `feature-development.md` | 新功能和行为变更（小功能可走轻量档） |
 | `low-risk-change.md` | 纯文案、样式和静态布局调整 |
 | `bugfix.md` | 缺陷、回归和性能问题 |
 | `refactor.md` | 保持外部行为的结构调整 |

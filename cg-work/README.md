@@ -10,7 +10,7 @@
 4. 再按 `core/operating-model.md` 识别低风险变更：纯文案、样式或静态布局调整使用 `framework:low-risk-change`，不创建需求箱、task 或自动化测试；其他变更先复用已有原始需求包，只有没有对应需求包时才新增到 `local/projects/<project-id>/requirements-inbox/`，再创建 `pending` task 并记录 `requirements_reference`。
 5. 按流程声明加载 `skills/` 中的 required skills。
 6. 进入工作流前展示决策预检简报；低风险或可逆事项可自动继续，高风险或不可逆事项等待用户确认，并在需要时再加载 `grilling` 或其他特殊技能。
-7. 标准任务在同一任务目录保存计划、审查、验证、学习证据、风险和下一步行动；跨模块、高风险或用户要求审查的任务在 `plan.md` 内增加计划审核章节，不另建计划审查文件；满足 `workflows/bugfix.md` 轻量条件的缺陷仅在 `task.yaml` 保留根因、范围、验证、自审和集成结论。大任务额外在 `roadmaps/` 保存决策、覆盖与关闭索引。
+7. 标准任务在同一任务目录保存计划、审查、验证、学习证据、风险和下一步行动；跨模块、高风险或用户要求审查的任务在 `plan.md` 内增加计划审核章节，不另建计划审查文件；满足 `workflows/bugfix.md` 轻量条件的缺陷仅在 `task.yaml` 保留根因、范围、验证、自审和集成结论，满足 `workflows/feature-development.md` 轻量条件的小功能同样在 `task.yaml` 合并范围、验证、自审与集成结论（见 [最小充分流程](core/operating-model.md#最小充分流程)）。大任务额外在 `roadmaps/` 保存决策、覆盖与关闭索引。
    新任务可使用 `artifact_profile: compact`：先有 `task.yaml`，再按任务意图生成一个主产物；验证、学习和交接默认回写任务记录或主产物。历史任务继续按原有产物引用规则运行；详见 [任务证据生命周期](core/operating-model.md#任务证据生命周期)。
    若创建原型，记录原型引用及其采纳结论、实现映射和验证映射。
 7. 通过新鲜验证和审查后，再确定集成方式并将任务标记为 `done`。

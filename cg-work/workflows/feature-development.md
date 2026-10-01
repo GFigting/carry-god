@@ -1,10 +1,5 @@
 ---
 required_skills:
-  - framework:brainstorming
-  - framework:writing-plans
-  - framework:codebase-design
-  - framework:test-driven-development
-  - framework:code-review
   - framework:verification-before-completion
 optional_skills:
   - framework:domain-modeling
@@ -13,6 +8,11 @@ optional_skills:
   - framework:using-git-worktrees
   - framework:finishing-a-development-branch
 conditional_skills:
+  - framework:brainstorming
+  - framework:writing-plans
+  - framework:codebase-design
+  - framework:test-driven-development
+  - framework:code-review
   - framework:project-initialization
   - framework:large-task-decomposition
 ---
@@ -20,6 +20,12 @@ conditional_skills:
 # 功能开发
 
 先按 [工作模型的低风险变更](../core/operating-model.md#低风险变更) 筛选：符合条件时改用 `framework:low-risk-change`，不得创建需求箱或任务记录。其余功能开发读取项目上下文和 `requirements.inbox_path` 中的原始需求包；创建 `pending` 任务记录，澄清目标、范围和验收标准，并评估业务文档影响。一个原始需求包可关联多个任务，但任务产物不得写回需求箱；再完成设计、计划、实现、文档同步、验证和集成决策。若需求跨模块、跨会话、存在未决关键决策或无法作为一个独立任务验收，先切换至 [大任务拆分与关闭](large-task-decomposition.md)，不得直接并列创建无路线图的任务。若创建原型，任务记录须写入 `prototype_reference` 和实现契约引用 `prototype_contract_reference`，并在进入 `in_progress` 前完成契约；将原型作为正式设计输入，在进入 `review` 前按 `core/prototype-implementation-contract.template.md` 记录状态、视觉、资源、交互和验收映射，并按 `core/prototype-disposition.template.md` 记录采纳结论、实现映射、验证映射和未采纳项。完成实现后必须经过新鲜验证和审查，再进入统一收尾流程。
+
+### 轻量功能
+
+单模块边界、业务规则无未决、无数据迁移且可逆的小功能，可声明 `execution_profile: lightweight`：保留需求箱与 `task.yaml`，把范围、验证、自审与集成结论合并进 `lightweight_evidence`（功能类免填 `root_cause`），不创建独立计划、审查、验证、学习或交接文件，不做计划审核章节；测试按 [工作模型的最小充分流程](../core/operating-model.md#最小充分流程) 价值分层执行。任一条件不满足（跨模块、规则未决、迁移、不可逆）立即转标准路径。
+
+技能加载按需化：`framework:verification-before-completion` 恒加载；`brainstorming`、`writing-plans`、`codebase-design`、`test-driven-development`、`code-review` 在跨模块、高风险或用户明确要求审查时加载，轻量档与单模块小刀不强制。子任务派发（含子智能体）沿用同一比例原则：默认最小交付，明确测试口径与决断边界。
 
 原项目统一收尾顺序为：先完成验证；测试文件默认保留，不自动删除或排除；仅覆盖简单映射、直通委托、样板代码或无独立回归价值的简单逻辑测试类和测试方法，在确认没有独立保护价值且用户或任务范围明确授权清理时，才删除并记录类/方法删除清单、复核提交差异。随后清理直接相关冗余、整合最新 SQL 到正式脚本，再创建本地 Git commit；框架自身提交按核心提交规范保留有效回归测试。提交后同步受影响文档，并重新运行文档引用、任务记录和差异检查。推送、合并、部署仍需单独授权。
 
@@ -33,6 +39,6 @@ conditional_skills:
 
 两条审核线可以并行，但同一子智能体不应同时代表需求方和规范方作最终结论。
 
-功能开发若产生新的可观察行为、业务规则、边界条件、异常路径、权限/兼容性约束或验收条件，必须新增或更新自动化测试；优先扩展已有职责相同的测试类，只有隔离边界明显不同才新建测试类。对 getter/setter、简单映射、直通委托、常量读取和框架样板等显然正确的简单逻辑，不单独生成测试类，除非它承载业务约束、历史缺陷或对外契约。仅有纯文案、样式、静态布局或不改变行为的整理时，可按低风险路径不新增测试。需求迭代删除旧行为时，先检查并保留或改写相关测试；只有确认没有独立保护价值时才删除，并在审查记录中说明测试处理结论。
+功能开发的测试按 [最小充分流程](../core/operating-model.md#最小充分流程) 的价值分层执行：数据不可逆、红线和真会悄悄坏的核心逻辑，必须新增或更新自动化测试；界面、交互与文案改动以人工验收为准，不强制自动化测试。新增测试优先扩展已有职责相同的测试类，只有隔离边界明显不同才新建测试类。对 getter/setter、简单映射、直通委托、常量读取和框架样板等显然正确的简单逻辑，不单独生成测试类，除非它承载业务约束、历史缺陷或对外契约。仅有纯文案、样式、静态布局或不改变行为的整理时，可按低风险路径不新增测试。需求迭代删除旧行为时，先检查并保留或改写相关测试；只有确认没有独立保护价值时才删除，并在审查记录中说明测试处理结论。
 
 进入实现前，计划必须包含 `standards_preflight`：列出本次变更需要常量化的业务字面量及允许例外；编码完成后，验证记录必须补充项目静态检查或当前差异人工检查结果。审查阶段复核该证据，不以审查作为首次发现硬编码的时点。

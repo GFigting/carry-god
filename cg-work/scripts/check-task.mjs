@@ -65,8 +65,9 @@ if (!taskFile) {
       await validateCompactArtifacts(task, file, errors);
     }
     const isLightweight = task.execution_profile === 'lightweight';
-    if (isLightweight && task.workflow !== 'framework:bugfix') {
-      errors.push('lightweight 执行模式只适用于 framework:bugfix');
+    const lightweightWorkflows = new Set(['framework:bugfix', 'framework:feature-development']);
+    if (isLightweight && !lightweightWorkflows.has(task.workflow)) {
+      errors.push('lightweight 执行模式只适用于 framework:bugfix 或 framework:feature-development');
     }
     if (isLightweight) validateLightweightScope(task, errors);
 
@@ -94,7 +95,7 @@ if (!taskFile) {
     }
 
     if (isLightweight && (task.status === 'review' || task.status === 'done')) {
-      validateLightweightEvidence(task.lightweight_evidence, errors);
+      validateLightweightEvidence(task.lightweight_evidence, task, errors);
     } else if (!isCompact && (task.status === 'review' || task.status === 'done')) {
       await requireReference(task.review_reference, 'review_reference', file, errors);
       await requireReference(task.verification_reference, 'verification_reference', file, errors);
@@ -341,12 +342,16 @@ function validateOpenDecisions(value, errors) {
   });
 }
 
-function validateLightweightEvidence(value, errors) {
+function validateLightweightEvidence(value, task, errors) {
   if (!isObject(value)) {
     errors.push('lightweight 任务进入审查或完成前必须填写 lightweight_evidence');
     return;
   }
-  for (const key of ['root_cause', 'scope', 'verification', 'review', 'integration_decision']) {
+  // 缺陷类要交代根因；功能类没有"根因"可言，以范围/验证/自审/集成结论为准。
+  const keys = task.workflow === 'framework:bugfix'
+    ? ['root_cause', 'scope', 'verification', 'review', 'integration_decision']
+    : ['scope', 'verification', 'review', 'integration_decision'];
+  for (const key of keys) {
     if (typeof value[key] !== 'string' || !value[key].trim()) {
       errors.push(`lightweight_evidence.${key} 必须是非空字符串`);
     }
