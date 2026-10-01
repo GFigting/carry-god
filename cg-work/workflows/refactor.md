@@ -1,15 +1,15 @@
 ---
 required_skills:
-  - framework:codebase-design
-  - framework:writing-plans
-  - framework:test-driven-development
-  - framework:code-review
   - framework:verification-before-completion
 optional_skills:
   - framework:domain-modeling
   - framework:using-git-worktrees
   - framework:finishing-a-development-branch
 conditional_skills:
+  - framework:codebase-design
+  - framework:writing-plans
+  - framework:test-driven-development
+  - framework:code-review
   - framework:project-initialization
   - framework:improve-codebase-architecture
   - framework:grilling

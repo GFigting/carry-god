@@ -55,5 +55,6 @@ test('测试类和方法只为可观察行为或独立契约生成', async () =>
   assert.match(content, /新的可观察行为、业务规则、边界条件、异常路径/);
   assert.match(content, /优先在已有测试类中补充/);
   assert.match(content, /不为 getter\/setter、简单映射、直通委托/);
-  assert.match(content, /缺陷修复通常必须补充/);
+  assert.match(content, /缺陷修复命中硬三类（数据不可逆、红线、真会悄悄坏的核心逻辑/);
+  assert.match(content, /其余修复以人工验收为准/);
 });

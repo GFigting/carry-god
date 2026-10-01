@@ -25,7 +25,7 @@ conditional_skills:
 
 单模块边界、业务规则无未决、无数据迁移且可逆的小功能，可声明 `execution_profile: lightweight`：保留需求箱与 `task.yaml`，把范围、验证、自审与集成结论合并进 `lightweight_evidence`（功能类免填 `root_cause`），不创建独立计划、审查、验证、学习或交接文件，不做计划审核章节；测试按 [工作模型的最小充分流程](../core/operating-model.md#最小充分流程) 价值分层执行。任一条件不满足（跨模块、规则未决、迁移、不可逆）立即转标准路径。
 
-技能加载按需化：`framework:verification-before-completion` 恒加载；`brainstorming`、`writing-plans`、`codebase-design`、`test-driven-development`、`code-review` 在跨模块、高风险或用户明确要求审查时加载，轻量档与单模块小刀不强制。子任务派发（含子智能体）沿用同一比例原则：默认最小交付，明确测试口径与决断边界。
+技能加载按需化：`framework:verification-before-completion` 恒加载；`brainstorming`、`writing-plans`、`codebase-design`、`test-driven-development`、`code-review` 在跨模块、高风险或用户明确要求审查时加载，轻量档与单模块小刀不强制。子任务派发（含子智能体）沿用同一比例原则：默认最小交付，明确测试口径与决断边界；需要并行时按文件所有权切分任务边界，实现类子代理不并行派发（文件冲突），审查类可并行。
 
 原项目统一收尾顺序为：先完成验证；测试文件默认保留，不自动删除或排除；仅覆盖简单映射、直通委托、样板代码或无独立回归价值的简单逻辑测试类和测试方法，在确认没有独立保护价值且用户或任务范围明确授权清理时，才删除并记录类/方法删除清单、复核提交差异。随后清理直接相关冗余、整合最新 SQL 到正式脚本，再创建本地 Git commit；框架自身提交按核心提交规范保留有效回归测试。提交后同步受影响文档，并重新运行文档引用、任务记录和差异检查。推送、合并、部署仍需单独授权。
 

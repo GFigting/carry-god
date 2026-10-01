@@ -1,15 +1,15 @@
 ---
 required_skills:
-  - framework:brainstorming
-  - framework:writing-plans
   - framework:framework-optimization
-  - framework:code-review
   - framework:verification-before-completion
 optional_skills:
   - framework:research
   - framework:codebase-design
-  - framework:grilling
 conditional_skills:
+  - framework:brainstorming
+  - framework:writing-plans
+  - framework:code-review
+  - framework:grilling
   - framework:writing-skills
 ---
 
