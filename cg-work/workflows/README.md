@@ -10,7 +10,7 @@
 |---|---|---|
 | `pending` | 建立任务、目标、范围和验收标准，并评估文档影响 | `task.yaml` |
 | `in_progress` | 完成计划（复杂任务）、实现、过程验证，并记录会影响当前任务或未来复用的候选经验 | `plan.md`（需要时），必要时补充任务记录和 `learning.md` |
-| `review` | 完成审查和新鲜验证，完成文档同步或记录无需更新的理由，处理或记录遗留问题，并判定候选经验去向 | 标准任务为 `review.md`、`verification.md`、`learning.md`（使用学习协议时）；轻量缺陷使用 `task.yaml` 的精简证据 |
+| `review` | 完成审查和统一收尾：新鲜验证、测试处理、直接相关冗余清理、SQL 整合、文档同步、遗留项处理和集成决策 | 标准任务为 `review.md`、`verification.md`、`learning.md`（使用学习协议时）；轻量缺陷使用 `task.yaml` 的精简证据 |
 | `done` | 用户接受结果、确定集成方式，并完成学习记录的交接或明确无可复用经验 | 标准任务为 `task.yaml` 中的终态和下一步、`learning.md`（使用学习协议时）；轻量缺陷使用 `task.yaml` 的集成结论 |
 
 验证失败或审查发现问题时回到 `in_progress`；缺少外部条件进入 `blocked`；用户取消进入 `cancelled`。不得跳过 `review` 直接标记 `done`。
