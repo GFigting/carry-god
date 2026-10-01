@@ -1,0 +1,25 @@
+id: 2026-10-01-consistency-alignments
+status: done
+goal: 对齐框架一致性缺口：测试条款按价值分层统一口径、refactor/framework-optimization 技能按需化、并行派发文件所有权准则成文。
+workflow: framework:feature-development
+execution_profile: lightweight
+created_at: 2026-10-01T22:10:00+08:00
+next_action: 已完成并验证（check-all 通过、test 48/48）；随框架提交收口。
+requirements_reference: ../../requirements-inbox/2026-10-01-lean-fast-lane.md
+documentation:
+  impact: update
+interaction_protocol: v1
+next_user_action:
+  required: false
+  action: none
+  message: 一致性对齐已完成，无需操作。
+lightweight_evidence:
+  scope: 仅规则文本与断言口径（naming-and-submission、bugfix、refactor、framework-optimization、feature-development、VERSION、submission-rules 测试），无行为、接口或数据变更。
+  verification: node scripts/check-all.mjs 通过；node --test "test/*.test.mjs" 48/48（含随规则更新的 submission-rules 断言）。
+  review: 逐文件核对唯一来源互引一致、镜像技能零改动、断言与新条款同源。
+  integration_decision: 与轻量档提交同一主题，独立成笔提交（框架文件仅限本任务 7 个）。
+status_history:
+  - pending
+  - in_progress
+  - review
+  - done

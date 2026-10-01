@@ -1,0 +1,30 @@
+id: 2026-10-01-lean-fast-lane
+status: done
+goal: "为框架增加轻量档与比例原则：feature-development 支持 execution_profile lightweight、技能加载按需化、测试按价值分层、验证绑定交付点，减少小任务仪式开销。"
+workflow: framework:framework-optimization
+artifact_profile: compact
+created_at: 2026-10-01T21:30:00+08:00
+next_action: 已验收并提交（62b4596）；一致性缺口转轻量档任务 2026-10-01-consistency-alignments。
+requirements_reference: ../../requirements-inbox/2026-10-01-lean-fast-lane.md
+scope_decision:
+  mode: independent
+  rationale: 框架流程演进是独立交付物，不与 job-hunt 业务任务混合。
+acceptance_summary:
+  - "feature-development 可声明 execution_profile lightweight，校验器与回归测试同步接受并约束其证据字段（功能类免填 root_cause）。"
+  - feature-development 的技能加载按需化：仅 verification-before-completion 必留，其余转 conditional（跨模块/高风险/用户要求时加载）。
+  - 核心规则新增「最小充分流程」：三档分级、测试价值分层（硬三类）、现状证据保鲜、验证绑定交付点。
+  - VERSION 升次版本；README 与相关引用同步；check-all 与 test 全量通过。
+documentation:
+  impact: update
+interaction_protocol: v1
+next_user_action:
+  required: false
+  action: none
+  message: 已验收提交（62b4596），无待办；一致性缺口由轻量档任务跟进。
+artifacts:
+  primary: optimization-report.md
+status_history:
+  - pending
+  - in_progress
+  - review
+  - done
