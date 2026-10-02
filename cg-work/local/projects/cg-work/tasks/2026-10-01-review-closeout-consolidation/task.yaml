@@ -1,0 +1,32 @@
+id: 2026-10-01-review-closeout-consolidation
+status: done
+goal: 将提交收尾操作统一明确为 review 阶段的完成门禁，避免任务过早进入 done。
+workflow: framework:framework-optimization
+created_at: 2026-10-01T00:00:00+08:00
+requirements_reference: ../../requirements-inbox/2026-10-01-review-closeout-consolidation.md
+scope_decision:
+  mode: independent
+  rationale: 独立收敛 review、done 与提交收尾之间的规则边界。
+documentation:
+  impact: update
+  targets:
+    - core/operating-model.md
+    - workflows/review.md
+    - workflows/feature-development.md
+    - workflows/README.md
+    - core/naming-and-submission.md
+    - README.md
+interaction_protocol: v1
+next_action: 任务已关闭。
+next_user_action:
+  required: false
+  action: none
+  message: 规则收敛已完成，review 阶段统一收尾流程已写入框架。
+review_reference: review.md
+verification_reference: verification.md
+handoff_reference: handoff.md
+status_history:
+  - pending
+  - in_progress
+  - review
+  - done

@@ -1,0 +1,38 @@
+id: 2026-09-29-prototype-fidelity-contract
+status: review
+goal: 为原型增加实现契约和真实场景验收门禁，提升原型到项目的落地一致性。
+workflow: framework:framework-optimization
+created_at: 2026-09-29T00:00:00+08:00
+next_action: 等待用户验收原型落地契约和门禁变更。
+requirements_reference: ../../requirements-inbox/2026-09-29-prototype-fidelity-contract.md
+scope_decision:
+  mode: independent
+  rationale: 新增原型实现契约和对应验收标准，区别于既有原型采纳追踪任务。
+acceptance_summary:
+  - 原型任务在审查或完成前具备实现契约引用。
+  - 契约覆盖状态、视觉、资源、交互和验收映射。
+  - 原型技能要求真实数据和多视口验收。
+documentation:
+  impact: update
+  targets:
+    - skills/prototype/SKILL.md
+    - skills/prototype/LOGIC.md
+    - skills/prototype/UI.md
+    - core/prototype-implementation-contract.template.md
+    - core/operating-model.md
+    - workflows/README.md
+    - workflows/feature-development.md
+    - scripts/check-task.mjs
+    - test/check-task.test.mjs
+status_history:
+  - pending
+  - in_progress
+  - review
+interaction_protocol: v1
+next_user_action:
+  required: true
+  action: review_result
+  message: 请验收原型实现契约、技能说明和任务校验门禁；验收后再确定集成方式。
+plan_reference: plan.md
+review_reference: review.md
+verification_reference: verification.md
