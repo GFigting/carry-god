@@ -36,17 +36,24 @@ test('提交规则明确测试文件识别边界', async () => {
   assert.match(content, /项目已有约定更宽时，以项目约定为准/);
 });
 
-test('入口和工作流同步提交范围与验证顺序', async () => {
-  const content = await Promise.all(Object.values(files).map((file) => readFile(file, 'utf8')));
-  for (const source of content) {
-    assert.match(source, /原项目/);
-    assert.match(source, /(?:测试文件默认保留|默认保留测试文件)/);
-    assert.match(source, /明确授权/);
+test('提交政策只维护在唯一来源，其余位置只引用不复制', async () => {
+  const submission = await readFile(files.submission, 'utf8');
+  assert.match(submission, /## 原项目提交口径/);
+  assert.match(submission, /## 测试类与测试方法生成标准/);
+  // 唯一来源必须继续承载被引用的收尾正文，避免引用指向空承诺。
+  assert.match(submission, /将最新 SQL 合并到正式脚本/);
+  assert.match(submission, /清理与本次变更直接相关的冗余/);
+  assert.match(submission, /提交后同步更新受影响的业务、架构、接口或维护文档/);
+  assert.match(submission, /统一收尾顺序：新鲜验证/);
+  assert.match(submission, /仅表示创建本地 Git commit，不自动推送、合并、部署/);
+
+  const consumers = ['readme', 'maintenance', 'workflows', 'feature', 'bugfix'];
+  for (const key of consumers) {
+    const content = await readFile(files[key], 'utf8');
+    assert.match(content, /naming-and-submission\.md/, `${key} 必须引用提交政策唯一来源`);
+    assert.doesNotMatch(content, /简单映射、直通委托/, `${key} 不得复制提交政策正文`);
+    assert.doesNotMatch(content, /测试文件默认保留/, `${key} 不得复制提交政策正文`);
   }
-  assert.match(content[0], /删除前先完成必要验证/);
-  assert.match(content[4], /先完成验证/);
-  assert.match(content[4], /记录(?:类\/方法)?删除清单/);
-  assert.match(content[4], /复核提交差异/);
 });
 
 test('测试类和方法只为可观察行为或独立契约生成', async () => {

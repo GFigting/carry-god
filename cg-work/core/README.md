@@ -5,7 +5,10 @@
 - `operating-model.md`：对象、角色和复杂度。
 - `context-loading.md`：项目上下文加载。
 - `naming-and-submission.md`：命名和 Git 边界。
+- `continuous-learning.md`：任务学习的记录、证据和提升规则。
 - `framework-maintenance.md`：框架自身维护。
 - `project-onboarding.md`：项目接入。
-- `project-context.template.yaml`：唯一的项目上下文模板。
+- `project-code-standards.md`：项目未覆盖时的通用代码规范。
 - `special-operations.md`：外部与高风险操作的触发和授权边界。
+- `project-context.template.yaml`：唯一的项目上下文模板。
+- 其余 `*.template.md` 和 `roadmap.template.yaml` 是对应产物的格式模板。

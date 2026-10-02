@@ -70,6 +70,7 @@ pending -> in_progress -> review -> done
 任务可选使用以下字段补充机器可校验的摘要信息；未声明时保持历史任务兼容：
 
 - `acceptance_summary`：非空字符串数组，记录任务级可观察验收条件的短摘要。详细验收仍保存在需求包或 `plan.md`，该字段不替代它们。
+- `requirements_reference_note`：一句话说明需求包确实不可恢复的原因。仅在 `requirements_reference` 目标缺失时允许填写；目标存在时填写该字段视为错误。
 - `open_decisions`：未决事项数组。每项必须包含 kebab-case 的唯一 `id`、非空 `question` 和布尔 `blocking`；`blocking: true` 表示该事项阻塞当前任务推进，需要在 `next_user_action` 中提供解除动作。
 
 `next_action` 表示 Agent 的内部下一步；`next_user_action` 表示面向用户的动作提示，两者可以同时存在但职责不同。

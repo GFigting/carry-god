@@ -15,7 +15,7 @@
 
 任务产物按生命周期逐步生成：创建阶段先保留原始需求包和 `task.yaml`；开始实施时补充 `plan.md`；实现完成进入审查时补充 `review.md` 和 `verification.md`；任务声明持续学习协议时补充 `learning.md`；交接或关闭时补充 `handoff.md`。这些文件分别记录不同事实，不应以测试结果替代审查结论，也不应以审查结论替代验证证据。
 
-项目技能路径使用 `skills.paths` 声明，路径相对于 `project.root_path` 解析。例如 `.cg-work/skills` 对应项目根目录下的 `.cg-work/skills/`。先加载 `cg-work/skills/` 中的框架技能，再加载这些路径中的项目技能。登记的项目规则与文档路径（`instructions.files`、`coding_standards.files`、`documents.*`、`required_context`、`requirements.inbox_path`）同样相对于 `project.root_path` 解析，绝对路径亦可直接使用——优先相对写法以保证跨机/跨目录可移植。
+项目技能路径使用 `skills.paths` 声明，路径相对于 `project.root_path` 解析。例如 `.cg-work/skills` 对应项目根目录下的 `.cg-work/skills/`。先加载 `cg-work/skills/` 中的框架技能，再加载这些路径中的项目技能。登记的项目规则与文档路径（`instructions.files`、`coding_standards.files`、`documents.*`、`required_context`、`requirements.inbox_path`）同样相对于 `project.root_path` 解析，绝对路径亦可直接使用——优先相对写法以保证跨机/跨目录可移植。`project.root_path` 自身必须是绝对路径；只有框架受管项目 `cg-work` 可以使用字面量 `.`，表示 cg-work 框架目录自身，使被提交的上下文可以跨机复用。
 
 项目上下文可选声明 `submission`，登记业务仓库的提交工具、工具说明、默认参数和推送/合并/部署策略。进入提交或分支收尾流程前，Agent 必须先读取 `submission.instructions`，优先使用 `submission.tool`；`submission.policies` 只表达项目边界，不替代用户对推送、合并、部署等外部操作的明确授权。
 
@@ -24,8 +24,6 @@
 单仓项目继续以 `project.root_path` 作为主仓库。存在前后端或多个独立仓库时，可在可选的 `repositories` 中登记每个仓库的稳定 `id`、`role` 和绝对 `root_path`；`project.root_path` 不因此失效。执行验证前，先读取可选的 `verification.profiles`：每项声明 `stage`、`command`、`outcome` 及可选 `limitation`。`required` 表示该阶段应执行，`environment_limited` 表示必须保留未完成原因而不能写为通过，`not_applicable` 表示该任务不适用。profile 是项目验证入口的唯一记录处，不替代任务内的新鲜验证证据。
 
 启动、停止或重启项目时，必须先读取项目上下文的 `runtime.entrypoints` 和相关 `runtime.health_checks`。`runtime.entrypoints` 每项可以是可执行命令（例如 `npm run dev`、`mvn spring-boot:run`），也可以是已存在的启动脚本路径；优先执行上下文登记的入口，不得凭经验另造启动命令。框架工具可以将入口指向 `tools/` 下的共享脚本。若入口为空、路径失效或命令需要未登记的参数，先记录环境限制并请求补充上下文，不得静默绕过上下文启动。
-
-任务产物按生命周期逐步生成：创建阶段先保留原始需求包和 `task.yaml`；开始实施时补充 `plan.md`；实现完成进入审查时补充 `review.md` 和 `verification.md`；任务声明持续学习协议时补充 `learning.md`；交接或关闭时补充 `handoff.md`。这些文件分别记录不同事实，不应以测试结果替代审查结论，也不应以审查结论替代验证证据。
 
 工作流使用 `framework:<skill-name>` 引用框架技能，使用 `project:<skill-name>` 引用项目技能。项目技能只补充当前项目规则，不能静默覆盖框架规则；路径不存在或技能不可读时记录 `unavailable`。
 

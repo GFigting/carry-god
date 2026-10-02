@@ -42,3 +42,17 @@ jobs:
 
       - name: 校验技能镜像
         run: node scripts/check-skills.mjs
+
+      - name: 校验业务项目本地数据未入库
+        run: |
+          tracked=$(git ls-files local/projects \
+            | grep -v '^local/projects/cg-work/' \
+            | grep -v '^local/projects/\.gitkeep$' \
+            | grep -v -E '^local/projects/[^/]+/requirements-inbox/(README\.md|\.gitkeep)$' \
+            || true)
+          if [ -n "$tracked" ]; then
+            echo "业务项目本地数据不得入库："
+            echo "$tracked"
+            exit 1
+          fi
+          echo "业务项目本地数据未入库"

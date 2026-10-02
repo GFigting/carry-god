@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { checkTaskRecord } from './check-task.mjs';
+import { checkProjectContext } from './check-project.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
@@ -31,12 +33,87 @@ function frameworkSkillPath(reference) {
   return path.join(root, 'skills', name);
 }
 
-async function checkMarkdownLinks(file) {
+function slugify(text) {
+  return text.trim().toLowerCase()
+    .replace(/[`*_~[\]]/g, '')
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
+    .replace(/\s+/g, '-');
+}
+
+// 围栏代码块里的 # 不是标题，必须排除，否则会产生幽灵锚点。
+function headingTexts(content) {
+  const headings = [];
+  let fenced = false;
+  for (const line of content.split(/\r?\n/)) {
+    if (/^\s*(?:```|~~~)/.test(line)) {
+      fenced = !fenced;
+      continue;
+    }
+    if (fenced) continue;
+    const match = line.match(/^#{1,6}\s+(.+?)\s*$/);
+    if (match) headings.push(match[1]);
+  }
+  return headings;
+}
+
+async function headingSlugs(file) {
+  return new Set(headingTexts(await fs.readFile(file, 'utf8')).map(slugify));
+}
+
+function decode(fragment) {
+  try { return decodeURIComponent(fragment); } catch { return fragment; }
+}
+
+// 兼容 `](dest)`、`](<dest>)` 与 `](dest "title")`；返回按优先级排列的候选目标。
+function linkDestinations(raw) {
+  const trimmed = raw.trim();
+  const angle = trimmed.match(/^<([^>]+)>/);
+  if (angle) return [angle[1].trim()];
+  const withoutTitle = trimmed.replace(/\s+["'(].*$/, '').trim();
+  return withoutTitle === trimmed ? [trimmed] : [withoutTitle, trimmed];
+}
+
+async function checkMarkdownLinks(file, { checkAnchors }) {
   const content = await fs.readFile(file, 'utf8');
-  for (const match of content.matchAll(/\[[^\]]+\]\(([^)#]+)(?:#[^)]+)?\)/g)) {
-    const target = match[1].trim();
-    if (!target || /^(https?:|mailto:)/.test(target)) continue;
-    if (!(await exists(path.resolve(path.dirname(file), target)))) errors.push(`broken link: ${path.relative(root, file)} -> ${target}`);
+  for (const match of content.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)) {
+    const raw = match[1].trim();
+    if (!raw || /^(https?:|mailto:)/.test(raw)) continue;
+    let resolved;
+    for (const candidate of linkDestinations(raw)) {
+      const [rawTarget, fragment] = candidate.split('#');
+      const targetFile = rawTarget ? path.resolve(path.dirname(file), rawTarget) : file;
+      if (!rawTarget || await exists(targetFile)) {
+        resolved = { targetFile, fragment };
+        break;
+      }
+    }
+    if (!resolved) {
+      errors.push(`broken link: ${path.relative(root, file)} -> ${raw}`);
+      continue;
+    }
+    if (!checkAnchors || !resolved.fragment) continue;
+    if (!(await headingSlugs(resolved.targetFile)).has(slugify(decode(resolved.fragment)))) {
+      errors.push(`broken anchor: ${path.relative(root, file)} -> ${raw}`);
+    }
+  }
+}
+
+async function checkManagedProjectRecords() {
+  const projectRoot = path.join(root, 'local', 'projects', 'cg-work');
+  const contextFile = path.join(projectRoot, 'project-context.yaml');
+  if (await exists(contextFile)) {
+    for (const error of await checkProjectContext(contextFile)) {
+      errors.push(`local/projects/cg-work/project-context.yaml: ${error}`);
+    }
+  }
+  const tasksRoot = path.join(projectRoot, 'tasks');
+  if (!(await exists(tasksRoot))) return;
+  for (const entry of await fs.readdir(tasksRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const taskFile = path.join(tasksRoot, entry.name, 'task.yaml');
+    if (!(await exists(taskFile))) continue;
+    const label = path.relative(root, taskFile).replaceAll(path.sep, '/');
+    for (const error of await checkTaskRecord(taskFile)) errors.push(`${label}: ${error}`);
   }
 }
 
@@ -51,12 +128,14 @@ async function walk(dir) {
       if (!isLocal(relative) && !isSkill(relative) && !(await exists(path.join(target, 'README.md')))) errors.push(`missing README.md: ${relative}`);
       await walk(target);
     } else if (!isSkill(relative) && entry.name.endsWith('.md')) {
-      await checkMarkdownLinks(target);
+      // 锚点校验只覆盖框架内容；local/ 下的项目资料由项目自行维护。
+      await checkMarkdownLinks(target, { checkAnchors: !isLocal(relative) });
     }
   }
 }
 
 await walk(root);
+await checkManagedProjectRecords();
 await checkRequirementsInboxes();
 const workflowFiles = (await fs.readdir(path.join(root, 'workflows'), { withFileTypes: true }))
   .filter((entry) => entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'README.md')
@@ -92,6 +171,7 @@ for (const requiredIgnoreRule of [
   '!/local/projects/*/requirements-inbox/',
   '!/local/projects/*/requirements-inbox/README.md',
   '!/local/projects/*/requirements-inbox/.gitkeep',
+  '!/local/projects/cg-work/**',
 ]) {
   if (!ignore.includes(requiredIgnoreRule)) errors.push(`missing local project ignore rule: ${requiredIgnoreRule}`);
 }

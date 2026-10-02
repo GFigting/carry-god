@@ -156,3 +156,28 @@ test('接受相对 project.root_path 的项目路径', async () => {
   await rm(root, { recursive: true, force: true });
   await rm(contextDir, { recursive: true, force: true });
 });
+
+const managedContext = (id) => `project:\n  id: ${id}\n  root_path: .\ntechnology:\n  stack: []\ninstructions:\n  files: []\ndocuments:\n  business: []\n  architecture: []\n  api: []\nruntime:\n  entrypoints: []\n  health_checks: []\nrequirements:\n  inbox_path: ./local/projects/cg-work/requirements-inbox\nvocabulary:\n  glossary: null\nskills:\n  paths: []\nrequired_context: []\n`;
+
+test('框架受管项目可以用 . 作为 project.root_path', async () => {
+  const contextDir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-context-'));
+  const projectDir = path.join(contextDir, 'cg-work');
+  await mkdir(projectDir);
+  const file = path.join(projectDir, 'project-context.yaml');
+  await writeFile(file, managedContext('cg-work'));
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
+  await rm(contextDir, { recursive: true, force: true });
+});
+
+test('业务项目不允许用 . 作为 project.root_path', async () => {
+  const contextDir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-context-'));
+  const projectDir = path.join(contextDir, 'sample-project');
+  await mkdir(projectDir);
+  const file = path.join(projectDir, 'project-context.yaml');
+  await writeFile(file, managedContext('sample-project'));
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /只有框架受管项目 cg-work 可以使用 project\.root_path: \./);
+  await rm(contextDir, { recursive: true, force: true });
+});

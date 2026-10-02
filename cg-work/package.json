@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "check": "node scripts/check-all.mjs"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"

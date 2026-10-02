@@ -2,6 +2,7 @@ project:
   id: example-project
   name: 示例项目
   domain: 业务领域
+  # 必须是绝对路径；只有框架受管项目 cg-work 可以用字面量 . 表示框架目录自身。
   root_path: D:/path/to/project
 repositories: []
 technology:

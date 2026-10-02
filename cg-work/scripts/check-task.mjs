@@ -3,7 +3,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 
-const taskFile = process.argv[2];
 const frameworkRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const workflowRoot = path.join(frameworkRoot, 'workflows');
 const allowedStatuses = new Set(['pending', 'in_progress', 'review', 'done', 'blocked', 'cancelled']);
@@ -19,10 +18,7 @@ const transitions = {
   cancelled: new Set(),
 };
 
-if (!taskFile) {
-  console.error('用法：node scripts/check-task.mjs <任务记录文件路径>');
-  process.exitCode = 1;
-} else {
+export async function checkTaskRecord(taskFile) {
   const file = path.resolve(taskFile);
   const errors = [];
   let task;
@@ -139,11 +135,22 @@ if (!taskFile) {
     await validateTaskReferences(task, file, errors);
   }
 
-  if (errors.length) {
-    console.error(errors.join('\n'));
+  return errors;
+}
+
+const taskFile = process.argv[2];
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  if (!taskFile) {
+    console.error('用法：node scripts/check-task.mjs <任务记录文件路径>');
     process.exitCode = 1;
   } else {
-    console.log(`task checks passed: ${file}`);
+    const errors = await checkTaskRecord(taskFile);
+    if (errors.length) {
+      console.error(errors.join('\n'));
+      process.exitCode = 1;
+    } else {
+      console.log(`task checks passed: ${path.resolve(taskFile)}`);
+    }
   }
 }
 
@@ -232,9 +239,10 @@ async function validateStandardsPreflight(task, taskFilePath, errors) {
 }
 
 async function validateTaskReferences(task, taskFilePath, errors) {
-  for (const key of ['parent_task_reference', 'roadmap_reference', 'closure_reference', 'requirements_reference']) {
+  for (const key of ['parent_task_reference', 'roadmap_reference', 'closure_reference']) {
     if (task[key] !== undefined) await requireNonSelfReference(task[key], key, taskFilePath, errors);
   }
+  await validateRequirementsReference(task, taskFilePath, errors);
 
   for (const key of ['depends_on', 'follow_up_task_references', 'child_task_references']) {
     if (task[key] === undefined) continue;
@@ -259,6 +267,32 @@ async function validateTaskReferences(task, taskFilePath, errors) {
   if (task.status === 'done' && task.roadmap_reference !== undefined) {
     await requireReference(task.closure_reference, 'closure_reference', taskFilePath, errors);
   }
+}
+
+async function validateRequirementsReference(task, taskFilePath, errors) {
+  const note = task.requirements_reference_note;
+  if (note !== undefined && (typeof note !== 'string' || !note.trim())) {
+    errors.push('requirements_reference_note 必须是非空字符串');
+    return;
+  }
+  if (task.requirements_reference === undefined) {
+    if (note !== undefined) errors.push('requirements_reference_note 不能脱离 requirements_reference 单独使用');
+    return;
+  }
+  if (typeof task.requirements_reference !== 'string' || !task.requirements_reference.trim()) {
+    errors.push('requirements_reference 必须是非空路径字符串');
+    return;
+  }
+  const target = path.resolve(path.dirname(taskFilePath), task.requirements_reference);
+  if (target === taskFilePath) {
+    errors.push('requirements_reference 不能指向任务自身');
+    return;
+  }
+  if (await exists(target)) {
+    if (note !== undefined) errors.push('requirements_reference 目标存在时不得填写 requirements_reference_note');
+    return;
+  }
+  if (note === undefined) errors.push(`requirements_reference 指向的文件不存在：${task.requirements_reference}`);
 }
 
 async function validateScopeDecision(task, taskFilePath, errors) {

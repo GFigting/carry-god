@@ -161,6 +161,64 @@ test('接受复用已有需求箱原始需求的任务引用', async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
+test('需求包缺失且没有替代说明时被拒绝', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-02-lost-requirement');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-10-02-lost-requirement\nstatus: pending\ngoal: Reference a lost requirement package\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-02\nrequirements_reference: ../requirements-inbox/lost.md\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Verify\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /requirements_reference 指向的文件不存在/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('需求包确实不可恢复时接受替代说明', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-02-lost-requirement-noted');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-10-02-lost-requirement-noted\nstatus: pending\ngoal: Reference a lost requirement package\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-02\nrequirements_reference: ../requirements-inbox/lost.md\nrequirements_reference_note: 需求包未随框架提交，本机不可恢复\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Verify\n');
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('需求包仍然存在时不得填写替代说明', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-02-present-requirement');
+  const inboxDir = path.join(dir, 'requirements-inbox');
+  await mkdir(taskDir);
+  await mkdir(inboxDir);
+  await writeFile(path.join(inboxDir, 'live.md'), '# 原始需求\n');
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-10-02-present-requirement\nstatus: pending\ngoal: Reference a live requirement package\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-02\nrequirements_reference: ../requirements-inbox/live.md\nrequirements_reference_note: 需求包未随框架提交，本机不可恢复\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Verify\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /目标存在时不得填写 requirements_reference_note/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('替代说明必须是脱离引用也能自查的非空文本', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-02-blank-note');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-10-02-blank-note\nstatus: pending\ngoal: Reject a blank note\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-02\nrequirements_reference: ../requirements-inbox/lost.md\nrequirements_reference_note: ""\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Verify\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /requirements_reference_note 必须是非空字符串/);
+
+  const soloDir = path.join(dir, '2026-10-02-solo-note');
+  await mkdir(soloDir);
+  const soloFile = path.join(soloDir, 'task.yaml');
+  await writeFile(soloFile, 'id: 2026-10-02-solo-note\nstatus: pending\ngoal: Reject an orphan note\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-02\nrequirements_reference_note: 需求包不可恢复\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Verify\n');
+  const soloResult = await run(soloFile);
+  assert.notEqual(soloResult.code, 0);
+  assert.match(soloResult.output, /不能脱离 requirements_reference 单独使用/);
+  await rm(dir, { recursive: true, force: true });
+});
+
 test('完成任务前必须有审查证据', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
   const taskDir = path.join(dir, '2026-09-10-project-initialization');

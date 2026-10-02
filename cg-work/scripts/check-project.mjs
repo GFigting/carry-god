@@ -1,13 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 
-const contextFile = process.argv[2];
+const frameworkRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-if (!contextFile) {
-  console.error('用法：node scripts/check-project.mjs <项目上下文文件路径>');
-  process.exitCode = 1;
-} else {
+export async function checkProjectContext(contextFile) {
   const file = path.resolve(contextFile);
   const errors = [];
   let content;
@@ -15,8 +13,7 @@ if (!contextFile) {
   try {
     content = await fs.readFile(file, 'utf8');
   } catch (error) {
-    console.error(`无法读取项目上下文：${file}（${error.message}）`);
-    process.exitCode = 1;
+    errors.push(`无法读取项目上下文：${file}（${error.message}）`);
   }
 
   if (content !== undefined) {
@@ -40,10 +37,16 @@ if (!contextFile) {
       const projectId = stringField(project, 'id', 'project.id', errors);
 
       if (projectId && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(projectId)) errors.push('project.id 必须使用小写 kebab-case');
-      if (rootPathValue && !path.isAbsolute(rootPathValue)) errors.push('project.root_path 必须是绝对路径');
+      if (rootPathValue === '.' && projectId !== 'cg-work') {
+        errors.push('只有框架受管项目 cg-work 可以使用 project.root_path: .');
+      } else if (rootPathValue && rootPathValue !== '.' && !path.isAbsolute(rootPathValue)) {
+        errors.push('project.root_path 必须是绝对路径，或框架自身项目使用的字面量 .');
+      }
       if (projectId && path.basename(path.dirname(file)) !== projectId) errors.push('上下文目录名必须与 project.id 一致');
 
-      const projectRoot = rootPathValue && path.isAbsolute(rootPathValue) ? path.resolve(rootPathValue) : '';
+      const projectRoot = rootPathValue === '.'
+        ? frameworkRoot
+        : (rootPathValue && path.isAbsolute(rootPathValue) ? path.resolve(rootPathValue) : '');
       if (projectRoot) {
         try {
           const stat = await fs.stat(projectRoot);
@@ -74,7 +77,7 @@ if (!contextFile) {
       await checkSubmission(submission, errors);
       if (inboxPath) {
         const inboxResolved = path.isAbsolute(inboxPath) ? inboxPath : (projectRoot ? path.resolve(projectRoot, inboxPath) : '');
-        if (!inboxResolved) errors.push('requirements.inbox_path 必须相对于 project.root_path');
+        if (!inboxResolved) errors.push('project.root_path 无法解析，无法校验 requirements.inbox_path');
         else if (path.basename(inboxResolved) !== 'requirements-inbox') errors.push('requirements.inbox_path 必须指向 requirements-inbox 目录');
         else if (!(await exists(inboxResolved))) errors.push(`requirements.inbox_path 不存在：${inboxResolved}`);
       }
@@ -93,11 +96,22 @@ if (!contextFile) {
     }
   }
 
-  if (errors.length) {
-    console.error(errors.join('\n'));
+  return errors;
+}
+
+const contextFile = process.argv[2];
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  if (!contextFile) {
+    console.error('用法：node scripts/check-project.mjs <项目上下文文件路径>');
     process.exitCode = 1;
-  } else if (content !== undefined) {
-    console.log(`项目上下文校验通过：${file}`);
+  } else {
+    const errors = await checkProjectContext(contextFile);
+    if (errors.length) {
+      console.error(errors.join('\n'));
+      process.exitCode = 1;
+    } else {
+      console.log(`项目上下文校验通过：${path.resolve(contextFile)}`);
+    }
   }
 }
 
@@ -220,7 +234,7 @@ async function checkAbsolutePaths(values, label, errors, { allowUrls = false, ba
     else if (allowUrls && /^(https?:|mailto:)/.test(value)) continue;
     else if (path.isAbsolute(value)) {
       if (!(await exists(value))) errors.push(`登记的路径不存在：${value}`);
-    } else if (!base) errors.push(`登记的项目路径必须相对于 project.root_path：${value}`);
+    } else if (!base) errors.push(`project.root_path 无法解析，登记路径无法校验：${value}`);
     else if (!(await exists(path.resolve(base, value)))) errors.push(`登记的路径不存在：${path.resolve(base, value)}`);
   }
 }
