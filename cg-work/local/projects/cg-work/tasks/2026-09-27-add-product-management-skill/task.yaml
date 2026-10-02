@@ -13,6 +13,7 @@ scope:
     - 项目业务代码修改
     - 独立产品管理工作流
 requirements_reference: ../../requirements-inbox/2026-09-27-add-product-management-skill.md
+requirements_reference_note: 需求包在提交策略统一前未随框架提交，本机已不可恢复；保留引用路径作为溯源。
 workflow: framework:framework-optimization
 execution_profile: standard
 learning_protocol: v1

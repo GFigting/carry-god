@@ -2,7 +2,7 @@ project:
   id: cg-work
   name: cg-work
   domain: AI 软件开发工作框架
-  root_path: D:/songgf/Projects/all-work/carry-god/cg-work
+  root_path: .
 technology:
   stack:
     - Node.js
@@ -28,7 +28,7 @@ runtime:
   entrypoints: []
   health_checks: []
 requirements:
-  inbox_path: D:/songgf/Projects/all-work/carry-god/cg-work/local/projects/cg-work/requirements-inbox
+  inbox_path: ./local/projects/cg-work/requirements-inbox
 vocabulary:
   glossary: null
 skills:

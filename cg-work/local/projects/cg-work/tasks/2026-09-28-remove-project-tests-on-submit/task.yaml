@@ -5,6 +5,7 @@ workflow: framework:framework-optimization
 created_at: 2026-09-28T00:00:00+08:00
 next_action: 任务已关闭。
 requirements_reference: ../../requirements-inbox/2026-09-28-remove-project-tests-on-submit.md
+requirements_reference_note: 需求包在提交策略统一前未随框架提交，本机已不可恢复；保留引用路径作为溯源。
 scope_decision:
   mode: independent
   rationale: 新增原项目提交时测试文件删除门禁，具有独立的提交验收标准。

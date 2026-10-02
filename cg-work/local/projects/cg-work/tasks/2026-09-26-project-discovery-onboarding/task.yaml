@@ -5,6 +5,7 @@ workflow: framework:framework-optimization
 execution_profile: standard
 created_at: 2026-09-26
 requirements_reference: ../../requirements-inbox/2026-09-26-project-discovery-onboarding.md
+requirements_reference_note: 需求包在提交策略统一前未随框架提交，本机已不可恢复；保留引用路径作为溯源。
 scope_decision:
   mode: independent
   rationale: 新增项目识别阶段会改变框架入口路由和初始化门禁，具有独立验收标准，不能并入既有初始化任务。

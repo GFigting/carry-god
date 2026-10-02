@@ -5,6 +5,7 @@ workflow: framework:framework-optimization
 created_at: 2026-09-29T00:00:00+08:00
 next_action: 等待用户验收原型落地契约和门禁变更。
 requirements_reference: ../../requirements-inbox/2026-09-29-prototype-fidelity-contract.md
+requirements_reference_note: 需求包在提交策略统一前未随框架提交，本机已不可恢复；保留引用路径作为溯源。
 scope_decision:
   mode: independent
   rationale: 新增原型实现契约和对应验收标准，区别于既有原型采纳追踪任务。

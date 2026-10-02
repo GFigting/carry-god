@@ -1,0 +1,47 @@
+id: 2026-10-02-framework-consistency-and-simplification
+status: done
+goal: 修复框架入口、政策与校验器之间的一致性缺口，并收敛重复叙述，使规则只有一个来源。
+workflow: framework:framework-optimization
+created_at: 2026-10-02T10:45:00+08:00
+artifact_profile: compact
+artifacts:
+  primary: ./plan.md
+requirements_reference: ../../requirements-inbox/2026-10-02-framework-consistency-and-simplification.md
+scope_decision:
+  mode: independent
+  rationale: 同一批一致性缺口共享统一来源与单一验证范围，合并为一次框架收敛，避免拆成多个互相引用的小任务。
+acceptance_summary:
+  - 入口文档不再复制规则，规则漂移不再可能发生
+  - 提交政策只在 core/naming-and-submission.md 维护正文，其余位置只引用
+  - check-all.mjs 能拦住断链锚点、断链需求引用和框架受管项目记录失效
+  - cg-work 自身项目上下文可在不同机器复用
+  - npm run check 一次执行框架全量校验
+documentation:
+  impact: update
+  targets:
+    - AGENTS.md
+    - README.md
+    - core/context-loading.md
+    - core/framework-maintenance.md
+    - core/naming-and-submission.md
+    - core/operating-model.md
+    - core/README.md
+    - workflows/README.md
+    - workflows/feature-development.md
+    - workflows/bugfix.md
+    - scripts/check-all.mjs
+    - scripts/check-project.mjs
+    - scripts/check-task.mjs
+    - scripts/README.md
+    - VERSION
+next_action: 任务已关闭；产物废弃由 2026-10-02-retire-initialization-report 单独处理。
+interaction_protocol: v1
+next_user_action:
+  required: false
+  action: none
+  message: 框架一致性收敛已验收并提交（规则与校验为 1c7ebef），未推送、未合并。剩余待办：initialization-report 废弃已立项，check-skills 换行符宽容化可在下次框架维护处理。
+status_history:
+  - pending
+  - in_progress
+  - review
+  - done

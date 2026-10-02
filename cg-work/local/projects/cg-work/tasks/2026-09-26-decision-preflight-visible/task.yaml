@@ -5,6 +5,7 @@ workflow: framework:framework-optimization
 execution_profile: standard
 created_at: 2026-09-26
 requirements_reference: ../../requirements-inbox/2026-09-26-decision-preflight-visible.md
+requirements_reference_note: 需求包在提交策略统一前未随框架提交，本机已不可恢复；保留引用路径作为溯源。
 scope_decision:
   mode: independent
   rationale: 新增自动决策预检的可见性和高风险确认门禁，具有独立协议和验收标准，不能追加到已完成的项目识别任务。
