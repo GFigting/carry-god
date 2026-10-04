@@ -14,14 +14,14 @@
    新任务可使用 `artifact_profile: compact`：先有 `task.yaml`，再按任务意图生成一个主产物；验证、学习和交接默认回写任务记录或主产物。历史任务继续按原有产物引用规则运行；详见 [任务证据生命周期](core/operating-model.md#任务证据生命周期)。
    若创建原型，记录原型引用及其采纳结论、实现映射和验证映射。
 8. 在 `review` 阶段完成统一收尾（验证、测试处理、冗余清理、文档同步和集成决策）后，再将任务标记为 `done`。
-9. 运行 `npm run check`（等价于 `node scripts/check-all.mjs`），确认框架结构、文档锚点、工作流引用和框架受管项目记录有效；单文件校验使用 `node scripts/check-task.mjs <task.yaml>` 或 `node scripts/check-project.mjs <project-context.yaml>`；维护技能镜像时另行运行 `node scripts/check-skills.mjs`。
+9. 运行 `npm run check`（等价于 `node scripts/check-all.mjs`），确认框架结构、文档锚点、工作流引用和框架受管项目记录有效；单文件校验使用 `node scripts/check-task.mjs <task.yaml>` 或 `node scripts/check-project.mjs <project-context.yaml>`；维护技能镜像时另行运行 `node scripts/check-skills.mjs`。需要交付验收时用 `npm run queue` 查看待验收清单，并用 `node scripts/acceptance-queue.mjs --accept <id>[,<id>...] --note "<说明>"` 一次验收多条。
 10. 涉及外部系统、破坏性、生产数据、认证、部署或跨会话操作时，先读取 `core/special-operations.md`，按其场景表完成决策预检并取得用户授权；集成前的分支收尾同样适用。
 
 涉及新旧模型、历史数据、字段删除、接口兼容或数据迁移时，先区分模块生命周期与本次变更性质；新模块默认采用新模型，不自动兼容未发布旧实现。任何历史数据迁移、删除或语义转换必须提供选项并取得用户确认，再将选择记录为任务决策。
 
-工作流使用 `framework:<skill-name>` 引用框架技能，使用 `project:<skill-name>` 引用项目技能。项目技能目录由项目上下文的 `skills.paths` 指定，并相对于项目根路径解析。
+工作流使用 `framework:<skill-name>` 引用框架技能，使用 `project:<skill-name>` 引用项目技能。`framework:<name>` 的含义由所在位置决定：在 `task.yaml` 的 `workflow` 字段中指向 `workflows/<name>.md`，在工作流的技能字段和正文中指向 `skills/<name>/`——按字段判定，不按名字猜。项目技能目录由项目上下文的 `skills.paths` 指定，并相对于项目根路径解析。
 
-产品需求、用户故事、验收标准、优先级、路线图或版本验收尚未成形时，可显式调用 `framework:product-management`。该技能只负责产品定义和交付边界，不自动修改业务代码或外部系统；确认后的定义可继续交给 `framework:to-spec` 或 `framework:to-tickets`，实现仍遵循 `framework:feature-development`。
+产品需求、用户故事、验收标准、优先级、路线图或版本验收尚未成形时，可显式调用 `framework:product-management`。该技能只负责产品定义和交付边界，不自动修改业务代码或外部系统；项目级路线图写入**原项目仓库内**并登记到项目上下文的 `product.roadmap_path`（格式见 [项目路线图模板](core/project-roadmap.template.md)），确认后的定义可继续交给 `framework:to-spec` 或 `framework:to-tickets`，实现仍遵循 `framework:feature-development`。
 
 ## 目录边界
 
@@ -35,11 +35,13 @@
 
 单页面原型和不依赖业务仓库的多页面原型存放在 `local/projects/<project-id>/design/<design-name>/`；根目录 `designs/` 已废弃，不再用于新产物。依赖真实项目路由、组件或运行入口的多页面原型，可由用户选择存放在关联项目的 `<project.root_path>/prototypes/<design-name>/`，并在项目上下文的 `prototypes.paths` 中登记路径和入口。
 
-跨模块、跨会话、未决关键决策较多或不能作为单个任务验收的需求，使用 `framework:large-task-decomposition`：先通过 `framework:wayfinder` 明确决策，再在 `local/projects/<project-id>/roadmaps/<roadmap-id>/` 建立路线图，最后创建可独立验收的研发任务。关闭路线图时只生成索引，不迁移或删除任务证据。
+跨模块、跨会话、未决关键决策较多或不能作为单个任务验收的需求，使用 `framework:large-task-decomposition`：先通过 `framework:wayfinder` 明确决策，再在 `local/projects/<project-id>/roadmaps/<roadmap-id>/` 建立**需求拆分索引**，最后创建可独立验收的研发任务（格式见 [需求拆分索引模板](core/decomposition.template.md)）。关闭索引时只生成索引记录，不迁移或删除任务证据。
+
+**项目路线图**是另一种产物：它存放在**原项目仓库内**（惯例 `docs/roadmap.md`），路径相对 `project.root_path` 登记在项目上下文的 `product.roadmap_path`，按版本与主题编排整个项目的切片、状态与验收，由 `framework:product-management` 维护，格式见 [项目路线图模板](core/project-roadmap.template.md)，内容校验见 `scripts/check-product.mjs`。需求拆分索引服务于"一个大需求"且留在框架本地，项目路线图服务于"整个项目"且随项目代码版本化，两者不互相替代。
 
 新任务使用 `interaction_protocol: v1` 和 `next_user_action` 记录面向用户的下一步。等待确认、外部输入、审查验收或完成交接时，必须明确说明用户是否需要操作以及具体动作；没有操作时说明 Agent 将继续处理什么。
 
-原型是任务的正式设计产物，不是可选的演示附件。声明 `prototype_reference` 的任务在审查或完成前，必须以 `prototype_disposition_reference` 说明采纳、部分采纳或不采纳的结论，并链接对应实现和验证证据。
+原型是任务的正式设计产物，不是可选的演示附件。声明 `prototype_reference` 的任务在进入实现前必须在计划记录写 `## 原型实现契约` 章节，在审查或完成前必须在评审记录写 `## 原型采纳` 章节，说明采纳、部分采纳或不采纳的结论，并链接对应实现和验证证据；规则与章节骨架见 [原型与任务记录](core/operating-model.md#原型与任务记录)。
 
 ## 提交规则
 

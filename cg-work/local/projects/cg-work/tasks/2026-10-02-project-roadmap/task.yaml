@@ -1,0 +1,45 @@
+id: 2026-10-02-project-roadmap
+status: review
+goal: 定义项目级路线图产物：存放在原项目仓库内并由项目上下文登记路径，配套格式模板与校验器。
+workflow: framework:framework-optimization
+created_at: 2026-10-02T16:10:00+08:00
+artifact_profile: compact
+artifacts:
+  primary: ./plan.md
+requirements_reference: ../../requirements-inbox/2026-10-02-project-roadmap.md
+scope_decision:
+  mode: independent
+  rationale: 属新产物类型的定义与门禁建设，验收对象是位置规则、格式与校验器，与前序收敛任务独立。
+acceptance_summary:
+  - 项目路线图存放在原项目仓库内，路径由 project-context 的 product.roadmap_path 登记
+  - check-product.mjs 校验章节、切片状态、版本主题登记、引用路径与未决决策动作
+  - check-project.mjs 校验 product.roadmap_path 的存在性与相对性
+  - 需求拆分模板改名为 decomposition.template.md，两种路线图命名不再冲突
+  - 框架本地不再保留项目路线图副本
+documentation:
+  impact: update
+  targets:
+    - core/project-roadmap.template.md
+    - core/decomposition.template.md
+    - core/README.md
+    - core/context-loading.md
+    - core/roadmap.template.yaml
+    - core/roadmap-closure.template.md
+    - README.md
+    - local/README.md
+    - skills/product-management/SKILL.md
+    - skills/large-task-decomposition/SKILL.md
+    - scripts/README.md
+    - scripts/check-product.mjs
+    - scripts/check-all.mjs
+    - VERSION
+next_action: 等待用户验收位置规则、校验器与 job-hunt 项目路线图，再并入框架提交。
+interaction_protocol: v1
+next_user_action:
+  required: true
+  action: accept-result
+  message: 项目路线图已按你的指正落在原项目仓库：job-hunt 的 docs/roadmap.md（内容取自该项目真实拆分索引与 8 个任务状态），并在其 project-context 登记 product.roadmap_path；跨仓库引用用任务 id / 需求包名，check-product 已能反查项目并校验（73 测试通过、check-all 通过）。该文件需你在 job-hunt 仓库自行提交；框架侧请验收后我并入 2.24.0 提交（不推送）。
+status_history:
+  - pending
+  - in_progress
+  - review

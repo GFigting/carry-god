@@ -23,6 +23,9 @@ runtime:
   health_checks: []
 prototypes:
   paths: []
+# 可选：项目路线图存放在原项目仓库内，路径相对 project.root_path 登记。
+product:
+  roadmap_path: null
 verification:
   profiles: []
 requirements:

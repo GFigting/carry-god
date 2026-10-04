@@ -2,9 +2,34 @@
 
 核心对象为 Goal、Task、Context、Plan、Evidence、Artifact、Decision、Learning、Roadmap 和 NextAction。
 
-原型是 Artifact 的一种。任务声明 `prototype_reference` 后，原型不能只作为演示文件保留：进入 `review` 或 `done` 前，必须通过 `prototype_disposition_reference` 指向任务目录内的采纳记录，说明采纳结论、原型到实现的映射、原型到验证证据的映射，以及未采纳项及原因。记录格式见 [原型采纳记录模板](prototype-disposition.template.md)。
+## 原型与任务记录
 
-为减少原型到项目的实现偏差，声明 `prototype_reference` 的任务在进入 `in_progress` 前必须通过 `prototype_contract_reference` 指向实现契约，并在进入 `review` 或 `done` 时保持有效。契约至少说明问题与目标、状态与场景、视觉与响应式约束、资源与依赖、交互与业务规则和验收映射。格式见 [原型实现契约模板](prototype-implementation-contract.template.md)。
+原型是 Artifact 的一种，任务的唯一原型字段是 `prototype_reference`。原型不单独建档，写入任务已有的两份记录：
+
+- **计划记录**（`plan.md`；compact 任务为其主产物）在进入 `in_progress` 前必须包含 `## 原型实现契约` 章节，说明问题与目标、状态与场景、视觉与响应式约束、资源与依赖、交互与业务规则、验收映射，并保持到任务关闭。
+- **评审记录**（`review.md`；compact 任务为其主产物）在进入 `review` 或 `done` 前必须包含 `## 原型采纳` 章节，说明采纳结论、原型到实现的映射、原型到验证证据的映射，以及未采纳项及原因。
+
+章节骨架：
+
+```markdown
+## 原型实现契约
+
+### 问题与目标
+### 状态与场景
+### 视觉与响应式约束
+### 资源与依赖
+### 交互与业务规则
+### 验收映射
+
+## 原型采纳
+
+### 采纳结论
+### 实现映射
+### 验证映射
+### 未采纳项
+```
+
+`core/prototype-implementation-contract.template.md` 和 `core/prototype-disposition.template.md` 已废弃并保留为上述章节的说明；`prototype_contract_reference` 与 `prototype_disposition_reference` 字段不再使用，写入会被校验器拒绝。
 
 Learning 是由任务执行中的观察形成、经审查判定去向的经验记录。它不替代需求、计划、审查或验证；具体的连续记录、证据和提升规则见 [持续学习与经验沉淀](continuous-learning.md)。
 
@@ -71,6 +96,7 @@ pending -> in_progress -> review -> done
 
 - `acceptance_summary`：非空字符串数组，记录任务级可观察验收条件的短摘要。详细验收仍保存在需求包或 `plan.md`，该字段不替代它们。
 - `requirements_reference_note`：一句话说明需求包确实不可恢复的原因。仅在 `requirements_reference` 目标缺失时允许填写；目标存在时填写该字段视为错误。
+- `standards_preflight` 不是任务字段：它是 `plan.md` 与 `verification.md` 中的证据段落，写在 `task.yaml` 会被校验器拒绝。
 - `open_decisions`：未决事项数组。每项必须包含 kebab-case 的唯一 `id`、非空 `question` 和布尔 `blocking`；`blocking: true` 表示该事项阻塞当前任务推进，需要在 `next_user_action` 中提供解除动作。
 
 `next_action` 表示 Agent 的内部下一步；`next_user_action` 表示面向用户的动作提示，两者可以同时存在但职责不同。
@@ -134,3 +160,11 @@ Roadmap 是项目级索引，不是任务目录的替代品。其唯一默认位
 任务使用 `interaction_protocol: v1` 时，以 `next_user_action` 向用户表达当前是否需要其操作。该对象必须含有 `required`（布尔值）、`action`（动作标识）和 `message`（面向用户的明确提示）。任务进入 `review`、`blocked` 或 `done` 时必须提供该对象：审查阶段请求验收或补充决定；阻塞阶段说明解除动作；完成阶段明确无需操作或给出后续入口。没有需要用户操作时，`required: false`，并在 message 中说明 Agent 将继续什么或任务已关闭。
 
 大任务路线图也维护同名字段。当没有可执行的无依赖任务、需要范围确认或关键决策时，路线图的该字段必须转为 `required: true`，而不是静默等待。
+
+### 待验收清单与批量验收
+
+等待用户验收的任务不应靠翻目录发现。`npm run queue` 一次性列出所有处于 `review` 或声明了 `next_user_action.required: true` 的任务，并显示各自的项目、动作和说明。
+
+用户可以用 `node scripts/acceptance-queue.mjs --accept <task-id>[,<task-id>...] --note "<验收说明>"` 一次验收多条记录。该命令不是绕过门禁的后门：它在写入前先用任务校验检查"置为 done 之后是否仍然合规"，证据不全的记录会被拒绝、保持 `review`，并打印缺口。批量验收只合并交互次数，不改变 `done` 的证据要求。
+
+验收不是由 Agent 代做的判断：Agent 只记录用户已经给出的接受结论，不得在用户未确认时自行把任务标记为 `done`。

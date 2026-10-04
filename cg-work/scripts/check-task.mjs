@@ -78,6 +78,11 @@ export async function checkTaskRecord(taskFile) {
     validateAcceptanceSummary(task.acceptance_summary, errors);
     validateOpenDecisions(task.open_decisions, errors);
 
+    // standards_preflight 是 plan.md 与 verification.md 里的证据段落，不是任务字段。
+    if (task.standards_preflight !== undefined) {
+      errors.push('standards_preflight 不是 task.yaml 字段；请写入 plan.md 和 verification.md 的证据段落');
+    }
+
     if (task.scope_decision !== undefined) await validateScopeDecision(task, file, errors);
 
     if (Array.isArray(task.status_history)) {
@@ -97,20 +102,30 @@ export async function checkTaskRecord(taskFile) {
       await requireReference(task.verification_reference, 'verification_reference', file, errors);
       if (task.execution_profile === 'standard') await validateStandardsPreflight(task, file, errors);
     }
+    if (task.prototype_contract_reference !== undefined) {
+      errors.push('prototype_contract_reference 已废弃：原型实现契约写入计划记录的“原型实现契约”章节');
+    }
+    if (task.prototype_disposition_reference !== undefined) {
+      errors.push('prototype_disposition_reference 已废弃：原型采纳结论写入评审记录的“原型采纳”章节');
+    }
     if (task.prototype_reference !== undefined) {
       await requireReference(task.prototype_reference, 'prototype_reference', file, errors);
-      if (task.status === 'in_progress' || task.status === 'review' || task.status === 'done') {
-        await requirePrototypeContract(task.prototype_contract_reference, file, errors);
-      } else if (task.prototype_contract_reference !== undefined) {
-        await requirePrototypeContract(task.prototype_contract_reference, file, errors);
+      if (['in_progress', 'review', 'done'].includes(task.status)) {
+        await requirePrototypeSection(task, file, {
+          kind: 'contract',
+          label: '原型实现契约',
+          headings: ['问题与目标', '状态与场景', '视觉与响应式约束', '资源与依赖', '交互与业务规则', '验收映射'],
+          errors,
+        });
       }
-      if (task.status === 'review' || task.status === 'done') {
-        await requirePrototypeDisposition(task.prototype_disposition_reference, file, errors);
-      } else if (task.prototype_disposition_reference !== undefined) {
-        await requirePrototypeDisposition(task.prototype_disposition_reference, file, errors);
+      if (['review', 'done'].includes(task.status)) {
+        await requirePrototypeSection(task, file, {
+          kind: 'adoption',
+          label: '原型采纳',
+          headings: ['采纳结论', '实现映射', '验证映射', '未采纳项'],
+          errors,
+        });
       }
-    } else if (task.prototype_disposition_reference !== undefined) {
-      errors.push('prototype_disposition_reference 只能与 prototype_reference 一起使用');
     }
     if (task.learning_protocol !== undefined && task.learning_protocol !== 'v1') {
       errors.push('learning_protocol 目前只支持 v1');
@@ -181,42 +196,33 @@ async function validateCompactArtifacts(task, taskFilePath, errors) {
   else if (!(await exists(target))) errors.push(`artifacts.primary 指向的文件不存在：${task.artifacts.primary}`);
 }
 
-async function requirePrototypeDisposition(value, taskFilePath, errors) {
-  if (typeof value !== 'string' || !value.trim()) {
-    errors.push('必须填写 prototype_disposition_reference');
-    return;
+// 原型实现契约写入计划记录、采纳结论写入评审记录；compact 任务统一写入其主产物。
+function prototypeSectionFile(task, kind) {
+  if (task.artifact_profile === 'compact' && isObject(task.artifacts)
+    && typeof task.artifacts.primary === 'string' && task.artifacts.primary.trim()) {
+    return task.artifacts.primary;
   }
-  const target = path.resolve(path.dirname(taskFilePath), value);
-  let content;
-  try {
-    content = await fs.readFile(target, 'utf8');
-  } catch {
-    errors.push(`prototype_disposition_reference 指向的文件不存在：${value}`);
-    return;
-  }
-  for (const heading of ['采纳结论', '实现映射', '验证映射', '未采纳项']) {
-    if (!new RegExp(`^##\\s+${heading}\\s*$`, 'm').test(content)) {
-      errors.push(`prototype_disposition_reference 缺少“${heading}”章节：${value}`);
-    }
-  }
+  const reference = kind === 'contract' ? task.plan_reference : task.review_reference;
+  if (typeof reference === 'string' && reference.trim()) return reference;
+  return kind === 'contract' ? './plan.md' : './review.md';
 }
 
-async function requirePrototypeContract(value, taskFilePath, errors) {
-  if (typeof value !== 'string' || !value.trim()) {
-    errors.push('必须填写 prototype_contract_reference');
-    return;
-  }
-  const target = path.resolve(path.dirname(taskFilePath), value);
+async function requirePrototypeSection(task, taskFilePath, { kind, label, headings, errors }) {
+  const relative = prototypeSectionFile(task, kind);
+  const target = path.resolve(path.dirname(taskFilePath), relative);
   let content;
   try {
     content = await fs.readFile(target, 'utf8');
   } catch {
-    errors.push(`prototype_contract_reference 指向的文件不存在：${value}`);
+    errors.push(`声明 prototype_reference 的任务需要${label}，但 ${relative} 不存在`);
     return;
   }
-  for (const heading of ['问题与目标', '状态与场景', '视觉与响应式约束', '资源与依赖', '交互与业务规则', '验收映射']) {
-    if (!new RegExp(`^##\\s+${heading}\\s*$`, 'm').test(content)) {
-      errors.push(`prototype_contract_reference 缺少“${heading}”章节：${value}`);
+  if (!new RegExp(`^#{2,3}\\s+${label}\\s*$`, 'm').test(content)) {
+    errors.push(`${relative} 缺少“${label}”章节`);
+  }
+  for (const heading of headings) {
+    if (!new RegExp(`^#{2,4}\\s+${heading}\\s*$`, 'm').test(content)) {
+      errors.push(`${label}缺少“${heading}”章节：${relative}`);
     }
   }
 }
@@ -244,7 +250,7 @@ async function validateTaskReferences(task, taskFilePath, errors) {
   }
   await validateRequirementsReference(task, taskFilePath, errors);
 
-  for (const key of ['depends_on', 'follow_up_task_references', 'child_task_references']) {
+  for (const key of ['depends_on']) {
     if (task[key] === undefined) continue;
     if (!Array.isArray(task[key]) || task[key].some((value) => typeof value !== 'string' || !value.trim())) {
       errors.push(`${key} 必须是非空路径字符串数组`);
@@ -395,14 +401,10 @@ function validateLightweightEvidence(value, task, errors) {
 function validateLightweightScope(task, errors) {
   for (const key of [
     'prototype_reference',
-    'prototype_contract_reference',
-    'prototype_disposition_reference',
     'roadmap_reference',
     'closure_reference',
     'parent_task_reference',
     'depends_on',
-    'follow_up_task_references',
-    'child_task_references',
     'requirements_coverage'
   ]) {
     if (task[key] !== undefined) errors.push(`lightweight 任务不得声明 ${key}`);

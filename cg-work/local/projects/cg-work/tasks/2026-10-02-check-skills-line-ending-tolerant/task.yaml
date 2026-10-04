@@ -1,0 +1,31 @@
+id: 2026-10-02-check-skills-line-ending-tolerant
+status: review
+goal: 让技能镜像校验按 LF 归一化比较内容，消除 Windows 工作副本的换行符假阳性，同时不放宽真实差异检查。
+workflow: framework:framework-optimization
+created_at: 2026-10-02T11:50:00+08:00
+artifact_profile: compact
+artifacts:
+  primary: ./plan.md
+requirements_reference: ../../requirements-inbox/2026-10-02-check-skills-line-ending-tolerant.md
+scope_decision:
+  mode: independent
+  rationale: 属于校验器自身的环境兼容修正，与提交政策、产物废弃等改动无共同验收标准，独立立项。
+acceptance_summary:
+  - 本机 node scripts/check-skills.mjs 通过
+  - 真实内容差异、文件清单差异与不可读镜像仍被报告
+  - 二进制文件不做文本归一化
+documentation:
+  impact: update
+  targets:
+    - scripts/README.md
+    - VERSION
+next_action: 等待用户验收换行符宽容化结论，再并入框架提交。
+interaction_protocol: v1
+next_user_action:
+  required: true
+  action: accept-result
+  message: 镜像校验已按 LF 归一化比较，本机从 65 处假阳性降到 0；降噪过程暴露出 3 处真实差异，已另立任务处理。npm test 60 通过、npm run check 通过。请验收后我并入版本 2.19.1 提交（不推送）。
+status_history:
+  - pending
+  - in_progress
+  - review

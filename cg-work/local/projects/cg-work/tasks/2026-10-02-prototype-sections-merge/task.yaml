@@ -1,0 +1,43 @@
+id: 2026-10-02-prototype-sections-merge
+status: review
+goal: 把原型实现契约与采纳结论并入任务的计划与评审记录，废弃两个独立引用字段，门禁强度不变。
+workflow: framework:framework-optimization
+created_at: 2026-10-02T14:40:00+08:00
+artifact_profile: compact
+artifacts:
+  primary: ./plan.md
+requirements_reference: ../../requirements-inbox/2026-10-02-prototype-sections-merge.md
+scope_decision:
+  mode: independent
+  rationale: 属原型 Artifact 模型的重构，验收对象是章节门禁与字段集合，与前序字段收敛、验收通道独立。
+acceptance_summary:
+  - prototype_reference 成为唯一原型字段，另两个字段被拒绝
+  - 计划记录必须含“原型实现契约”六节，评审记录必须含“原型采纳”四节
+  - compact 任务写入其主产物，不新增文件
+  - 两个模板保留为替代说明，历史引用不断链
+  - 任务记录复校验无新增失败
+documentation:
+  impact: update
+  targets:
+    - core/operating-model.md
+    - core/framework-maintenance.md
+    - core/README.md
+    - core/prototype-implementation-contract.template.md
+    - core/prototype-disposition.template.md
+    - README.md
+    - workflows/README.md
+    - workflows/feature-development.md
+    - skills/prototype/SKILL.md
+    - scripts/README.md
+    - scripts/check-task.mjs
+    - VERSION
+next_action: 等待用户验收原型章节合并结论，再并入框架提交。
+interaction_protocol: v1
+next_user_action:
+  required: true
+  action: accept-result
+  message: 原型机制已并入任务记录：只需 prototype_reference，契约写入计划记录、采纳结论写入评审记录，两个独立引用字段被拒绝，两个模板转为替代说明；npm test 66 通过，129 条记录失败数未增加。请验收后我并入版本 2.22.0 提交（不推送）。
+status_history:
+  - pending
+  - in_progress
+  - review

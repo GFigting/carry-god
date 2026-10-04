@@ -170,7 +170,6 @@ for (const requiredIgnoreRule of [
   '/local/projects/*/*',
   '!/local/projects/*/requirements-inbox/',
   '!/local/projects/*/requirements-inbox/README.md',
-  '!/local/projects/*/requirements-inbox/.gitkeep',
   '!/local/projects/cg-work/**',
 ]) {
   if (!ignore.includes(requiredIgnoreRule)) errors.push(`missing local project ignore rule: ${requiredIgnoreRule}`);
@@ -193,7 +192,7 @@ async function checkRequirementsInboxes() {
       errors.push(`missing requirements-inbox: local/projects/${entry.name}`);
       continue;
     }
-    for (const name of ['README.md', '.gitkeep']) {
+    for (const name of ['README.md']) {
       if (!(await exists(path.join(inbox, name)))) errors.push(`missing requirements-inbox file: local/projects/${entry.name}/requirements-inbox/${name}`);
     }
   }

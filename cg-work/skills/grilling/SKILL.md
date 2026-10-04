@@ -3,6 +3,8 @@ name: grilling
 description: Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.
 ---
 
+> **框架本地化技能**：以上游 `skills/skills/productivity/grilling` 为基础，由 cg-work 维护本地调整；不逐字节同步上游，也不登记为原始镜像。上游变更需评估后再合并。
+
 Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
 
 ## Visible preflight

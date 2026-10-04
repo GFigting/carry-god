@@ -25,15 +25,13 @@ export const mirrors = [
   ['skills/skills/engineering/codebase-design', 'codebase-design'],
   ['skills/skills/engineering/domain-modeling', 'domain-modeling'],
   ['skills/skills/engineering/research', 'research'],
-  ['skills/skills/engineering/prototype', 'prototype'],
-  // code-review is locally maintained and intentionally excluded from mirror checks.
+  // code-review、grilling 与 prototype 是框架本地化技能：正文声明了本地调整与上游来源，不登记为原始镜像。
   ['skills/skills/engineering/improve-codebase-architecture', 'improve-codebase-architecture'],
   ['skills/skills/engineering/resolving-merge-conflicts', 'resolving-merge-conflicts'],
   ['skills/skills/engineering/wayfinder', 'wayfinder'],
   ['skills/skills/engineering/to-spec', 'to-spec'],
   ['skills/skills/engineering/to-tickets', 'to-tickets'],
   ['skills/skills/engineering/grill-with-docs', 'grill-with-docs'],
-  // grilling is locally maintained and intentionally excluded from mirror checks.
   ['skills/skills/productivity/handoff', 'handoff'],
   ['skills/skills/productivity/to-questionnaire', 'to-questionnaire'],
   ['gstack/review', 'gstack-review'],
@@ -50,32 +48,45 @@ async function files(root, current = root) {
   return result.sort();
 }
 
+// 哈希前统一按 LF 归一化：Windows 工作副本会因 core.autocrlf 把 cg-work 镜像转成 CRLF，
+// 而镜像源目录多由 .gitattributes 固定为 LF，直接比字节会把换行符差异误报成内容漂移。
+// 含 NUL 字节的文件视为二进制，按原字节比较。
 async function hash(file) {
-  return crypto.createHash('sha256').update(await fs.readFile(file)).digest('hex');
+  const buffer = await fs.readFile(file);
+  const content = buffer.includes(0)
+    ? buffer
+    : Buffer.from(buffer.toString('utf8').replace(/\r\n/g, '\n'), 'utf8');
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+export async function compareMirror(sourceRoot, targetRoot, label) {
+  const errors = [];
+  let sourceFiles;
+  let targetFiles;
+  try {
+    [sourceFiles, targetFiles] = await Promise.all([files(sourceRoot), files(targetRoot)]);
+  } catch (error) {
+    return [`unreadable skill mirror: ${label} (${error.message})`];
+  }
+  if (sourceFiles.join('\n') !== targetFiles.join('\n')) {
+    return [`skill file list differs: ${label}`];
+  }
+  for (const relative of sourceFiles) {
+    if (await hash(path.join(sourceRoot, relative)) !== await hash(path.join(targetRoot, relative))) {
+      errors.push(`skill content differs: ${label}/${relative}`);
+    }
+  }
+  return errors;
 }
 
 export async function verifyMirrors() {
   const errors = [];
   for (const [source, target] of mirrors) {
-    const sourceRoot = path.join(workspaceRoot, source);
-    const targetRoot = path.join(frameworkRoot, 'skills', target);
-    let sourceFiles;
-    let targetFiles;
-    try {
-      [sourceFiles, targetFiles] = await Promise.all([files(sourceRoot), files(targetRoot)]);
-    } catch (error) {
-      errors.push(`unreadable skill mirror: ${target} (${error.message})`);
-      continue;
-    }
-    if (sourceFiles.join('\n') !== targetFiles.join('\n')) {
-      errors.push(`skill file list differs: ${target}`);
-      continue;
-    }
-    for (const relative of sourceFiles) {
-      if (await hash(path.join(sourceRoot, relative)) !== await hash(path.join(targetRoot, relative))) {
-        errors.push(`skill content differs: ${target}/${relative}`);
-      }
-    }
+    errors.push(...await compareMirror(
+      path.join(workspaceRoot, source),
+      path.join(frameworkRoot, 'skills', target),
+      target,
+    ));
   }
   return errors;
 }

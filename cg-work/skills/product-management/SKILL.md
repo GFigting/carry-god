@@ -76,6 +76,8 @@ Rank requirements or stories using evidence-backed value, user impact, urgency, 
 
 Group accepted work by outcome or theme, not only by component. For each slice, record the intended result, timeframe or sequencing, dependencies, risks, and the evidence that will move it from discovery to ready. Keep exploratory ideas separate from committed work. The roadmap is directional; exact implementation estimates belong with the engineering plan.
 
+Persist this section in the project roadmap **inside the original project repository** (conventionally `docs/roadmap.md`), and register that path relative to `project.root_path` in the project context under `product.roadmap_path`. Use `core/project-roadmap.template.md`: one row per slice carrying status (`proposed`/`ready`/`in_progress`/`review`/`done`/`deferred`/`dropped`), priority, dependency, requirement source, task reference, and the evidence that moves it to ready. Validate it with `node scripts/check-product.mjs <path>`. Do not put the project roadmap under the framework's `local/projects/`, and do not reuse the per-requirement decomposition index under `roadmaps/<roadmap-id>/` for project-level planning.
+
 ## Release acceptance
 
 At release review, compare planned and delivered requirements, list accepted and rejected criteria with reasons, identify known gaps and follow-up work, report measurement readiness, and recommend ship, hold, limited rollout, or stop. Every rejection must point to the unmet criterion or evidence gap.

@@ -2,17 +2,15 @@
 
 本目录保存真实项目上下文、任务、报告、设计和运行产物。除 `projects/cg-work/` 外，`projects/` 下的真实项目数据不提交；`cg-work` 是框架自身的受管项目，其上下文、需求包、任务和框架维护产物随框架提交。
 
-`projects/<业务项目>/requirements-inbox/` 中的需求包、附件和原文保持本地忽略，只有需求箱的 `README.md` 与 `.gitkeep` 可以提交；`projects/cg-work/requirements-inbox/` 属于框架内容，随框架提交，但不得摘录业务项目真实数据——来源于业务项目的需求包必须留在该项目自己的需求箱。`tools/` 保存本机工具副本，也保持本地忽略。
+`projects/<业务项目>/requirements-inbox/` 中的需求包、附件和原文保持本地忽略，只有需求箱的 `README.md` 可以提交；`projects/cg-work/requirements-inbox/` 属于框架内容，随框架提交，但不得摘录业务项目真实数据——来源于业务项目的需求包必须留在该项目自己的需求箱。`tools/` 保存本机工具副本，也保持本地忽略。
 
 每个项目使用 `projects/<project-id>/`，任务产物固定放在：
 
 ```text
 projects/<project-id>/
 ├── project-context.yaml
-├── initialization-report.md
 ├── requirements-inbox/
 │   ├── README.md
-│   ├── .gitkeep
 │   └── <requirement-package>/
 ├── tasks/<task-id>/
     ├── task.yaml
@@ -26,9 +24,11 @@ projects/<project-id>/
     └── closure.md
 ```
 
-初始化报告用于记录探测事实和缺口；任务不需要的产物可以省略，但已有产物必须使用上述固定名称。不要在此目录保存密钥、令牌、密码或生产数据。
+**项目路线图不放在框架本地**：它属于项目文档，存放在原项目仓库内（惯例 `docs/roadmap.md`），路径登记在项目上下文的可选字段 `product.roadmap_path`，格式见 `core/project-roadmap.template.md`，由 `framework:product-management` 维护。框架本地的 `roadmaps/<roadmap-id>/` 是另一种产物——单个大需求的**需求拆分索引**（格式见 `core/decomposition.template.md`），不是项目路线图。
 
-`requirements-inbox/` 是原始需求的唯一入口：保存尚未拆分的需求包、附件、原文和澄清材料。一个需求包可以拆分为多个 `tasks/<task-id>/`；任务记录、计划、审查和验证证据不得写回需求箱。业务项目的需求内容保持本地忽略，仅需求箱的 `README.md` 和 `.gitkeep` 可提交；框架受管项目 `cg-work` 的需求包随框架提交。
+`initialization-report.md` 自 2026-10-02 起废弃：探测范围、事实来源、缺口和待确认项改记在项目的初始化任务记录（`tasks/<task-id>/`）中，耐久事实写入 `project-context.yaml`。历史报告文件保留原样，不再新增，也不强制迁移。任务不需要的产物可以省略，但已有产物必须使用上述固定名称。不要在此目录保存密钥、令牌、密码或生产数据。
+
+`requirements-inbox/` 是原始需求的唯一入口：保存尚未拆分的需求包、附件、原文和澄清材料。一个需求包可以拆分为多个 `tasks/<task-id>/`；任务记录、计划、审查和验证证据不得写回需求箱。业务项目的需求内容保持本地忽略，仅需求箱的 `README.md` 可提交（它同时保证目录非空，不再需要 `.gitkeep`）；框架受管项目 `cg-work` 的需求包随框架提交。
 
 任务记录的最小字段：
 
@@ -40,4 +40,4 @@ projects/<project-id>/
 
 任务状态使用 `pending`、`in_progress`、`review`、`done`、`blocked` 或 `cancelled`。计划、审查和验证正文只保存在这里；项目自己的用户文档仍放在项目仓库的 `docs/` 目录。
 
-`roadmaps/` 仅用于复杂需求的项目级编排：记录从决策地图到研发任务的覆盖、依赖和关闭结论。它不替代 `tasks/`，也不保存原始需求副本。任务可以通过 `roadmap_reference`、`parent_task_reference`、`depends_on`、`requirements_coverage`、`follow_up_task_references` 与 `closure_reference` 建立可选关联；所有路径相对 `task.yaml` 解析。带 `roadmap_reference` 的任务进入 `done` 时必须引用路线图的 `closure.md`。路线图也要维护 `next_user_action`：不能继续推进时明确请求用户决定，可继续时告知下一项由 Agent 推进的任务。
+`roadmaps/` 仅用于复杂需求的项目级编排：记录从决策地图到研发任务的覆盖、依赖和关闭结论。它不替代 `tasks/`，也不保存原始需求副本。任务可以通过 `roadmap_reference`、`parent_task_reference`、`depends_on`、`requirements_coverage` 与 `closure_reference` 建立可选关联；所有路径相对 `task.yaml` 解析。带 `roadmap_reference` 的任务进入 `done` 时必须引用路线图的 `closure.md`。路线图也要维护 `next_user_action`：不能继续推进时明确请求用户决定，可继续时告知下一项由 Agent 推进的任务。

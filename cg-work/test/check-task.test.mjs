@@ -114,6 +114,18 @@ test('compact 任务缺少主产物时被拒绝', async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
+test('拒绝把 standards_preflight 写成任务字段', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-02-standards-preflight-field');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-10-02-standards-preflight-field\nstatus: pending\ngoal: Reject a misplaced preflight section\nworkflow: framework:feature-development\ncreated_at: 2026-10-02\nstandards_preflight:\n  literals:\n    - some-literal\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Move it to plan.md\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /standards_preflight 不是 task\.yaml 字段/);
+  await rm(dir, { recursive: true, force: true });
+});
+
 test('拒绝未知执行模式并提示可用值', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
   const taskDir = path.join(dir, '2026-09-21-invalid-profile');
@@ -294,33 +306,58 @@ test('拒绝为轻量缺陷声明原型', async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
-test('引用原型的审查任务缺少实现契约时被拒绝', async () => {
+test('原型任务的计划记录缺少实现契约章节时被拒绝', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
-  const taskDir = path.join(dir, '2026-09-29-prototype-contract');
+  const taskDir = path.join(dir, '2026-10-02-prototype-contract');
   await mkdir(taskDir);
-  await writeFile(path.join(taskDir, 'review.md'), '# Review\n');
+  await writeFile(path.join(taskDir, 'plan.md'), '# Plan\n');
+  await writeFile(path.join(taskDir, 'review.md'), '# Review\n\n## 原型采纳\n\n### 采纳结论\n\n### 实现映射\n\n### 验证映射\n\n### 未采纳项\n');
   await writeFile(path.join(taskDir, 'verification.md'), '# Verification\n');
   await writeFile(path.join(taskDir, 'prototype.html'), '<html></html>\n');
-  await writeFile(path.join(taskDir, 'prototype-disposition.md'), '# 原型采纳记录\n\n## 采纳结论\n\n## 实现映射\n\n## 验证映射\n\n## 未采纳项\n');
   const file = path.join(taskDir, 'task.yaml');
-  await writeFile(file, 'id: 2026-09-29-prototype-contract\nstatus: review\ngoal: Require prototype contract\nworkflow: framework:feature-development\ncreated_at: 2026-09-29\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Review\nprototype_reference: prototype.html\nprototype_disposition_reference: prototype-disposition.md\nreview_reference: review.md\nverification_reference: verification.md\n');
+  await writeFile(file, 'id: 2026-10-02-prototype-contract\nstatus: review\ngoal: Require prototype contract\nworkflow: framework:feature-development\ncreated_at: 2026-10-02\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Review\nprototype_reference: prototype.html\nplan_reference: plan.md\nreview_reference: review.md\nverification_reference: verification.md\n');
   const result = await run(file);
   assert.notEqual(result.code, 0);
-  assert.match(result.output, /必须填写 prototype_contract_reference/);
+  assert.match(result.output, /plan\.md 缺少“原型实现契约”章节/);
   await rm(dir, { recursive: true, force: true });
 });
 
-test('接受包含六个章节的原型实现契约', async () => {
+test('接受计划记录含实现契约、评审记录含采纳章节的原型任务', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
-  const taskDir = path.join(dir, '2026-09-29-prototype-contract');
+  const taskDir = path.join(dir, '2026-10-02-prototype-accepted');
   await mkdir(taskDir);
-  await writeFile(path.join(taskDir, 'review.md'), '# Review\n');
+  await writeFile(path.join(taskDir, 'plan.md'), '# Plan\n\n## 原型实现契约\n\n### 问题与目标\n\n### 状态与场景\n\n### 视觉与响应式约束\n\n### 资源与依赖\n\n### 交互与业务规则\n\n### 验收映射\n');
+  await writeFile(path.join(taskDir, 'review.md'), '# Review\n\n## 原型采纳\n\n### 采纳结论\n\n全部采纳。\n\n### 实现映射\n\n### 验证映射\n\n### 未采纳项\n\n无。\n');
   await writeFile(path.join(taskDir, 'verification.md'), '# Verification\n');
   await writeFile(path.join(taskDir, 'prototype.html'), '<html></html>\n');
-  await writeFile(path.join(taskDir, 'prototype-contract.md'), '# 原型实现契约\n\n## 问题与目标\n\n## 状态与场景\n\n## 视觉与响应式约束\n\n## 资源与依赖\n\n## 交互与业务规则\n\n## 验收映射\n');
-  await writeFile(path.join(taskDir, 'prototype-disposition.md'), '# 原型采纳记录\n\n## 采纳结论\n\n## 实现映射\n\n## 验证映射\n\n## 未采纳项\n');
   const file = path.join(taskDir, 'task.yaml');
-  await writeFile(file, 'id: 2026-09-29-prototype-contract\nstatus: review\ngoal: Require prototype contract\nworkflow: framework:feature-development\ncreated_at: 2026-09-29\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Review\nprototype_reference: prototype.html\nprototype_contract_reference: prototype-contract.md\nprototype_disposition_reference: prototype-disposition.md\nreview_reference: review.md\nverification_reference: verification.md\n');
+  await writeFile(file, 'id: 2026-10-02-prototype-accepted\nstatus: review\ngoal: Require prototype sections\nworkflow: framework:feature-development\ncreated_at: 2026-10-02\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Review\nprototype_reference: prototype.html\nplan_reference: plan.md\nreview_reference: review.md\nverification_reference: verification.md\n');
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('原型实现契约缺少子章节时被拒绝', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-02-prototype-partial-contract');
+  await mkdir(taskDir);
+  await writeFile(path.join(taskDir, 'plan.md'), '# Plan\n\n## 原型实现契约\n\n### 问题与目标\n\n');
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-10-02-prototype-partial-contract\nstatus: in_progress\ngoal: Require every contract section\nworkflow: framework:feature-development\ncreated_at: 2026-10-02\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Fill the contract\nprototype_reference: prototype.html\nplan_reference: plan.md\n');
+  await writeFile(path.join(taskDir, 'prototype.html'), '<html></html>\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /原型实现契约缺少“验收映射”章节/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('待处理的原型任务不要求契约章节', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-02-prototype-pending');
+  await mkdir(taskDir);
+  await writeFile(path.join(taskDir, 'prototype.html'), '<html></html>\n');
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-10-02-prototype-pending\nstatus: pending\ngoal: Prototype not started\nworkflow: framework:feature-development\ncreated_at: 2026-10-02\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Start later\nprototype_reference: prototype.html\n');
   const result = await run(file);
   assert.equal(result.code, 0, result.output);
   await rm(dir, { recursive: true, force: true });
@@ -354,52 +391,49 @@ test('学习协议任务接受存在的学习记录', async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
-test('引用原型的审查任务缺少处置记录时被拒绝', async () => {
+test('原型任务的评审记录缺少采纳章节时被拒绝', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
-  const taskDir = path.join(dir, '2026-09-10-project-initialization');
+  const taskDir = path.join(dir, '2026-10-02-prototype-disposition-missing');
   await mkdir(taskDir);
+  await writeFile(path.join(taskDir, 'plan.md'), '# Plan\n\n## 原型实现契约\n\n### 问题与目标\n\n### 状态与场景\n\n### 视觉与响应式约束\n\n### 资源与依赖\n\n### 交互与业务规则\n\n### 验收映射\n');
   await writeFile(path.join(taskDir, 'review.md'), '# Review\n');
   await writeFile(path.join(taskDir, 'verification.md'), '# Verification\n');
   await writeFile(path.join(taskDir, 'prototype.html'), '<html></html>\n');
-  await writeFile(path.join(taskDir, 'prototype-contract.md'), '# 原型实现契约\n\n## 问题与目标\n\n## 状态与场景\n\n## 视觉与响应式约束\n\n## 资源与依赖\n\n## 交互与业务规则\n\n## 验收映射\n');
   const file = path.join(taskDir, 'task.yaml');
-  await writeFile(file, 'id: 2026-09-10-project-initialization\nstatus: review\ngoal: Initialize\nworkflow: framework:project-initialization\ncreated_at: 2026-09-10\ndocumentation:\n  impact: none\n  not_needed_reason: Initialization only\nnext_action: Review\nprototype_reference: prototype.html\nprototype_contract_reference: prototype-contract.md\nreview_reference: review.md\nverification_reference: verification.md\n');
+  await writeFile(file, 'id: 2026-10-02-prototype-disposition-missing\nstatus: review\ngoal: Require adoption section\nworkflow: framework:feature-development\ncreated_at: 2026-10-02\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Review\nprototype_reference: prototype.html\nplan_reference: plan.md\nreview_reference: review.md\nverification_reference: verification.md\n');
   const result = await run(file);
   assert.notEqual(result.code, 0);
-  assert.match(result.output, /必须填写 prototype_disposition_reference/);
+  assert.match(result.output, /review\.md 缺少“原型采纳”章节/);
   await rm(dir, { recursive: true, force: true });
 });
 
-test('引用原型的审查任务接受存在的处置记录', async () => {
+test('原型采纳章节缺少映射子章节时被拒绝', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
-  const taskDir = path.join(dir, '2026-09-10-project-initialization');
+  const taskDir = path.join(dir, '2026-10-02-prototype-partial-adoption');
   await mkdir(taskDir);
-  await writeFile(path.join(taskDir, 'review.md'), '# Review\n');
+  await writeFile(path.join(taskDir, 'plan.md'), '# Plan\n\n## 原型实现契约\n\n### 问题与目标\n\n### 状态与场景\n\n### 视觉与响应式约束\n\n### 资源与依赖\n\n### 交互与业务规则\n\n### 验收映射\n');
+  await writeFile(path.join(taskDir, 'review.md'), '# Review\n\n## 原型采纳\n\n### 采纳结论\n\n部分采纳。\n');
   await writeFile(path.join(taskDir, 'verification.md'), '# Verification\n');
   await writeFile(path.join(taskDir, 'prototype.html'), '<html></html>\n');
-  await writeFile(path.join(taskDir, 'prototype-contract.md'), '# 原型实现契约\n\n## 问题与目标\n\n## 状态与场景\n\n## 视觉与响应式约束\n\n## 资源与依赖\n\n## 交互与业务规则\n\n## 验收映射\n');
-  await writeFile(path.join(taskDir, 'prototype-disposition.md'), '# 原型采纳记录\n\n## 采纳结论\n\n全部采纳。\n\n## 实现映射\n\n- `prototype.html` → `src/page.ts`\n\n## 验证映射\n\n- `test/page.test.ts`\n\n## 未采纳项\n\n无。\n');
   const file = path.join(taskDir, 'task.yaml');
-  await writeFile(file, 'id: 2026-09-10-project-initialization\nstatus: review\ngoal: Initialize\nworkflow: framework:project-initialization\ncreated_at: 2026-09-10\ndocumentation:\n  impact: none\n  not_needed_reason: Initialization only\nnext_action: Review\nprototype_reference: prototype.html\nprototype_contract_reference: prototype-contract.md\nprototype_disposition_reference: prototype-disposition.md\nreview_reference: review.md\nverification_reference: verification.md\n');
+  await writeFile(file, 'id: 2026-10-02-prototype-partial-adoption\nstatus: review\ngoal: Require every adoption section\nworkflow: framework:feature-development\ncreated_at: 2026-10-02\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Review\nprototype_reference: prototype.html\nplan_reference: plan.md\nreview_reference: review.md\nverification_reference: verification.md\n');
   const result = await run(file);
-  assert.equal(result.code, 0, result.output);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /原型采纳缺少“实现映射”章节/);
   await rm(dir, { recursive: true, force: true });
 });
 
-test('引用原型的处置记录缺少映射章节时被拒绝', async () => {
+test('拒绝已废弃的原型契约与处置字段', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
-  const taskDir = path.join(dir, '2026-09-10-project-initialization');
+  const taskDir = path.join(dir, '2026-10-02-prototype-legacy-fields');
   await mkdir(taskDir);
-  await writeFile(path.join(taskDir, 'review.md'), '# Review\n');
-  await writeFile(path.join(taskDir, 'verification.md'), '# Verification\n');
   await writeFile(path.join(taskDir, 'prototype.html'), '<html></html>\n');
-  await writeFile(path.join(taskDir, 'prototype-contract.md'), '# 原型实现契约\n\n## 问题与目标\n\n## 状态与场景\n\n## 视觉与响应式约束\n\n## 资源与依赖\n\n## 交互与业务规则\n\n## 验收映射\n');
-  await writeFile(path.join(taskDir, 'prototype-disposition.md'), '# 原型采纳记录\n\n## 采纳结论\n\n部分采纳。\n');
   const file = path.join(taskDir, 'task.yaml');
-  await writeFile(file, 'id: 2026-09-10-project-initialization\nstatus: review\ngoal: Initialize\nworkflow: framework:project-initialization\ncreated_at: 2026-09-10\ndocumentation:\n  impact: none\n  not_needed_reason: Initialization only\nnext_action: Review\nprototype_reference: prototype.html\nprototype_contract_reference: prototype-contract.md\nprototype_disposition_reference: prototype-disposition.md\nreview_reference: review.md\nverification_reference: verification.md\n');
+  await writeFile(file, 'id: 2026-10-02-prototype-legacy-fields\nstatus: pending\ngoal: Reject removed prototype fields\nworkflow: framework:feature-development\ncreated_at: 2026-10-02\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Use the plan/review sections\nprototype_reference: prototype.html\nprototype_contract_reference: prototype-contract.md\nprototype_disposition_reference: prototype-disposition.md\n');
   const result = await run(file);
   assert.notEqual(result.code, 0);
-  assert.match(result.output, /缺少“实现映射”章节/);
+  assert.match(result.output, /prototype_contract_reference 已废弃/);
+  assert.match(result.output, /prototype_disposition_reference 已废弃/);
   await rm(dir, { recursive: true, force: true });
 });
 
@@ -446,7 +480,7 @@ test('接受带路线图、依赖和关闭记录的已完成任务', async () =>
   await mkdir(taskDir);
   for (const name of ['review.md', 'verification.md', 'handoff.md', 'roadmap.yaml', 'closure.md', 'parent-task.yaml', 'dependency-task.yaml', 'coverage.md', 'follow-up-task.yaml']) await writeFile(path.join(taskDir, name), `# ${name}\n`);
   const file = path.join(taskDir, 'task.yaml');
-  await writeFile(file, 'id: 2026-09-10-project-initialization\nstatus: done\ngoal: Initialize\nworkflow: framework:project-initialization\ncreated_at: 2026-09-10\ndocumentation:\n  impact: none\n  not_needed_reason: Initialization only\nnext_action: None\nroadmap_reference: roadmap.yaml\nclosure_reference: closure.md\nparent_task_reference: parent-task.yaml\ndepends_on:\n  - dependency-task.yaml\nrequirements_coverage:\n  REQ-1: coverage.md\nfollow_up_task_references:\n  - follow-up-task.yaml\nreview_reference: review.md\nverification_reference: verification.md\nhandoff_reference: handoff.md\n');
+  await writeFile(file, 'id: 2026-09-10-project-initialization\nstatus: done\ngoal: Initialize\nworkflow: framework:project-initialization\ncreated_at: 2026-09-10\ndocumentation:\n  impact: none\n  not_needed_reason: Initialization only\nnext_action: None\nroadmap_reference: roadmap.yaml\nclosure_reference: closure.md\nparent_task_reference: parent-task.yaml\ndepends_on:\n  - dependency-task.yaml\nrequirements_coverage:\n  REQ-1: coverage.md\nreview_reference: review.md\nverification_reference: verification.md\nhandoff_reference: handoff.md\n');
   const result = await run(file);
   assert.equal(result.code, 0, result.output);
   await rm(dir, { recursive: true, force: true });

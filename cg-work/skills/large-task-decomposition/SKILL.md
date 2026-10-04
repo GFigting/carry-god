@@ -25,13 +25,13 @@ description: Use when a confirmed multi-session requirement must be converted fr
 | `coverage.md` | 原始需求条目到任务、决策或延后项的覆盖映射 |
 | `closure.md` | 关闭结论、完成度、遗留与后续索引 |
 
-以 `core/roadmap.template.yaml` 创建 `roadmap.yaml`；以 `core/roadmap-closure.template.md` 创建关闭记录。原始需求仍只存于 `requirements-inbox/`，研发证据仍只存于 `tasks/<task-id>/`。
+按 `core/decomposition.template.md` 创建 `roadmap.yaml` 与 `closure.md`（该文件是需求拆分索引格式的唯一来源；项目级路线图另见 `core/roadmap.template.md`）。原始需求仍只存于 `requirements-inbox/`，研发证据仍只存于 `tasks/<task-id>/`。
 
 ## 转换规则
 
 1. 在 `roadmap.yaml` 写入 destination、原始需求引用、已确认决策、仍未明确的范围和排除项。每个决策保留 Wayfinder 票据名称与其本地或外部引用。
 2. 在 `coverage.md` 为每条可验收需求指定一个结果：子任务、已关闭决策、明确延期或排除。不得用“待处理”作为关闭结论。
-3. 为每个研发切片创建独立 `tasks/<task-id>/task.yaml`，使用相应研发工作流。子任务可写入 `roadmap_reference`、`parent_task_reference`、`depends_on`、`requirements_coverage` 与 `follow_up_task_references`；所有路径相对任务记录解析。
+3. 为每个研发切片创建独立 `tasks/<task-id>/task.yaml`，使用相应研发工作流。子任务可写入 `roadmap_reference`、`parent_task_reference`、`depends_on` 与 `requirements_coverage`；所有路径相对任务记录解析。
 4. 依赖只表达真实前置条件。任务不得依赖自身；任务与路线图引用必须存在。
 5. 关闭路线图前核对所有覆盖条目和依赖；在 `closure.md` 记录完成结论、未完成项、后续任务和证据索引。已完成的路线图关联任务须在 `task.yaml` 以 `closure_reference` 指向该记录。
 6. 每次前沿任务变化后更新 `next_user_action`。若需用户决策、验收或外部输入，写 `required: true` 和一个明确动作；若无需操作，写 `required: false` 并明确 Agent 将继续推进的任务。不得仅保留内部 `next_action` 而不向用户说明。

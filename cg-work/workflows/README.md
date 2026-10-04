@@ -15,7 +15,7 @@
 
 验证失败或审查发现问题时回到 `in_progress`；缺少外部条件进入 `blocked`；用户取消进入 `cancelled`。不得跳过 `review` 直接标记 `done`。
 
-原型落地门禁：任务声明 `prototype_reference` 时，进入 `in_progress` 前必须以 `prototype_contract_reference` 引用实现契约，并在 `review` 或 `done` 时保持有效；进入 `review` 或 `done` 前还必须以 `prototype_disposition_reference` 引用采纳记录。实现契约必须有“问题与目标”“状态与场景”“视觉与响应式约束”“资源与依赖”“交互与业务规则”“验收映射”六节；采纳记录必须有“采纳结论”“实现映射”“验证映射”“未采纳项”四节。格式分别见 `core/prototype-implementation-contract.template.md` 和 `core/prototype-disposition.template.md`。未创建原型的任务不受此门禁影响。
+原型落地门禁：任务声明 `prototype_reference` 时，进入 `in_progress` 前计划记录必须有 `## 原型实现契约` 章节（含问题与目标、状态与场景、视觉与响应式约束、资源与依赖、交互与业务规则、验收映射六节）；进入 `review` 或 `done` 前评审记录必须有 `## 原型采纳` 章节（含采纳结论、实现映射、验证映射、未采纳项四节）。compact 任务写入其主产物。原型不再使用独立文件与引用字段，规则与骨架见 [工作模型的原型与任务记录](../core/operating-model.md#原型与任务记录)。未创建原型的任务不受此门禁影响。
 
 ## 执行模式
 
@@ -50,7 +50,7 @@
 
 持续学习门禁：历史标准任务可声明 `learning_protocol: v1` 并引用 `learning.md`；compact 任务将可复用经验写入主产物或 `task.yaml`，不强制单独学习文件。轻量档任务不得声明该协议，发现可复用经验时必须转为标准任务。规则、格式和提升边界见 [持续学习与经验沉淀](../core/continuous-learning.md)。
 
-用户下一步提醒：新任务必须声明 `interaction_protocol: v1` 并维护 `next_user_action`。进入 `review`、`blocked` 或 `done` 时，该对象必须说明是否需要用户操作、动作标识和一条可直接执行的提示；路线图没有可执行前沿任务时也必须更新同名字段。
+用户下一步提醒：新任务必须声明 `interaction_protocol: v1` 并维护 `next_user_action`。进入 `review`、`blocked` 或 `done` 时，该对象必须说明是否需要用户操作、动作标识和一条可直接执行的提示；路线图没有可执行前沿任务时也必须更新同名字段。等待验收的积压用 `npm run queue` 查看，用户可一次验收多条；批量验收在写入前会先校验证据完整性，不改变 `done` 的门禁。
 
 | 文件 | 使用场景 |
 |---|---|

@@ -5,7 +5,6 @@
 !/local/projects/*/requirements-inbox/
 /local/projects/*/requirements-inbox/*
 !/local/projects/*/requirements-inbox/README.md
-!/local/projects/*/requirements-inbox/.gitkeep
 # cg-work 自身是框架受管项目：其上下文、需求包、任务和报告随框架提交，但不得摘录业务项目真实数据。
 !/local/projects/cg-work/**
 # 本机工具副本可能包含个人路径或运行参数，不进入框架提交。

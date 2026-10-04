@@ -73,6 +73,7 @@ export async function checkProjectContext(contextFile) {
       await checkAbsolutePaths(runtime?.entrypoints, 'runtime.entrypoints', errors, { base: projectRoot });
       await checkAbsolutePaths(runtime?.health_checks, 'runtime.health_checks', errors, { allowUrls: true, base: projectRoot });
       await checkPrototypePaths(prototypes, projectRoot, errors);
+      await checkProductPaths(context.product, projectRoot, errors);
       await checkAbsolutePaths(context.required_context, 'required_context', errors, { base: projectRoot });
       await checkSubmission(submission, errors);
       if (inboxPath) {
@@ -169,6 +170,27 @@ async function checkPrototypePaths(prototypes, projectRoot, errors) {
       if (path.isAbsolute(value)) errors.push(`${label} 必须相对于 project.root_path：${value}`);
       else if (projectRoot && !(await exists(path.resolve(projectRoot, value)))) errors.push(`登记的路径不存在：${path.resolve(projectRoot, value)}`);
     }
+  }
+}
+
+async function checkProductPaths(product, projectRoot, errors) {
+  if (product === undefined) return;
+  if (!isObject(product)) {
+    errors.push('product 必须是映射对象');
+    return;
+  }
+  const roadmapPath = product.roadmap_path;
+  if (roadmapPath === undefined || roadmapPath === null) return;
+  if (typeof roadmapPath !== 'string' || !roadmapPath.trim()) {
+    errors.push('product.roadmap_path 必须是非空字符串');
+    return;
+  }
+  if (path.isAbsolute(roadmapPath)) {
+    errors.push(`product.roadmap_path 必须相对于 project.root_path：${roadmapPath}`);
+    return;
+  }
+  if (projectRoot && !(await exists(path.resolve(projectRoot, roadmapPath)))) {
+    errors.push(`product.roadmap_path 不存在：${path.resolve(projectRoot, roadmapPath)}`);
   }
 }
 

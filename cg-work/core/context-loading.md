@@ -21,10 +21,12 @@
 
 依赖业务项目代码的多页面原型可以放在 `<project.root_path>/prototypes/<design-name>/`。此类原型必须在项目上下文的可选 `prototypes.paths` 中登记 `id`、相对 `path` 和 `entrypoint`；这些路径均相对于 `project.root_path`，并由 `scripts/check-project.mjs` 校验。放在 `local/projects/<project-id>/design/<design-name>/` 的框架目录原型不写入该字段，直接由任务的 `prototype_reference` 引用。
 
+项目级路线图是可选的常驻产物，但**存放在原项目仓库内**：路径相对 `project.root_path` 登记在项目上下文的可选字段 `product.roadmap_path`，由 `framework:product-management` 维护，内容由 `scripts/check-product.mjs` 校验，路径存在性由 `scripts/check-project.mjs` 校验。它与框架本地 `roadmaps/<roadmap-id>/`（单个大需求的需求拆分索引）是两种产物，不要混用。
+
 单仓项目继续以 `project.root_path` 作为主仓库。存在前后端或多个独立仓库时，可在可选的 `repositories` 中登记每个仓库的稳定 `id`、`role` 和绝对 `root_path`；`project.root_path` 不因此失效。执行验证前，先读取可选的 `verification.profiles`：每项声明 `stage`、`command`、`outcome` 及可选 `limitation`。`required` 表示该阶段应执行，`environment_limited` 表示必须保留未完成原因而不能写为通过，`not_applicable` 表示该任务不适用。profile 是项目验证入口的唯一记录处，不替代任务内的新鲜验证证据。
 
 启动、停止或重启项目时，必须先读取项目上下文的 `runtime.entrypoints` 和相关 `runtime.health_checks`。`runtime.entrypoints` 每项可以是可执行命令（例如 `npm run dev`、`mvn spring-boot:run`），也可以是已存在的启动脚本路径；优先执行上下文登记的入口，不得凭经验另造启动命令。框架工具可以将入口指向 `tools/` 下的共享脚本。若入口为空、路径失效或命令需要未登记的参数，先记录环境限制并请求补充上下文，不得静默绕过上下文启动。
 
-工作流使用 `framework:<skill-name>` 引用框架技能，使用 `project:<skill-name>` 引用项目技能。项目技能只补充当前项目规则，不能静默覆盖框架规则；路径不存在或技能不可读时记录 `unavailable`。
+工作流使用 `framework:<skill-name>` 引用框架技能，使用 `project:<skill-name>` 引用项目技能。同名前缀按字段区分：`task.yaml` 的 `workflow` 字段指向 `workflows/<name>.md`，技能字段与正文指向 `skills/<name>/`。项目技能只补充当前项目规则，不能静默覆盖框架规则；路径不存在或技能不可读时记录 `unavailable`。
 
 项目上下文缺失、路径无效或文档无法读取时，只能调查和澄清，不能直接修改项目代码。涉及术语时遵循项目词汇表。不得把密钥、令牌、密码或生产数据写入上下文。

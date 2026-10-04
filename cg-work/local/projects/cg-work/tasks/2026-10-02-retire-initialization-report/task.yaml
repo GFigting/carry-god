@@ -1,25 +1,34 @@
 id: 2026-10-02-retire-initialization-report
-status: pending
+status: review
 goal: 正式废弃 initialization-report.md 产物，同步结构清单与技能正文，并保留替代说明。
 workflow: framework:framework-optimization
 created_at: 2026-10-02T11:25:00+08:00
+artifact_profile: compact
+artifacts:
+  primary: ./plan.md
 requirements_reference: ../../requirements-inbox/2026-10-02-retire-initialization-report.md
 scope_decision:
   mode: independent
-  rationale: 废弃标准产物需要同步文档结构清单与框架自有技能正文，并保留替代说明，具有独立验收标准，不并入 2026-10-02 框架一致性收敛。
+  rationale: 废弃标准产物需要同步文档结构清单、core 规则与两个框架自有技能正文，并保留替代说明，具有独立验收标准，不并入 2026-10-02 框架一致性收敛。
 acceptance_summary:
-  - local/README.md 与 project-initialization 技能不再要求生成该产物
+  - 框架内不再要求生成或依赖 initialization-report.md
+  - 缺口与待确认项改由初始化任务记录承载
   - 历史报告保留原样并有替代说明，不强制迁移
 documentation:
   impact: update
   targets:
     - local/README.md
+    - core/project-onboarding.md
+    - workflows/project-initialization.md
     - skills/project-initialization/SKILL.md
-next_action: 复核废弃理由后同步两处引用并保留替代说明。
+    - skills/project-discovery/SKILL.md
+next_action: 等待用户验收 initialization-report 废弃结论，再并入框架提交。
 interaction_protocol: v1
 next_user_action:
-  required: false
-  action: none
-  message: 待办已登记，当前无需操作；Agent 将在下一次框架维护时执行该废弃。
+  required: true
+  action: accept-result
+  message: initialization-report 已按 D4 决策废弃：5 处引用改为初始化任务记录承载，历史报告 4 份保留，npm test 60 通过、npm run check 通过。请验收，确认后我并入版本 2.19.1 的框架提交（不推送）。
 status_history:
   - pending
+  - in_progress
+  - review

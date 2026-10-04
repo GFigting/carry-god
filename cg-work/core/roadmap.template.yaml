@@ -1,3 +1,5 @@
+# 已废弃：需求拆分索引的格式唯一来源改为 core/decomposition.template.md。
+# 本文件仅为历史任务引用的替代说明，保留原字段骨架以免旧引用失真。
 id: <roadmap-id>
 status: active
 destination: <完成后可交付或可决策的结果>
