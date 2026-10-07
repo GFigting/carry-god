@@ -11,7 +11,7 @@
 
 加载项目规则时，优先读取 `instructions.files` 与 `coding_standards.files` 登记的项目规则，以及仓库工具配置；对于项目未覆盖的事项，再应用 [项目通用代码规范](project-code-standards.md)。该规范约束计划、编码和提交前自查，不限于最终审查。
 
-原始需求先存入 `requirements.inbox_path` 所指向的本地需求箱；需求箱保存未经拆分的需求包、附件和澄清材料。同一需求包可以支撑多个 task，创建 task 前应先查找并复用已有需求包，并在 task 中以 `requirements_reference` 建立引用；只有没有对应来源时才新增需求包。若新增业务规则、接口/数据结构或独立验收标准，必须创建新 task，不得仅沿用旧 task 的 `next_action`；可用 `scope_decision` 记录新建或延续的范围判断。符合 [工作模型的低风险变更](operating-model.md#低风险变更) 不创建需求箱或任务记录，直接按 `framework:low-risk-change` 完成最小验证。其他需求先判断是否需要 `framework:large-task-decomposition`：需要时，在 `roadmaps/<roadmap-id>/` 保存决策地图的本地索引、覆盖关系和关闭记录；创建开发任务后，任务记录、计划、审查、验证和学习证据仍只保存在 `tasks/<task-id>/`。使用持续学习协议的任务还须读取 [持续学习与经验沉淀](continuous-learning.md)。具体约束见 [项目接入规则](project-onboarding.md)。
+原始需求按 [需求包留存判断](operating-model.md#需求包留存判断) 按需存入 `requirements.inbox_path` 所指向的本地需求箱，需求包不是每任务必建文件：判断为需要时，需求箱保存未经拆分的需求包、附件和澄清材料，同一需求包可以支撑多个 task，创建 task 前应先查找并复用已有需求包，并在 task 中以 `requirements_reference` 建立引用；只有没有对应来源时才新增需求包。判断为不需要时（四项全“否”的明确小改动），需求原文、范围和取舍直接写入任务 `plan.md` 或决策记录，不建需求包。若新增业务规则、接口/数据结构或独立验收标准，必须创建新 task，不得仅沿用旧 task 的 `next_action`；可用 `scope_decision` 记录新建或延续的范围判断。符合 [工作模型的低风险变更](operating-model.md#低风险变更) 不创建需求箱或任务记录，直接按 `framework:low-risk-change` 完成最小验证。其他需求先判断是否需要 `framework:large-task-decomposition`：需要时，在 `roadmaps/<roadmap-id>/` 保存决策地图的本地索引、覆盖关系和关闭记录；创建开发任务后，任务记录、计划、审查、验证和学习证据仍只保存在 `tasks/<task-id>/`。使用持续学习协议的任务还须读取 [持续学习与经验沉淀](continuous-learning.md)。具体约束见 [项目接入规则](project-onboarding.md)。
 
 任务产物按生命周期逐步生成：创建阶段先保留原始需求包和 `task.yaml`；开始实施时补充 `plan.md`；实现完成进入审查时补充 `review.md` 和 `verification.md`；任务声明持续学习协议时补充 `learning.md`；交接或关闭时补充 `handoff.md`。这些文件分别记录不同事实，不应以测试结果替代审查结论，也不应以审查结论替代验证证据。
 

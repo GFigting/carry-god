@@ -306,6 +306,31 @@ test('拒绝为轻量缺陷声明原型', async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
+test('拒绝 lightweight 与 artifact_profile: compact 同时声明', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-07-lightweight-compact-conflict');
+  await mkdir(taskDir);
+  await writeFile(path.join(taskDir, 'plan.md'), '# Plan\n');
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-10-07-lightweight-compact-conflict\nstatus: pending\ngoal: Reject combined profiles\nworkflow: framework:feature-development\nexecution_profile: lightweight\nartifact_profile: compact\nartifacts:\n  primary: plan.md\ncreated_at: 2026-10-07\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Verify\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /lightweight 与 artifact_profile: compact 不能同时声明/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('接受 standard 与 artifact_profile: compact 组合', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-07-standard-compact');
+  await mkdir(taskDir);
+  await writeFile(path.join(taskDir, 'plan.md'), '# Plan\n');
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-10-07-standard-compact\nstatus: review\ngoal: Allow standard with compact\nworkflow: framework:framework-optimization\nexecution_profile: standard\nartifact_profile: compact\nartifacts:\n  primary: plan.md\ncreated_at: 2026-10-07\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: User acceptance\ninteraction_protocol: v1\nnext_user_action:\n  required: true\n  action: accept-result\n  message: 请验收标准执行与 compact 组合\n');
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
+  await rm(dir, { recursive: true, force: true });
+});
+
 test('原型任务的计划记录缺少实现契约章节时被拒绝', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
   const taskDir = path.join(dir, '2026-10-02-prototype-contract');
@@ -497,5 +522,41 @@ test('交互协议任务进入审查前缺少用户下一步提醒时被拒绝',
   const result = await run(file);
   assert.notEqual(result.code, 0);
   assert.match(result.output, /必须填写 next_user_action/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('已归档任务只需成功解析 YAML', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-01-archived-task');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'status: review\narchived: true\narchive_reason: Historical\n');
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('接受结构化状态历史并校验原因与时间', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-01-structured-history');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(path.join(taskDir, 'review.md'), '# Review\n');
+  await writeFile(path.join(taskDir, 'verification.md'), '# Verification\n');
+  await writeFile(file, 'id: 2026-10-01-structured-history\nstatus: review\ngoal: Structured history\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01\ndocumentation:\n  impact: update\n  files:\n    - README.md\nreview_reference: review.md\nverification_reference: verification.md\nnext_action: Review\nstatus_history:\n  - status: pending\n    at: "2026-10-01T09:00:00+08:00"\n    reason: 任务创建\n  - status: in_progress\n    at: "2026-10-01T09:30:00+08:00"\n    reason: 开始实施\n  - status: review\n    at: "2026-10-01T10:00:00+08:00"\n    reason: 完成实现\n');
+  const result = await run(file);
+  assert.equal(result.code, 0, result.output);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('拒绝 documentation 规范字段与历史别名并存', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-01-documentation-alias-conflict');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-10-01-documentation-alias-conflict\nstatus: pending\ngoal: Documentation aliases\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01\ndocumentation:\n  impact: update\n  files:\n    - README.md\n  targets:\n    - core/README.md\nnext_action: Review\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /files 与 targets 不能同时填写/);
   await rm(dir, { recursive: true, force: true });
 });

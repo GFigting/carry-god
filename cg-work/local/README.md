@@ -11,13 +11,16 @@ projects/<project-id>/
 ├── project-context.yaml
 ├── requirements-inbox/
 │   ├── README.md
-│   └── <requirement-package>/
+│   ├── <requirement-package>/
+│   └── archive/<requirement-package>/
 ├── tasks/<task-id>/
     ├── task.yaml
     ├── plan.md
     ├── review.md
     ├── verification.md
     └── learning.md
+├── tasks/archive/<task-id>/
+│   └── 原任务目录中的完整证据
 └── roadmaps/<roadmap-id>/
     ├── roadmap.yaml
     ├── coverage.md
@@ -28,11 +31,11 @@ projects/<project-id>/
 
 `initialization-report.md` 自 2026-10-02 起废弃：探测范围、事实来源、缺口和待确认项改记在项目的初始化任务记录（`tasks/<task-id>/`）中，耐久事实写入 `project-context.yaml`。历史报告文件保留原样，不再新增，也不强制迁移。任务不需要的产物可以省略，但已有产物必须使用上述固定名称。不要在此目录保存密钥、令牌、密码或生产数据。
 
-`requirements-inbox/` 是原始需求的唯一入口：保存尚未拆分的需求包、附件、原文和澄清材料。一个需求包可以拆分为多个 `tasks/<task-id>/`；任务记录、计划、审查和验证证据不得写回需求箱。业务项目的需求内容保持本地忽略，仅需求箱的 `README.md` 可提交（它同时保证目录非空，不再需要 `.gitkeep`）；框架受管项目 `cg-work` 的需求包随框架提交。
+`requirements-inbox/` 是原始需求的唯一入口：保存尚未拆分的需求包、附件、原文和澄清材料。需求包按 [需求包留存判断](../core/operating-model.md#需求包留存判断) 按需生成，不是每任务必建；不建需求包时，需求原文、范围和取舍直接写入任务 `plan.md` 或决策记录。一个需求包可以拆分为多个 `tasks/<task-id>/`；任务记录、计划、审查和验证证据不得写回需求箱。业务项目的需求内容保持本地忽略，仅需求箱的 `README.md` 可提交（它同时保证目录非空，不再需要 `.gitkeep`）；框架受管项目 `cg-work` 的需求包随框架提交。
 
 任务记录的最小字段：
 
-- `task.yaml`：`id`、`status`、`goal`、`workflow`、`created_at`、`next_action`；新任务必须声明 `interaction_protocol: v1`，并配套 `next_user_action.required`、`action`、`message`，用于向用户说明是否需要操作及具体动作。`learning_protocol: v1` 按需声明，轻量档任务不得声明。
+- `task.yaml`：`id`、`status`、`goal`、`workflow`、`created_at`、`next_action`；新任务必须声明 `interaction_protocol: v1`，并配套 `next_user_action.required`、`action`、`message`，用于向用户说明是否需要操作及具体动作。`learning_protocol: v1` 按需声明，轻量执行任务不得声明。
 - `plan.md`：范围、验收标准、涉及文件、实施步骤、风险和验证方案。
 - `review.md`：审查基线、问题、严重性、处理结论和遗留风险。
 - `verification.md`：验证命令、执行时间、结果、证据和未验证项。

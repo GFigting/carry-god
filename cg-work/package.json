@@ -5,7 +5,9 @@
   "scripts": {
     "test": "node --test test/*.test.mjs",
     "check": "node scripts/check-all.mjs",
-    "queue": "node scripts/acceptance-queue.mjs"
+    "queue": "node scripts/acceptance-queue.mjs",
+    "archive": "node scripts/archive-tasks.mjs",
+    "migrate-task-metadata": "node scripts/migrate-task-metadata.mjs"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"

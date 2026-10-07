@@ -16,7 +16,7 @@ async function taskFiles() {
     const tasksRoot = path.join(projectsRoot, project.name, 'tasks');
     if (!(await exists(tasksRoot))) continue;
     for (const entry of await fs.readdir(tasksRoot, { withFileTypes: true })) {
-      if (!entry.isDirectory()) continue;
+      if (!entry.isDirectory() || entry.name === 'archive') continue;
       const file = path.join(tasksRoot, entry.name, 'task.yaml');
       if (await exists(file)) files.push({ project: project.name, file });
     }
@@ -30,6 +30,7 @@ async function queue() {
     let task;
     try { task = yaml.load(await fs.readFile(file, 'utf8')); } catch { continue; }
     if (!task || typeof task !== 'object') continue;
+    if (task.archived === true) continue;
     const requiresUser = task.next_user_action?.required === true;
     if (task.status !== 'review' && !requiresUser) continue;
     items.push({
@@ -62,7 +63,10 @@ function render(items) {
 // 只改三处：状态、状态历史、面向用户的下一步；其余原文不动。
 function markAccepted(text, note) {
   let out = text.replace(/^status:\s*review\s*$/m, 'status: done');
-  out = out.replace(/^(status_history:\r?\n(?:[ \t]*-[^\n]*\r?\n)*)/m, (block) => `${block}  - done\n`);
+  const acceptedAt = new Date().toISOString();
+  const reason = `用户已验收${note ? `：${note}` : '。'}`;
+  out = out.replace(/^(status_history:\r?\n(?:[ \t]*-[^\n]*\r?\n)*)/m,
+    (block) => `${block}  - status: done\n    at: ${JSON.stringify(acceptedAt)}\n    reason: ${JSON.stringify(reason)}\n`);
   const lines = out.split(/\r?\n/);
   const start = lines.findIndex((line) => /^next_user_action:\s*$/.test(line));
   if (start !== -1) {

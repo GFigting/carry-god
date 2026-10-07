@@ -31,6 +31,8 @@ export async function checkTaskRecord(taskFile) {
 
   if (!isObject(task)) {
     errors.push('任务记录必须是 YAML 映射对象');
+  } else if (task.archived === true) {
+    // 已归档记录只需成功解析 YAML；归档本身明确退出任务生命周期门禁。
   } else {
     for (const key of ['id', 'status', 'goal', 'workflow', 'created_at', 'next_action']) {
       if (!(key in task)) errors.push(`缺少任务字段：${key}`);
@@ -65,15 +67,14 @@ export async function checkTaskRecord(taskFile) {
     if (isLightweight && !lightweightWorkflows.has(task.workflow)) {
       errors.push('lightweight 执行模式只适用于 framework:bugfix 或 framework:feature-development');
     }
+    // compact 是证据文件组织方式而非执行档位；轻量执行的证据已合并进 task.yaml，
+    // 两者同时声明会引入多余的主产物门禁，按组合规则表直接拒绝。
+    if (isLightweight && isCompact) {
+      errors.push('lightweight 与 artifact_profile: compact 不能同时声明：轻量执行的证据已合并进 task.yaml，需要主产物时使用标准执行');
+    }
     if (isLightweight) validateLightweightScope(task, errors);
 
-    if (task.documentation === undefined || !isObject(task.documentation)) {
-      errors.push('task.documentation 必须是映射对象');
-    } else if (!['add', 'update', 'none'].includes(task.documentation.impact)) {
-      errors.push('task.documentation.impact 必须是 add、update 或 none');
-    } else if (task.documentation.impact === 'none' && typeof task.documentation.not_needed_reason !== 'string') {
-      errors.push('impact 为 none 时必须填写 task.documentation.not_needed_reason');
-    }
+    validateDocumentation(task.documentation, errors);
 
     validateAcceptanceSummary(task.acceptance_summary, errors);
     validateOpenDecisions(task.open_decisions, errors);
@@ -85,15 +86,7 @@ export async function checkTaskRecord(taskFile) {
 
     if (task.scope_decision !== undefined) await validateScopeDecision(task, file, errors);
 
-    if (Array.isArray(task.status_history)) {
-      for (let index = 1; index < task.status_history.length; index += 1) {
-        const previous = task.status_history[index - 1];
-        const current = task.status_history[index];
-        if (!allowedStatuses.has(previous) || !allowedStatuses.has(current)) errors.push('status_history 包含无效状态');
-        else if (!transitions[previous].has(current)) errors.push(`状态转换无效：${previous} -> ${current}`);
-      }
-      if (task.status_history.at(-1) !== task.status) errors.push('status_history 必须以 task.status 结尾');
-    }
+    if (Array.isArray(task.status_history)) validateStatusHistory(task.status_history, task.status, errors);
 
     if (isLightweight && (task.status === 'review' || task.status === 'done')) {
       validateLightweightEvidence(task.lightweight_evidence, task, errors);
@@ -351,6 +344,66 @@ function validateAcceptanceSummary(value, errors) {
   if (!Array.isArray(value) || value.length === 0 || value.some((item) => typeof item !== 'string' || !item.trim())) {
     errors.push('acceptance_summary 必须是非空字符串数组');
   }
+}
+
+function validateDocumentation(value, errors) {
+  if (!isObject(value)) {
+    errors.push('task.documentation 必须是映射对象');
+    return;
+  }
+  if (!['add', 'update', 'none'].includes(value.impact)) {
+    errors.push('task.documentation.impact 必须是 add、update 或 none');
+  }
+  if (value.files !== undefined && value.targets !== undefined) {
+    errors.push('task.documentation.files 与 targets 不能同时填写；targets 仅为历史兼容字段');
+  }
+  if (value.reason !== undefined && value.not_needed_reason !== undefined) {
+    errors.push('task.documentation.reason 与 not_needed_reason 不能同时填写；not_needed_reason 仅为历史兼容字段');
+  }
+  for (const [key, label] of [['files', 'files'], ['targets', 'targets']]) {
+    if (value[key] === undefined) continue;
+    if (!Array.isArray(value[key]) || value[key].length === 0 || value[key].some((item) => typeof item !== 'string' || !item.trim())) {
+      errors.push(`task.documentation.${label} 必须是非空字符串数组`);
+    }
+  }
+  if (value.impact === 'none') {
+    const reason = value.reason ?? value.not_needed_reason;
+    if (typeof reason !== 'string' || !reason.trim()) errors.push('impact 为 none 时必须填写 task.documentation.reason（历史记录可使用 not_needed_reason）');
+  }
+  if (value.summary !== undefined && (typeof value.summary !== 'string' || !value.summary.trim())) {
+    errors.push('task.documentation.summary 如填写必须是非空字符串');
+  }
+}
+
+function validateStatusHistory(history, currentStatus, errors) {
+  const statuses = [];
+  for (const entry of history) {
+    if (typeof entry === 'string') {
+      statuses.push(entry);
+      continue;
+    }
+    if (!isObject(entry) || typeof entry.status !== 'string' || !entry.status.trim()) {
+      errors.push('status_history 项必须是状态字符串或包含 status 的映射');
+      statuses.push(null);
+      continue;
+    }
+    const validDateObject = entry.at instanceof Date && !Number.isNaN(entry.at.getTime());
+    if (entry.at !== null && entry.at !== undefined && !validDateObject
+      && (typeof entry.at !== 'string' || Number.isNaN(Date.parse(entry.at)))) {
+      errors.push('status_history.at 必须是 ISO 时间字符串或 null');
+    }
+    if (typeof entry.reason !== 'string' || !entry.reason.trim()) {
+      errors.push('结构化 status_history 项必须填写非空 reason');
+    }
+    statuses.push(entry.status);
+  }
+  for (let index = 1; index < statuses.length; index += 1) {
+    const previous = statuses[index - 1];
+    const next = statuses[index];
+    if (!allowedStatuses.has(previous) || !allowedStatuses.has(next)) errors.push('status_history 包含无效状态');
+    else if (!transitions[previous].has(next)) errors.push(`状态转换无效：${previous} -> ${next}`);
+  }
+  if (statuses.at(-1) !== currentStatus) errors.push('status_history 必须以 task.status 结尾');
 }
 
 function validateOpenDecisions(value, errors) {

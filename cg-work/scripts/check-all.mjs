@@ -40,6 +40,13 @@ function slugify(text) {
     .replace(/\s+/g, '-');
 }
 
+function isArchivedArtifact(relative) {
+  const parts = relative.split('/');
+  return parts.some((part, index) =>
+    (part === 'tasks' || part === 'requirements-inbox') && parts[index + 1] === 'archive'
+  );
+}
+
 // 围栏代码块里的 # 不是标题，必须排除，否则会产生幽灵锚点。
 function headingTexts(content) {
   const headings = [];
@@ -110,6 +117,18 @@ async function checkManagedProjectRecords() {
   if (!(await exists(tasksRoot))) return;
   for (const entry of await fs.readdir(tasksRoot, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
+    if (entry.name === 'archive') {
+      // 归档记录退出生命周期门禁，但必须保持 YAML 可解析（见工作模型的任务归档）。
+      const archiveRoot = path.join(tasksRoot, entry.name);
+      for (const archived of await fs.readdir(archiveRoot, { withFileTypes: true })) {
+        if (!archived.isDirectory()) continue;
+        const archivedFile = path.join(archiveRoot, archived.name, 'task.yaml');
+        if (!(await exists(archivedFile))) continue;
+        const label = path.relative(root, archivedFile).replaceAll(path.sep, '/');
+        for (const error of await checkTaskRecord(archivedFile)) errors.push(`${label}: ${error}`);
+      }
+      continue;
+    }
     const taskFile = path.join(tasksRoot, entry.name, 'task.yaml');
     if (!(await exists(taskFile))) continue;
     const label = path.relative(root, taskFile).replaceAll(path.sep, '/');
@@ -123,6 +142,7 @@ async function walk(dir) {
     if (entry.isDirectory() && (entry.name.startsWith('.') || entry.name === 'node_modules')) continue;
     const target = path.join(dir, entry.name);
     const relative = path.relative(root, target).replaceAll(path.sep, '/');
+    if (isArchivedArtifact(relative)) continue;
     if (!isLocal(relative) && !isSkill(relative) && !isKebab(entry.name)) errors.push(`invalid name: ${relative}`);
     if (entry.isDirectory()) {
       if (!isLocal(relative) && !isSkill(relative) && !(await exists(path.join(target, 'README.md')))) errors.push(`missing README.md: ${relative}`);

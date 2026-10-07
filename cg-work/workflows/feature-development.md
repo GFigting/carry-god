@@ -19,13 +19,13 @@ conditional_skills:
 
 # 功能开发
 
-先按 [工作模型的低风险变更](../core/operating-model.md#低风险变更) 筛选：符合条件时改用 `framework:low-risk-change`，不得创建需求箱或任务记录。其余功能开发读取项目上下文和 `requirements.inbox_path` 中的原始需求包；创建 `pending` 任务记录，澄清目标、范围和验收标准，并评估业务文档影响。一个原始需求包可关联多个任务，但任务产物不得写回需求箱；再完成设计、计划、实现、文档同步、验证和集成决策。若需求跨模块、跨会话、存在未决关键决策或无法作为一个独立任务验收，先切换至 [大任务拆分与关闭](large-task-decomposition.md)，不得直接并列创建无路线图的任务。若创建原型，任务记录只写 `prototype_reference`：进入 `in_progress` 前在计划记录补 `## 原型实现契约` 章节，进入 `review` 前在评审记录补 `## 原型采纳` 章节；字段与章节要求见 [原型与任务记录](../core/operating-model.md#原型与任务记录)。完成实现后必须经过新鲜验证和审查，再进入统一收尾流程。
+先按 [工作模型的低风险变更](../core/operating-model.md#低风险变更) 筛选：符合条件时改用 `framework:low-risk-change`，不得创建需求箱或任务记录。其余功能开发按 [需求包留存判断](../core/operating-model.md#需求包留存判断) 处理需求来源：需要需求包时读取项目上下文和 `requirements.inbox_path` 中的原始需求包并以 `requirements_reference` 引用，明确小改动的需求原文与取舍直接写入 `plan.md` 或决策记录。创建 `pending` 任务记录，澄清目标、范围和验收标准，并评估业务文档影响。一个原始需求包可关联多个任务，但任务产物不得写回需求箱；再完成设计、计划、实现、文档同步、验证和集成决策。若需求跨模块、跨会话、存在未决关键决策或无法作为一个独立任务验收，先切换至 [大任务拆分与关闭](large-task-decomposition.md)，不得直接并列创建无路线图的任务。若创建原型，任务记录只写 `prototype_reference`：进入 `in_progress` 前在计划记录补 `## 原型实现契约` 章节，进入 `review` 前在评审记录补 `## 原型采纳` 章节；字段与章节要求见 [原型与任务记录](../core/operating-model.md#原型与任务记录)。完成实现后必须经过新鲜验证和审查，再进入统一收尾流程。
 
 ### 轻量功能
 
-单模块边界、业务规则无未决、无数据迁移且可逆的小功能，可声明 `execution_profile: lightweight`：保留需求箱与 `task.yaml`，把范围、验证、自审与集成结论合并进 `lightweight_evidence`（功能类免填 `root_cause`），不创建独立计划、审查、验证、学习或交接文件，不做计划审核章节；测试按 [工作模型的最小充分流程](../core/operating-model.md#最小充分流程) 价值分层执行。任一条件不满足（跨模块、规则未决、迁移、不可逆）立即转标准路径。
+满足 [轻量执行决策清单](../core/operating-model.md#轻量执行决策清单) 五项全部为“否”的单模块小功能，可声明 `execution_profile: lightweight`：保留 `task.yaml`（需求包按 [需求包留存判断](../core/operating-model.md#需求包留存判断) 按需生成），把范围、验证、自审与集成结论合并进 `lightweight_evidence`（功能类免填 `root_cause`），不创建独立计划、审查、验证、学习或交接文件，不做计划审核章节；测试按 [工作模型的最小充分流程](../core/operating-model.md#最小充分流程) 价值分层执行。清单任一项为“是”、无法取得针对性验证，或产生可复用经验时，按 [交付路径升级](../core/operating-model.md#交付路径升级) 保留原 `task.yaml` 与历史，升级为标准执行并补建计划、审查和验证记录。
 
-技能加载按需化：`framework:verification-before-completion` 恒加载；`brainstorming`、`writing-plans`、`codebase-design`、`test-driven-development`、`code-review` 在跨模块、高风险或用户明确要求审查时加载，轻量档与单模块小刀不强制。子任务派发（含子智能体）沿用同一比例原则：默认最小交付，明确测试口径与决断边界；需要并行时按文件所有权切分任务边界，实现类子代理不并行派发（文件冲突），审查类可并行。
+技能加载按需化：`framework:verification-before-completion` 恒加载；`brainstorming`、`writing-plans`、`codebase-design`、`test-driven-development`、`code-review` 在跨模块、高风险或用户明确要求审查时加载，轻量执行与单模块小刀不强制。子任务派发（含子智能体）沿用同一比例原则：默认最小交付，明确测试口径与决断边界；需要并行时按文件所有权切分任务边界，实现类子代理不并行派发（文件冲突），审查类可并行。
 
 原项目提交收尾属于 `review` 阶段，仓库边界按 [命名与提交](../core/naming-and-submission.md#原项目提交口径) 执行：先完成验证和差异检查，再创建本地 Git commit；推送、合并、部署仍需单独授权。
 

@@ -77,6 +77,42 @@ pending -> in_progress -> review -> done
 
 不得跳过 `review` 直接进入 `done`。`done` 和 `cancelled` 是终态。
 
+### 任务归档
+
+历史任务可以使用独立的归档标记退出日常验收与生命周期校验，但归档不等同于用户验收完成：
+
+```yaml
+archived: true
+archived_at: 2026-10-07T08:00:00.000Z
+archive_reason: 用户授权归档历史任务
+```
+
+归档任务移动到项目 `tasks/archive/<task-id>/`，保留原状态和全部证据，不得改写为 `done`，也不得删除任务文件。仅被归档任务引用的需求包同步移动到 `requirements-inbox/archive/`，共享需求包留在原位置；任务内的相对引用随目录深度同步改写。`npm run queue` 不列出已归档任务；`npm run check` 和单任务校验对归档记录只要求 YAML 可解析。使用 `node scripts/archive-tasks.mjs --before YYYY-MM-DD` 预览归档范围，追加 `--include-requirements` 纳入需求包，只有显式追加 `--apply` 才执行移动和写入归档字段；已有归档任务可用 `--relocate-archived` 补做目录迁移。
+
+归档可以覆盖 `review` 状态的验收积压（脚本默认 `--status review`），但归档不等于验收：被归档任务如仍需用户验收，必须先恢复归档（移回 `tasks/<task-id>/` 并移除归档元数据）再进入验收队列；不恢复时视为暂缓验收，其 `next_user_action` 保持原意，不得由 Agent 代验收。
+
+### 状态历史格式
+
+历史任务可以继续使用字符串数组：
+
+```yaml
+status_history: [pending, in_progress, review]
+```
+
+新记录和状态更新优先使用结构化项，`at` 使用 ISO 时间；历史迁移无法恢复的时间使用 `null`，不得用文件修改时间猜测：
+
+```yaml
+status_history:
+  - status: pending
+    at: 2026-10-07T09:00:00+08:00
+    reason: 任务创建
+  - status: in_progress
+    at: 2026-10-07T09:30:00+08:00
+    reason: 开始实施
+```
+
+结构化项必须包含非空 `status`、`reason`，`at` 可以是 ISO 时间字符串或 `null`；旧字符串数组在兼容期内继续校验。
+
 ### review 阶段统一收尾
 
 `review` 不只是代码意见检查，也是进入 `done` 前的统一收尾阶段。适用的标准顺序为：
@@ -95,6 +131,7 @@ pending -> in_progress -> review -> done
 任务可选使用以下字段补充机器可校验的摘要信息；未声明时保持历史任务兼容：
 
 - `acceptance_summary`：非空字符串数组，记录任务级可观察验收条件的短摘要。详细验收仍保存在需求包或 `plan.md`，该字段不替代它们。
+- `documentation`：`impact` 取 `add`、`update` 或 `none`；新记录使用 `files` 表示受影响路径，`impact: none` 使用 `reason` 说明无需文档更新。历史 `targets`、`not_needed_reason` 和 `summary` 保持兼容；同一语义不得同时填写规范字段与历史别名。
 - `requirements_reference_note`：一句话说明需求包确实不可恢复的原因。仅在 `requirements_reference` 目标缺失时允许填写；目标存在时填写该字段视为错误。
 - `standards_preflight` 不是任务字段：它是 `plan.md` 与 `verification.md` 中的证据段落，写在 `task.yaml` 会被校验器拒绝。
 - `open_decisions`：未决事项数组。每项必须包含 kebab-case 的唯一 `id`、非空 `question` 和布尔 `blocking`；`blocking: true` 表示该事项阻塞当前任务推进，需要在 `next_user_action` 中提供解除动作。
@@ -125,7 +162,7 @@ pending -> in_progress -> review -> done
 | 需要持续学习 | `learning.md` | 观察、结论、去向和可复用经验 |
 | 完成交接 | `handoff.md` | 集成方式、遗留项、用户下一步和关闭索引 |
 
-低风险变更不进入该生命周期；轻量缺陷可将根因、范围、验证、自审和集成结论合并在 `task.yaml` 的 `lightweight_evidence` 中。
+低风险变更不进入该生命周期；轻量执行的任务可将根因（缺陷类）、范围、验证、自审和集成结论合并在 `task.yaml` 的 `lightweight_evidence` 中。
 
 小任务使用最小充分流程；跨模块、不确定或高风险任务增加计划、审查或专门技能，但不改变状态机。用户确认和项目规则优先，技能不能自行改变状态。
 
@@ -137,13 +174,60 @@ pending -> in_progress -> review -> done
 - 不改变业务规则、交互行为、路由或菜单、接口、数据、权限、配置语义、依赖或外部副作用；
 - 可通过受影响文件的静态检查、页面视觉验收或文档链接检查直接验证。
 
-低风险变更必须使用 `framework:low-risk-change`，并完成与改动匹配的最小验证：前端页面至少执行受影响文件的 lint 和页面验收；纯文档改动至少执行链接或格式检查。任一条件不满足、需要新增或调整逻辑，或验证暴露行为变化时，立即转为相应标准工作流并创建任务记录。
+低风险变更必须使用 `framework:low-risk-change`，并完成与改动匹配的最小验证：前端页面至少执行受影响文件的 lint 和页面验收；纯文档改动至少执行链接或格式检查。任一条件不满足、需要新增或调整逻辑，或验证暴露行为变化时，立即停止免记录路径：按「交付路径升级」新建 `pending` 任务记录并转入相应标准工作流，已完成的改动纳入该任务范围。
 
 ## 最小充分流程
 
-任务按影响面分三档，从轻到重：**低风险变更**（免任务记录）→ **轻量档**（`execution_profile: lightweight`，单条 `task.yaml` 合并证据）→ **标准档**（全套产物与技能）。`framework:bugfix` 与 `framework:feature-development` 都可声明轻量档，适用条件与证据字段以各自工作流为唯一来源；档位按影响面与风险选择，不按任务名选择。跨模块、业务规则未决、数据迁移或不可逆事项不得使用轻量档。
+任务按影响面选择**交付路径**，从轻到重：**免记录路径**（低风险变更，不进入任务状态机）→ **轻量执行**（`execution_profile: lightweight`，单条 `task.yaml` 合并证据）→ **标准执行**（`execution_profile: standard` 或省略该字段，全套产物与技能）。交付路径按影响面与风险选择，不按任务名选择；`framework:bugfix` 与 `framework:feature-development` 都可使用轻量执行，其证据字段以各自工作流为唯一来源，升级触发器以本节的「轻量执行决策清单」为唯一来源。
 
-各档通用的比例原则：
+### 交付路径与两个声明字段
+
+三条交付路径与两个任务字段是不同维度的概念，不要混成“三种任务档位”：
+
+- **免记录路径（低风险变更）**：不进入任务状态机，没有 `task.yaml`，因此与下面两个字段都无关。
+- **`execution_profile`**：执行档位，取 `standard`（标准执行）或 `lightweight`（轻量执行），决定证据门禁强度；省略按标准执行兼容。
+- **`artifact_profile: compact`**：证据文件组织方式，不是执行档位，表示“任务索引 + 一个主产物”，服务于标准执行和未声明执行档位的历史标准任务。
+
+组合规则表：
+
+| 交付路径 \ 证据组织 | 未声明 `artifact_profile`（历史标准产物规则） | `artifact_profile: compact` |
+|---|---|---|
+| 免记录路径（低风险变更） | 不适用：没有 `task.yaml` | 不适用 |
+| 轻量执行（`execution_profile: lightweight`） | 允许（默认）：证据合并进 `task.yaml` 的 `lightweight_evidence`，不创建独立文件 | **不允许**：轻量执行本身就是单条 `task.yaml` 合并证据，再声明 compact 会引入主产物门禁，与“不创建独立文件”冲突；`check-task.mjs` 直接拒绝该组合 |
+| 标准执行（`execution_profile: standard` 或省略） | 允许：按阶段生成 `plan.md`、`review.md`、`verification.md`、`learning.md`、`handoff.md` | 允许：`task.yaml` + `artifacts.primary` 一个主产物，验证、学习和交接结论回写主产物或 `task.yaml` |
+
+### 轻量执行决策清单
+
+“小任务”“可逆的小功能”“高风险”等主观判断按下面五项升级触发器判定，任一项为“是”即不得使用（或必须退出）轻量执行，自动进入标准执行：
+
+1. 是否跨模块（改动或验证超出单一模块/业务边界）？
+2. 是否改变业务规则、接口、数据或权限？
+3. 是否存在迁移、删除或其他不可逆写入？
+4. 是否有未决业务决策？
+5. 是否产生外部副作用？
+
+五项全部为“否”才允许轻量执行。`framework:bugfix` 仍须根因已确认且仅恢复既有行为；`framework:feature-development` 仍须是单模块小功能。
+
+### 需求包留存判断
+
+需求包（需求箱里的原始需求文档）不是每个任务都必须生成的仪式性文件，按下面四项判断；任一项为“是”，才把原始需求存入需求箱并以 `requirements_reference` 引用：
+
+1. 需求是否复杂、模糊，后续是否可能被重新解释？
+2. 是否会拆成多个任务？
+3. 是否涉及用户确认、范围边界或重要取舍？
+4. 是否需要保留原始需求，避免实现记录替代原意？
+
+四项全部为“否”的明确小改动不建需求包：需求原文、范围和取舍直接写入任务 `plan.md`（compact 任务写入其主产物）或 `decisions` 决策记录，省略 `requirements_reference`。本清单与「轻量执行决策清单」正交：本清单判断**原意保真风险**（要不要保留原始需求），决策清单判断**执行风险**（走轻量还是标准），两者结论可以不同——表述明确但高风险的改动走标准执行而不建需求包，模糊但极小的改动留需求包但可走轻量执行。
+
+### 交付路径升级
+
+路径只向重的方向升级，不降级；升级保留原记录与历史，不重开任务：
+
+- **免记录路径 → 标准执行**：低风险变更实施或验证中发现行为变化、或任一低风险条件不再满足时，立即停止免记录路径，新建 `pending` 任务记录（原始需求存入需求箱），把已完成改动纳入该任务范围后按对应标准工作流继续。
+- **轻量执行 → 标准执行**：决策清单任一项转为“是”、无法取得针对性验证，或改动扩展到多个业务边界时，在原 `task.yaml` 内升级：保留原 `task.yaml`、`status_history` 和已写的 `lightweight_evidence`，把 `execution_profile` 改为 `standard`，在 `status_history` 追加带原因的升级记录，并补建 `plan.md`、`review.md`、`verification.md`（按需 `learning.md`、`handoff.md`）。
+- **产生可复用经验即升级**：轻量执行一旦产生可复用经验，必须升级为标准执行，并按 [持续学习与经验沉淀](continuous-learning.md) 记录去向。
+
+各路径通用的比例原则：
 
 - **测试按价值分层**：只为三类行为配自动化测试——数据不可逆（快照/落库被改写）、红线（内部字段外泄、客观态被写、凭据或权限外泄等）、真会悄悄坏的核心逻辑；界面、交互、文案改动以人工验收为准，不强制自动化测试。
 - **现状证据保鲜**：计划、路线图与文档中的"当前/已实现/未实现/仍有限制"断言必须标注核对日期与核对方式；定范围前用一手核查（如 `git log -S`、grep 能力标记）确认，发现证据过期时显式记录修正，不沿用旧断言。

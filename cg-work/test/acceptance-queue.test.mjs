@@ -40,6 +40,18 @@ test('清单列出等待用户操作的任务', async () => {
   }
 });
 
+test('清单跳过已归档任务', async () => {
+  const id = '2026-10-02-queue-archived';
+  const { dir } = await fixture(id, `${compactReview(id)}archived: true\n`);
+  try {
+    const result = await run([]);
+    assert.equal(result.code, 0, result.output);
+    assert.doesNotMatch(result.output, new RegExp(id));
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test('批量验收把 review 记录置为 done 并保留状态历史', async () => {
   const id = '2026-10-02-queue-accepted';
   const { dir, file } = await fixture(id, compactReview(id));
@@ -51,7 +63,8 @@ test('批量验收把 review 记录置为 done 并保留状态历史', async () 
     const text = await readFile(file, 'utf8');
     const task = yaml.load(text);
     assert.equal(task.status, 'done');
-    assert.equal(task.status_history.at(-1), 'done');
+    assert.equal(task.status_history.at(-1).status, 'done');
+    assert.match(task.status_history.at(-1).reason, /用户已验收：清单批量验收/);
     assert.equal(task.next_user_action.required, false);
     assert.match(task.next_user_action.message, /用户已验收：清单批量验收/);
 

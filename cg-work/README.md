@@ -7,7 +7,7 @@
 1. 读取 `AGENTS.md` 和本文件。
 2. 先执行 `framework:project-discovery`：通过一问一答判断请求属于既有项目、新项目或信息不足，并等待用户确认识别摘要。
 3. 对既有项目检查 `local/projects/<project-id>/project-context.yaml`；对新项目确认后执行 `framework:project-initialization`，缺失或失效时等待初始化确认。
-4. 再按 `core/operating-model.md` 识别低风险变更：纯文案、样式或静态布局调整使用 `framework:low-risk-change`，不创建需求箱、task 或自动化测试；其他变更先复用已有原始需求包，只有没有对应需求包时才新增到 `local/projects/<project-id>/requirements-inbox/`，再创建 `pending` task 并记录 `requirements_reference`。
+4. 再按 `core/operating-model.md` 识别低风险变更：纯文案、样式或静态布局调整使用 `framework:low-risk-change`，不创建需求箱、task 或自动化测试；其他变更先按 [需求包留存判断](core/operating-model.md#需求包留存判断) 判断是否需要需求包：需要时复用已有原始需求包，只有没有对应来源时才新增到 `local/projects/<project-id>/requirements-inbox/`，再创建 `pending` task 并记录 `requirements_reference`；四项全“否”的明确小改动不建需求包，需求原文与取舍直接写入任务 `plan.md` 或决策记录。
 5. 按流程声明加载 `skills/` 中的 required skills。
 6. 进入工作流前展示决策预检简报；低风险或可逆事项可自动继续，高风险或不可逆事项等待用户确认，并在需要时再加载 `grilling` 或其他特殊技能。
 7. 标准任务在同一任务目录保存计划、审查、验证、学习证据、风险和下一步行动；跨模块、高风险或用户要求审查的任务在 `plan.md` 内增加计划审核章节，不另建计划审查文件；满足 `workflows/bugfix.md` 轻量条件的缺陷仅在 `task.yaml` 保留根因、范围、验证、自审和集成结论，满足 `workflows/feature-development.md` 轻量条件的小功能同样在 `task.yaml` 合并范围、验证、自审与集成结论（见 [最小充分流程](core/operating-model.md#最小充分流程)）。大任务额外在 `roadmaps/` 保存决策、覆盖与关闭索引。
@@ -40,6 +40,10 @@
 **项目路线图**是另一种产物：它存放在**原项目仓库内**（惯例 `docs/roadmap.md`），路径相对 `project.root_path` 登记在项目上下文的 `product.roadmap_path`，按版本与主题编排整个项目的切片、状态与验收，由 `framework:product-management` 维护，格式见 [项目路线图模板](core/project-roadmap.template.md)，内容校验见 `scripts/check-product.mjs`。需求拆分索引服务于"一个大需求"且留在框架本地，项目路线图服务于"整个项目"且随项目代码版本化，两者不互相替代。
 
 新任务使用 `interaction_protocol: v1` 和 `next_user_action` 记录面向用户的下一步。等待确认、外部输入、审查验收或完成交接时，必须明确说明用户是否需要操作以及具体动作；没有操作时说明 Agent 将继续处理什么。
+
+历史任务如需退出日常验收清单，可使用 `scripts/archive-tasks.mjs` 的归档路径。归档任务移动到 `tasks/archive/<task-id>/`，仅被归档任务引用的需求包移动到 `requirements-inbox/archive/`；归档保留原任务状态和证据，不代表 `done` 或用户验收。归档任务不再进入验收队列和常规生命周期校验，具体用法见 [脚本说明](scripts/README.md)。
+
+任务字段演进使用 `scripts/migrate-task-metadata.mjs` 的兼容迁移路径：新任务的文档影响字段使用 `files`/`reason`，新状态历史使用结构化 `status`/`at`/`reason`；历史别名和字符串数组在兼容期内继续有效。
 
 原型是任务的正式设计产物，不是可选的演示附件。声明 `prototype_reference` 的任务在进入实现前必须在计划记录写 `## 原型实现契约` 章节，在审查或完成前必须在评审记录写 `## 原型采纳` 章节，说明采纳、部分采纳或不采纳的结论，并链接对应实现和验证证据；规则与章节骨架见 [原型与任务记录](core/operating-model.md#原型与任务记录)。
 
