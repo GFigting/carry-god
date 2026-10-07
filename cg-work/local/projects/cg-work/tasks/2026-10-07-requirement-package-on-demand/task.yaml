@@ -1,0 +1,40 @@
+id: 2026-10-07-requirement-package-on-demand
+status: review
+goal: 需求包从“每任务必建”改为按「需求包留存判断」四项清单按需生成，明确小改动的需求与取舍直接写 plan.md 或决策记录。
+workflow: framework:framework-optimization
+execution_profile: standard
+artifact_profile: compact
+artifacts:
+  primary: plan.md
+created_at: 2026-10-07T17:30:00+08:00
+requirements_reference: ../../requirements-inbox/2026-10-07-requirement-package-on-demand.md
+scope_decision:
+  mode: independent
+  rationale: 需求包留存政策是独立的文档与流程边界，与交付路径口径、归档目录拆分互不依赖。
+documentation:
+  impact: update
+  files:
+    - core/operating-model.md
+    - core/context-loading.md
+    - README.md
+    - workflows/bugfix.md
+    - workflows/feature-development.md
+    - local/README.md
+    - test/requirement-package-policy.test.mjs
+    - VERSION
+next_action: 等待用户验收需求包按需生成政策；审查与验证结论已写入主产物 plan.md。
+interaction_protocol: v1
+next_user_action:
+  required: true
+  action: 验收
+  message: 请验收「需求包留存判断」四项清单与五处强制措辞放宽（结论见 plan.md）。
+status_history:
+  - status: pending
+    at: 2026-10-07T17:30:00+08:00
+    reason: 用户确认政策方向（按需生成），创建任务与需求记录
+  - status: in_progress
+    at: 2026-10-07T17:35:00+08:00
+    reason: 开始新增需求包留存判断清单并放宽强制措辞
+  - status: review
+    at: 2026-10-07T17:45:00+08:00
+    reason: 清单与措辞放宽完成，npm run check 通过、90/90 测试全绿

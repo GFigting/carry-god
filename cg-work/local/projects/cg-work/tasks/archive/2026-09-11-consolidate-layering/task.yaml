@@ -1,0 +1,44 @@
+id: 2026-09-11-consolidate-layering
+status: done
+archive_reason: "用户授权归档历史任务"
+archived_at: "2026-10-07T07:34:46.009Z"
+archived: true
+goal: 收敛项目初始化与框架优化的 core、workflow、skill 职责，消除重复规则而保持现有流程和产物兼容。
+workflow: framework:refactor
+created_at: 2026-09-11T00:00:00+08:00
+next_action: 等待用户验收沉淀后的 framework-optimization 技能；验收后记录集成方式并归档任务。
+documentation:
+  impact: update
+  files:
+    - core/project-onboarding.md
+    - core/framework-maintenance.md
+    - workflows/project-initialization.md
+    - workflows/framework-optimization.md
+    - skills/project-initialization/SKILL.md
+    - skills/framework-optimization/SKILL.md
+status_history:
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+review_reference: review.md
+verification_reference: verification.md
+
+next_user_action:
+  required: false
+  action: none
+  message: 用户已授权归档旧任务。

@@ -1,0 +1,37 @@
+id: 2026-09-11-add-requirements-inbox
+status: done
+archive_reason: "用户授权归档历史任务"
+archived_at: "2026-10-07T07:34:46.009Z"
+archived: true
+goal: 为 cg-work 的已初始化项目建立原始需求箱入口，并使初始化流程和框架校验强制维护该入口。
+workflow: framework:feature-development
+created_at: 2026-09-11T00:00:00+08:00
+next_action: 等待用户验收需求箱目录、上下文登记与校验规则；验收后记录集成方式并归档任务。
+documentation:
+  impact: update
+  files:
+    - README.md
+    - local/README.md
+    - core/context-loading.md
+    - core/project-context.template.yaml
+    - skills/project-initialization/SKILL.md
+status_history:
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+review_reference: review.md
+verification_reference: verification.md
+
+next_user_action:
+  required: false
+  action: none
+  message: 用户已授权归档旧任务。

@@ -1,0 +1,49 @@
+id: 2026-09-26-decision-preflight-visible
+status: done
+archive_reason: "用户授权归档历史任务"
+archived_at: "2026-10-07T09:14:06.375Z"
+archived: true
+goal: 将 Agent 的自动风险判断和 grill 建议以决策预检简报展示给用户
+workflow: framework:framework-optimization
+execution_profile: standard
+created_at: 2026-09-26
+requirements_reference: ../../../requirements-inbox/2026-09-26-decision-preflight-visible.md
+requirements_reference_note: 需求包在提交策略统一前未随框架提交，本机已不可恢复；保留引用路径作为溯源。
+scope_decision:
+  mode: independent
+  rationale: 新增自动决策预检的可见性和高风险确认门禁，具有独立协议和验收标准，不能追加到已完成的项目识别任务。
+acceptance_summary:
+  - 自动预检展示风险、假设、推荐路径、备选方案和 grill 建议
+  - 重大或不可逆决策必须等待用户确认
+  - 低风险或可逆决策展示后可自动继续
+documentation:
+  impact: update
+  affected:
+    - core/special-operations.md
+    - skills/grilling/SKILL.md
+    - README.md
+next_action: 等待用户验收决策预检简报协议
+interaction_protocol: v1
+next_user_action:
+  required: false
+  action: accept-result
+  message: 决策预检简报协议已验收，已纳入本次框架提交。
+status_history:
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+plan_reference: ./plan.md
+review_reference: ./review.md
+verification_reference: ./verification.md
+handoff_reference: ./handoff.md
+learning_protocol: v1
+learning_reference: ./learning.md

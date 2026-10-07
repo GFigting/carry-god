@@ -1,5 +1,5 @@
 id: 2026-10-02-workflow-and-template-consolidation
-status: review
+status: done
 goal: 收敛三个工作流的重复正文并把路线图格式归到唯一来源，保持工作流 id 与门禁不变。
 workflow: framework:framework-optimization
 created_at: 2026-10-02T15:20:00+08:00
@@ -17,7 +17,7 @@ acceptance_summary:
   - 工作流与技能同名前缀的判定方式写入入口规则
 documentation:
   impact: update
-  targets:
+  files:
     - workflows/refactor.md
     - workflows/review.md
     - workflows/low-risk-change.md
@@ -32,10 +32,19 @@ documentation:
 next_action: 等待用户验收工作流与模板收敛结论，再并入框架提交。
 interaction_protocol: v1
 next_user_action:
-  required: true
-  action: accept-result
-  message: 工作流正文已收敛（refactor/review/low-risk-change 只留特有要求，id 与门禁不变），路线图格式归到 roadmap.template.md，前缀判定写入入口规则；npm test 66 通过、130 条记录失败数未增加。请验收后我并入版本 2.23.0 提交（不推送）。
+  required: false
+  action: none
+  message: 用户已验收：用户授权：归档 2026-10-07 之前的 review 任务
 status_history:
-  - pending
-  - in_progress
-  - review
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"

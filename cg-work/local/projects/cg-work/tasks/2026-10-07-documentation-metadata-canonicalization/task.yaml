@@ -1,0 +1,40 @@
+id: 2026-10-07-documentation-metadata-canonicalization
+status: review
+goal: 统一任务 documentation 元数据并提供兼容迁移路径。
+workflow: framework:framework-optimization
+execution_profile: standard
+created_at: 2026-10-07T17:00:00+08:00
+requirements_reference: ../../requirements-inbox/2026-10-07-documentation-metadata-canonicalization.md
+scope_decision:
+  mode: independent
+  rationale: 文档影响字段的规范化与状态历史结构升级具有独立字段、迁移和验收边界。
+documentation:
+  impact: update
+  files:
+    - scripts/check-task.mjs
+    - scripts/migrate-task-metadata.mjs
+    - scripts/README.md
+    - core/operating-model.md
+    - README.md
+    - package.json
+    - test/migrate-task-metadata.test.mjs
+    - VERSION
+plan_reference: plan.md
+review_reference: review.md
+verification_reference: verification.md
+next_action: 等待用户验收 documentation 规范字段与兼容迁移结果。
+interaction_protocol: v1
+next_user_action:
+  required: true
+  action: 验收
+  message: 请验收 documentation 规范字段、历史别名兼容和迁移 dry-run 结果。
+status_history:
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: 实现规范字段校验与兼容迁移
+  - status: review
+    at: null
+    reason: 测试、全量检查和迁移 dry-run 已完成

@@ -24,7 +24,15 @@ next_user_action:
 artifacts:
   primary: optimization-report.md
 status_history:
-  - pending
-  - in_progress
-  - review
-  - done
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"

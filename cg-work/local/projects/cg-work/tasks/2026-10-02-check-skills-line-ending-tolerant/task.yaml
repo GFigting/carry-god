@@ -1,5 +1,5 @@
 id: 2026-10-02-check-skills-line-ending-tolerant
-status: review
+status: done
 goal: 让技能镜像校验按 LF 归一化比较内容，消除 Windows 工作副本的换行符假阳性，同时不放宽真实差异检查。
 workflow: framework:framework-optimization
 created_at: 2026-10-02T11:50:00+08:00
@@ -16,16 +16,25 @@ acceptance_summary:
   - 二进制文件不做文本归一化
 documentation:
   impact: update
-  targets:
+  files:
     - scripts/README.md
     - VERSION
 next_action: 等待用户验收换行符宽容化结论，再并入框架提交。
 interaction_protocol: v1
 next_user_action:
-  required: true
-  action: accept-result
-  message: 镜像校验已按 LF 归一化比较，本机从 65 处假阳性降到 0；降噪过程暴露出 3 处真实差异，已另立任务处理。npm test 60 通过、npm run check 通过。请验收后我并入版本 2.19.1 提交（不推送）。
+  required: false
+  action: none
+  message: 用户已验收：用户授权：归档 2026-10-07 之前的 review 任务
 status_history:
-  - pending
-  - in_progress
-  - review
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"

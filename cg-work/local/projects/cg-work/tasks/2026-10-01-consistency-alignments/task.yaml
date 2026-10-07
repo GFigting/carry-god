@@ -19,7 +19,15 @@ lightweight_evidence:
   review: 逐文件核对唯一来源互引一致、镜像技能零改动、断言与新条款同源。
   integration_decision: 与轻量档提交同一主题，独立成笔提交（框架文件仅限本任务 7 个）。
 status_history:
-  - pending
-  - in_progress
-  - review
-  - done
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"

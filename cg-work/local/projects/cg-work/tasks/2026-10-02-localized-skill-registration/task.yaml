@@ -1,5 +1,5 @@
 id: 2026-10-02-localized-skill-registration
-status: review
+status: done
 goal: 修正本地化技能的镜像登记，并为其补齐正文中的本地化与唯一来源声明。
 workflow: framework:framework-optimization
 created_at: 2026-10-02T12:10:00+08:00
@@ -16,7 +16,7 @@ acceptance_summary:
   - 三个本地化技能声明本地调整与上游唯一来源
 documentation:
   impact: update
-  targets:
+  files:
     - scripts/check-skills.mjs
     - skills/prototype/SKILL.md
     - skills/code-review/SKILL.md
@@ -24,10 +24,19 @@ documentation:
 next_action: 等待用户验收登记修正与声明结论，再并入框架提交。
 interaction_protocol: v1
 next_user_action:
-  required: true
-  action: accept-result
-  message: prototype 已从原始镜像表移出并补本地化声明，code-review 与 grilling 的缺失声明一并补齐，check-skills 现返回 skill mirrors match sources。请验收后我并入版本 2.19.1 提交（不推送）。
+  required: false
+  action: none
+  message: 用户已验收：用户授权：归档 2026-10-07 之前的 review 任务
 status_history:
-  - pending
-  - in_progress
-  - review
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"

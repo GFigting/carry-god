@@ -18,7 +18,7 @@ acceptance_summary:
   - npm run check 一次执行框架全量校验
 documentation:
   impact: update
-  targets:
+  files:
     - AGENTS.md
     - README.md
     - core/context-loading.md
@@ -41,7 +41,15 @@ next_user_action:
   action: none
   message: 框架一致性收敛已验收并提交（规则与校验为 1c7ebef），未推送、未合并。剩余待办：initialization-report 废弃已立项，check-skills 换行符宽容化可在下次框架维护处理。
 status_history:
-  - pending
-  - in_progress
-  - review
-  - done
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"

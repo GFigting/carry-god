@@ -1,0 +1,47 @@
+id: 2026-09-27-add-product-management-skill
+status: done
+archive_reason: "用户授权归档历史任务"
+archived_at: "2026-10-07T09:14:06.375Z"
+archived: true
+created_at: 2026-09-27
+goal: 为 cg-work 增加可显式调用的产品经理框架技能，形成从需求定义到研发衔接的稳定能力。
+scope:
+  in:
+    - 新增 framework:product-management 技能
+    - 同步技能索引和根 README 的调用说明
+    - 增加技能结构回归测试
+    - 衔接 to-spec、to-tickets 和 feature-development 的职责边界
+  out:
+    - 外部 issue tracker 集成
+    - 项目业务代码修改
+    - 独立产品管理工作流
+requirements_reference: ../../../requirements-inbox/2026-09-27-add-product-management-skill.md
+requirements_reference_note: 需求包在提交策略统一前未随框架提交，本机已不可恢复；保留引用路径作为溯源。
+workflow: framework:framework-optimization
+execution_profile: standard
+learning_protocol: v1
+interaction_protocol: v1
+acceptance_summary:
+  - framework:product-management 技能可被显式调用并定义完整产品交付输出
+  - 技能索引、入口文档和工作流职责边界保持一致
+  - 技能结构测试、框架检查和现有测试通过
+documentation:
+  impact: update
+  files:
+    - skills/product-management/SKILL.md
+    - skills/README.md
+    - README.md
+  summary: 增加框架产品经理能力及其调用说明。
+plan_reference: plan.md
+scope_decision:
+  mode: independent
+  rationale: 新增独立框架能力，具有独立调用方式和验收标准。
+next_action: 任务已完成，后续产品策略或产品分析能力另建独立任务。
+review_reference: review.md
+verification_reference: verification.md
+learning_reference: learning.md
+handoff_reference: handoff.md
+next_user_action:
+  required: false
+  action: none
+  message: 验收已通过，任务已完成；后续产品策略、产品脉搏或产品视角审查能力应另建独立任务。

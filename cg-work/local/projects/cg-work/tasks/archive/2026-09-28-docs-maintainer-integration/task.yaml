@@ -1,0 +1,62 @@
+id: 2026-09-28-docs-maintainer-integration
+project_id: cg-work
+goal: 将优化后的文档维护技能以 docs-maintainer 名称接入框架文档影响流程。
+workflow: framework:framework-optimization
+execution_profile: standard
+status: done
+archive_reason: "用户授权归档历史任务"
+archived_at: "2026-10-07T09:14:06.375Z"
+archived: true
+created_at: 2026-09-28T16:00:00+08:00
+next_action: 已提交并推送当前分支，后续按远端评审流程处理。
+requirements_reference: ../../../requirements-inbox/2026-09-28-docs-maintainer-integration.md
+scope_decision:
+  mode: independent
+  rationale: 新增框架级技能调用约定和文档质量门禁，具有独立验收标准。
+decisions:
+  - id: localized-skill-name
+    decision: 将本地技能命名为 docs-maintainer，不登记为上游镜像。
+    confirmed_by: user
+  - id: conditional-loading
+    decision: 仅在文档影响为 update/add 或用户明确提出文档维护时加载，不强制进入所有工作流。
+    confirmed_by: user
+acceptance_summary:
+  - docs-maintainer 的目录、frontmatter 和工作流引用保持一致。
+  - 相关工作流通过条件技能引用文档维护能力。
+  - 框架技能索引、版本和验证证据同步更新。
+documentation:
+  impact: update
+  files:
+    - skills/docs-maintainer/SKILL.md
+    - skills/README.md
+    - workflows/feature-development.md
+    - workflows/bugfix.md
+    - workflows/refactor.md
+    - workflows/review.md
+    - workflows/low-risk-change.md
+    - workflows/README.md
+    - VERSION
+interaction_protocol: v1
+next_user_action:
+  required: false
+  action: task_closed
+  message: docs-maintainer 框架优化已提交并推送；无需额外操作，后续可按远端评审流程继续。
+learning_protocol: v1
+plan_reference: plan.md
+review_reference: review.md
+verification_reference: verification.md
+learning_reference: learning.md
+handoff_reference: handoff.md
+status_history:
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"

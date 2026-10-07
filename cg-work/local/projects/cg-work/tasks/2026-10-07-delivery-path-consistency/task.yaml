@@ -1,0 +1,45 @@
+id: 2026-10-07-delivery-path-consistency
+status: review
+goal: 统一交付路径口径：修正轻量执行适用范围的文档矛盾，区分低风险变更/execution_profile/artifact_profile 三概念并给出组合规则，补充升级规则与轻量执行决策清单。
+workflow: framework:framework-optimization
+execution_profile: standard
+created_at: 2026-10-07T16:40:00+08:00
+requirements_reference: ../../requirements-inbox/2026-10-07-delivery-path-consistency.md
+scope_decision:
+  mode: independent
+  rationale: 交付路径口径、组合规则、升级规则与决策清单具有独立的规则边界、校验行为和验收标准，与 documentation 元数据规范化任务互不依赖。
+documentation:
+  impact: update
+  files:
+    - core/operating-model.md
+    - core/continuous-learning.md
+    - workflows/README.md
+    - workflows/bugfix.md
+    - workflows/feature-development.md
+    - workflows/low-risk-change.md
+    - scripts/README.md
+    - scripts/check-task.mjs
+    - test/check-task.test.mjs
+    - test/delivery-path-consistency.test.mjs
+    - AGENTS.md
+    - local/README.md
+    - VERSION
+next_action: 等待用户验收交付路径口径统一结果，并裁定 lightweight+compact 组合决策点。
+plan_reference: plan.md
+review_reference: review.md
+verification_reference: verification.md
+interaction_protocol: v1
+next_user_action:
+  required: true
+  action: 验收
+  message: 请验收 P1-P5 文档统一、组合规则表与升级规则，并确认“lightweight+compact 不允许并由校验器拒绝”的决策是否按此保留。
+status_history:
+  - status: pending
+    at: 2026-10-07T16:40:00+08:00
+    reason: 用户评审反馈形成需求包，创建任务记录
+  - status: in_progress
+    at: 2026-10-07T16:45:00+08:00
+    reason: 开始按优先级实施文档统一与规则补充
+  - status: review
+    at: 2026-10-07T17:05:00+08:00
+    reason: P1-P5 完成，npm run check 与 87 项测试全部通过，等待用户验收

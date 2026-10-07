@@ -1,5 +1,5 @@
 id: 2026-10-02-artifact-and-field-simplification
-status: review
+status: done
 goal: 删除两个零使用字段、把 acceptance 与 standards_preflight 收敛到唯一名称与位置、去掉需求箱冗余 marker。
 workflow: framework:framework-optimization
 created_at: 2026-10-02T13:10:00+08:00
@@ -18,7 +18,7 @@ acceptance_summary:
   - 126 条任务记录复校验无新增失败
 documentation:
   impact: update
-  targets:
+  files:
     - core/operating-model.md
     - local/README.md
     - scripts/README.md
@@ -31,10 +31,19 @@ documentation:
 next_action: 等待用户验收字段与产物收敛结论，再并入框架提交。
 interaction_protocol: v1
 next_user_action:
-  required: true
-  action: accept-result
-  message: 第 3 项已完成：删除 2 个零使用字段，11 条 acceptance 命名归正，5 条 standards_preflight 从 YAML 字段迁入 plan/verification，需求箱不再强制 .gitkeep；126 条记录复校验仅剩 3 条需各自补真实证据的记录。请验收后我并入提交（不推送）。
+  required: false
+  action: none
+  message: 用户已验收：用户授权：归档 2026-10-07 之前的 review 任务
 status_history:
-  - pending
-  - in_progress
-  - review
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"

@@ -1,5 +1,5 @@
 id: 2026-10-02-retire-initialization-report
-status: review
+status: done
 goal: 正式废弃 initialization-report.md 产物，同步结构清单与技能正文，并保留替代说明。
 workflow: framework:framework-optimization
 created_at: 2026-10-02T11:25:00+08:00
@@ -16,7 +16,7 @@ acceptance_summary:
   - 历史报告保留原样并有替代说明，不强制迁移
 documentation:
   impact: update
-  targets:
+  files:
     - local/README.md
     - core/project-onboarding.md
     - workflows/project-initialization.md
@@ -25,10 +25,19 @@ documentation:
 next_action: 等待用户验收 initialization-report 废弃结论，再并入框架提交。
 interaction_protocol: v1
 next_user_action:
-  required: true
-  action: accept-result
-  message: initialization-report 已按 D4 决策废弃：5 处引用改为初始化任务记录承载，历史报告 4 份保留，npm test 60 通过、npm run check 通过。请验收，确认后我并入版本 2.19.1 的框架提交（不推送）。
+  required: false
+  action: none
+  message: 用户已验收：用户授权：归档 2026-10-07 之前的 review 任务
 status_history:
-  - pending
-  - in_progress
-  - review
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"

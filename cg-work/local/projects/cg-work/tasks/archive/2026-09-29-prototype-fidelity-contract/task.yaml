@@ -1,0 +1,51 @@
+id: 2026-09-29-prototype-fidelity-contract
+status: done
+archive_reason: "用户授权归档历史任务"
+archived_at: "2026-10-07T07:34:46.009Z"
+archived: true
+goal: 为原型增加实现契约和真实场景验收门禁，提升原型到项目的落地一致性。
+workflow: framework:framework-optimization
+created_at: 2026-09-29T00:00:00+08:00
+next_action: 等待用户验收原型落地契约和门禁变更。
+requirements_reference: ../../../requirements-inbox/archive/2026-09-29-prototype-fidelity-contract.md
+requirements_reference_note: 需求包在提交策略统一前未随框架提交，本机已不可恢复；保留引用路径作为溯源。
+scope_decision:
+  mode: independent
+  rationale: 新增原型实现契约和对应验收标准，区别于既有原型采纳追踪任务。
+acceptance_summary:
+  - 原型任务在审查或完成前具备实现契约引用。
+  - 契约覆盖状态、视觉、资源、交互和验收映射。
+  - 原型技能要求真实数据和多视口验收。
+documentation:
+  impact: update
+  files:
+    - skills/prototype/SKILL.md
+    - skills/prototype/LOGIC.md
+    - skills/prototype/UI.md
+    - core/prototype-implementation-contract.template.md
+    - core/operating-model.md
+    - workflows/README.md
+    - workflows/feature-development.md
+    - scripts/check-task.mjs
+    - test/check-task.test.mjs
+status_history:
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+interaction_protocol: v1
+next_user_action:
+  required: false
+  action: none
+  message: 用户已授权归档旧任务。
+plan_reference: plan.md
+review_reference: review.md
+verification_reference: verification.md

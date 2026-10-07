@@ -10,7 +10,7 @@ scope_decision:
   rationale: 独立收敛 review、done 与提交收尾之间的规则边界。
 documentation:
   impact: update
-  targets:
+  files:
     - core/operating-model.md
     - workflows/review.md
     - workflows/feature-development.md
@@ -27,7 +27,15 @@ review_reference: review.md
 verification_reference: verification.md
 handoff_reference: handoff.md
 status_history:
-  - pending
-  - in_progress
-  - review
-  - done
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"

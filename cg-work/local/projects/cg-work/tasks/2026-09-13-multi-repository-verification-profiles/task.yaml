@@ -7,12 +7,16 @@ next_action: 校验变更地图后，扩展项目上下文模板与校验器，�
 requirements_reference: ../../requirements-inbox/2026-09-13-multi-repository-verification-profiles.md
 documentation:
   impact: update
-  targets:
+  files:
     - core/context-loading.md
     - core/project-context.template.yaml
     - scripts/check-project.mjs
 plan_reference: plan.md
 verification_reference: verification.md
 status_history:
-  - pending
-  - in_progress
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"

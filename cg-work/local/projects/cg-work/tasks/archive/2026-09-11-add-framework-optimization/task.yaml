@@ -1,0 +1,35 @@
+id: 2026-09-11-add-framework-optimization
+status: done
+archive_reason: "用户授权归档历史任务"
+archived_at: "2026-10-07T07:34:46.009Z"
+archived: true
+goal: 为 cg-work 建立框架优化专用工作流和执行技能，使框架规则、流程、模板、校验与技能注册的演进有独立的兼容性和验证门禁。
+workflow: framework:feature-development
+created_at: 2026-09-11T00:00:00+08:00
+next_action: 等待用户验收框架优化流程；验收后记录集成方式并归档任务。
+documentation:
+  impact: update
+  files:
+    - workflows/README.md
+    - skills/README.md
+    - core/framework-maintenance.md
+status_history:
+  - status: pending
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: in_progress
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: review
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+  - status: done
+    at: null
+    reason: "历史迁移：原记录未保存时间与原因"
+review_reference: review.md
+verification_reference: verification.md
+
+next_user_action:
+  required: false
+  action: none
+  message: 用户已授权归档旧任务。
