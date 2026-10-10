@@ -1,0 +1,44 @@
+id: 2026-10-10-framework-invalid-content
+status: done
+goal: 精简已废弃模板中的无效骨架，保留历史引用兼容并明确现行唯一来源。
+workflow: framework:framework-optimization
+execution_profile: standard
+created_at: 2026-10-10T00:00:00+08:00
+artifact_profile: compact
+artifacts:
+  primary: ./plan.md
+scope_decision:
+  mode: independent
+  rationale: 四个已废弃模板的兼容说明精简与版本修订具有独立文件范围，不改变现行规则或校验行为。
+documentation:
+  impact: update
+  files:
+    - core/prototype-implementation-contract.template.md
+    - core/prototype-disposition.template.md
+    - core/roadmap.template.yaml
+    - core/roadmap-closure.template.md
+    - VERSION
+    - core/README.md
+acceptance_summary:
+  - 已废弃模板不再保留可复制的旧字段或章节骨架
+  - 历史文件路径继续存在并指向现行唯一来源
+  - 现行规则与校验器行为不变
+next_action: 已完成验收与本地提交。
+next_user_action:
+  required: false
+  action: none
+  message: 无；精简结果已验收并完成本地提交。
+interaction_protocol: v1
+status_history:
+  - status: pending
+    at: 2026-10-10T00:00:00+08:00
+    reason: 用户确认精简已废弃模板中的无效内容
+  - status: in_progress
+    at: 2026-10-10T00:10:00+08:00
+    reason: 已完成范围盘点并开始实施
+  - status: review
+    at: 2026-10-10T00:20:00+08:00
+    reason: 已完成精简，待全量校验与用户验收
+  - status: done
+    at: 2026-10-10T00:30:00+08:00
+    reason: 用户已验收，校验通过并完成本地提交
