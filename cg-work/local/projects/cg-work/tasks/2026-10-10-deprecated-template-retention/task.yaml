@@ -1,0 +1,47 @@
+id: 2026-10-10-deprecated-template-retention
+status: done
+goal: 删除无运行时消费者的废弃模板，并简化其目录与维护规则。
+workflow: framework:framework-optimization
+execution_profile: standard
+created_at: 2026-10-10T01:00:00+08:00
+artifact_profile: compact
+artifacts:
+  primary: ./plan.md
+scope_decision:
+  mode: independent
+  rationale: 删除不再承载规则或模板内容的文件，不改写历史任务证据；现行规则直接链接唯一来源。
+documentation:
+  impact: update
+  files:
+    - core/framework-maintenance.md
+    - core/README.md
+    - core/operating-model.md
+    - core/decomposition.template.md
+    - core/prototype-implementation-contract.template.md
+    - core/prototype-disposition.template.md
+    - core/roadmap.template.yaml
+    - core/roadmap-closure.template.md
+    - VERSION
+acceptance_summary:
+  - 删除四个无运行时消费者的废弃文件
+  - 现行文档改为链接当前唯一来源
+  - 历史任务的叙述与变更清单保持原样
+next_action: 已按用户指示删除无效模板并完成校验。
+next_user_action:
+  required: false
+  action: none
+  message: 无；已按用户指示删除废弃模板并完成校验。
+interaction_protocol: v1
+status_history:
+  - status: pending
+    at: 2026-10-10T01:00:00+08:00
+    reason: 根据用户要求明确废弃文件的保留与清理方式
+  - status: in_progress
+    at: 2026-10-10T01:05:00+08:00
+    reason: 已确认历史机器引用仍存在，正在补齐生命周期规则
+  - status: review
+    at: 2026-10-10T01:10:00+08:00
+    reason: 用户确认可删除，规则说明、索引和废弃文件清理完成
+  - status: done
+    at: 2026-10-10T01:15:00+08:00
+    reason: 校验通过并完成本地提交

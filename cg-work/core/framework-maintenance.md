@@ -10,7 +10,7 @@
 
 框架内容不得混入项目业务规则、真实需求、密钥、运行日志或生产数据。项目业务代码的结构调整不属于框架维护，使用 `framework:refactor`。
 
-每次变更必须运行 `npm run check`。项目上下文变更后运行 `node scripts/check-project.mjs <path>`，任务状态变更后运行 `node scripts/check-task.mjs <path>`。废弃内容保留替代说明，不删除仍被历史任务引用的文件。框架自身不保存项目业务资料。
+每次变更必须运行 `npm run check`。项目上下文变更后运行 `node scripts/check-project.mjs <path>`，任务状态变更后运行 `node scripts/check-task.mjs <path>`。废弃且无运行时消费者的文件可以直接删除；历史任务的变更清单和叙述属于审计记录，不要求为清理路径提及而改写。框架自身不保存项目业务资料。
 
 框架优化在用户验收且完成新鲜验证后，必须创建 Git 提交。提交前先检查工作区，仅暂存当前任务涉及的框架文件，不得使用 `git add .`：业务项目在 `local/projects/<project-id>/` 下的需求包、任务、报告和运行产物一律不得混入框架提交；框架受管项目 `local/projects/cg-work/` 的记录虽然同在一个仓库并随框架提交，但必须与规则改动分成不同 commit，便于回溯。若目标文件混有无法安全拆分的无关修改，保持任务在 `review` 并说明阻塞原因。
 

@@ -1,6 +1,6 @@
 # 路线图模板
 
-大任务的路线图只在其唯一位置 `local/projects/<project-id>/roadmaps/<roadmap-id>/` 保存三个文件。本文件是三者唯一的格式来源；旧的 `roadmap.template.yaml` 与 `roadmap-closure.template.md` 已废弃，仅保留为替代说明。
+大任务的路线图只在其唯一位置 `local/projects/<project-id>/roadmaps/<roadmap-id>/` 保存三个文件。本文件是三者唯一的格式来源。
 
 ## `roadmap.yaml`
 
