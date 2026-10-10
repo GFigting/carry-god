@@ -1,5 +1,8 @@
 id: 2026-10-10-deprecated-template-retention
 status: done
+archive_reason: "用户验收通过并要求归档 cg-work 任务"
+archived_at: "2026-10-10T09:03:12.938Z"
+archived: true
 goal: 删除无运行时消费者的废弃模板，并简化其目录与维护规则。
 workflow: framework:framework-optimization
 execution_profile: standard
