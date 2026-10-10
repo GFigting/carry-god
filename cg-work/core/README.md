@@ -11,4 +11,4 @@
 - `project-code-standards.md`：项目未覆盖时的通用代码规范。
 - `special-operations.md`：外部与高风险操作的触发和授权边界。
 - `project-context.template.yaml`：唯一的项目上下文模板。
-- 其余模板文件是对应产物的格式模板：`decomposition.template.md` 是需求拆分索引格式，`project-roadmap.template.md` 是项目路线图格式，`plan.template.md` 是计划结构。`prototype-*.template.md`、`roadmap.template.yaml` 与 `roadmap-closure.template.md` 已废弃，仅保留替代说明；原型章节见 `operating-model.md` 的"原型与任务记录"。
+- 现行模板：`decomposition.template.md` 是需求拆分索引格式，`project-roadmap.template.md` 是项目路线图格式，`plan.template.md` 是计划结构。原型章节见 `operating-model.md` 的"原型与任务记录"。不再保留无消费者的废弃模板文件。

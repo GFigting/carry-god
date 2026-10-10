@@ -29,7 +29,7 @@
 ### 未采纳项
 ```
 
-`core/prototype-implementation-contract.template.md` 和 `core/prototype-disposition.template.md` 已废弃并保留为上述章节的说明；`prototype_contract_reference` 与 `prototype_disposition_reference` 字段不再使用，写入会被校验器拒绝。
+`prototype_contract_reference` 与 `prototype_disposition_reference` 字段不再使用，写入会被校验器拒绝。原型实现契约与采纳结论的唯一格式见本节任务章节。
 
 Learning 是由任务执行中的观察形成、经审查判定去向的经验记录。它不替代需求、计划、审查或验证；具体的连续记录、证据和提升规则见 [持续学习与经验沉淀](continuous-learning.md)。
 
