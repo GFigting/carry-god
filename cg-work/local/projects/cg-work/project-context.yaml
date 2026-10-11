@@ -1,38 +1,88 @@
+# 项目身份与主仓库位置。
 project:
+  # 与上下文目录一致的稳定标识。
   id: cg-work
+  # 项目显示名称。
   name: cg-work
+  # 项目所属领域。
   domain: AI 软件开发工作框架
+  # 点号表示当前框架仓库根目录。
   root_path: .
+# 可选的附属仓库；主仓库由 project.root_path 指定。
+repositories: []
+# 稳定文档入口；按主题加载。
+documentation:
+  # 项目协作与仓库规则。
+  project_rules:
+    - path: ./AGENTS.md
+      load: always
+  # 项目专属开发规范。
+  development_standards:
+    - path: ./core/project-code-standards.md
+      load: always
+  # 项目目标、使用方式和业务上下文。
+  business:
+    - path: ./README.md
+      load: always
+  # 工作模型与上下文加载设计。
+  architecture:
+    - path: ./core/operating-model.md
+      load: when_relevant
+    - path: ./core/context-loading.md
+      load: when_relevant
+  # API、事件和消息契约。
+  api: []
+  # 数据模型、字典和迁移说明。
+  data: []
+  # 启动、部署和故障处理说明。
+  operations: []
+  # 认证授权和敏感数据规范。
+  security: []
+# 技术栈与包管理器。
 technology:
+  # 主要语言、运行时和框架。
   stack:
     - Node.js
     - ECMAScript modules
+  # 项目使用的包管理器。
   package_manager: npm
-  test_command: npm test
-  build_command: null
-instructions:
-  files:
-    - ./AGENTS.md
-coding_standards:
-  files:
-    - ./AGENTS.md
-    - ./core/project-code-standards.md
-documents:
-  business:
-    - ./README.md
-  architecture:
-    - ./core/operating-model.md
-    - ./core/context-loading.md
-  api: []
+# 运行入口和健康检查。
 runtime:
+  # 可执行入口文件或启动命令。
   entrypoints: []
+  # 健康检查 URL 或命令。
   health_checks: []
+# 框架没有项目 SQL 脚本目录。
+database:
+  # SQL 脚本目录路径列表。
+  sql_paths: []
+# 按需读取的本地工具配置；当前无项目级工具配置文件。
+tooling:
+  # MCP 或其他开发工具配置文件路径。
+  config_paths: []
+# 按阶段组织的可执行验证配置。
+verification:
+  # 框架测试套件。
+  profiles:
+    - id: framework-tests
+      stage: full_test
+      command: npm test
+      outcome: required
+# 框架本地的原始需求入口。
 requirements:
+  # 本项目需求包目录，相对于框架根目录。
   inbox_path: ./local/projects/cg-work/requirements-inbox
-vocabulary:
-  glossary: null
-skills:
+# 项目级产品规划产物。
+product:
+  # 项目路线图文件；无路线图时为 null。
+  roadmap_path: null
+# 项目原型；无原型时为空列表。
+prototypes:
+  # 每项登记原型标识、目录和入口文件。
   paths: []
-required_context:
-  - ./AGENTS.md
-  - ./README.md
+# 可选的项目专用提交工具；无专用工具时省略此字段。
+
+# 项目自有技能位置。
+skills:
+  # 技能目录路径列表。
+  paths: []

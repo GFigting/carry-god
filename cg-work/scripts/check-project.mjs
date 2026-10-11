@@ -27,7 +27,7 @@ export async function checkProjectContext(contextFile) {
     if (!isObject(context)) {
       errors.push('项目上下文必须是 YAML 映射对象');
     } else {
-      const requiredTopLevel = ['project', 'technology', 'instructions', 'documents', 'runtime', 'requirements', 'vocabulary', 'skills', 'required_context'];
+      const requiredTopLevel = ['project', 'technology', 'runtime', 'requirements', 'skills'];
       for (const key of requiredTopLevel) {
         if (!(key in context)) errors.push(`缺少顶层字段：${key}`);
       }
@@ -56,30 +56,44 @@ export async function checkProjectContext(contextFile) {
         }
       }
 
-      const instructions = objectField(context, 'instructions', errors);
+      const hasDocumentation = context.documentation !== undefined;
+      const hasLegacyDocumentation = context.instructions !== undefined || context.coding_standards !== undefined || context.documents !== undefined;
+      if (!hasDocumentation && !hasLegacyDocumentation) errors.push('缺少文档关联字段：documentation（或兼容字段 instructions/documents）');
+      if (hasDocumentation && hasLegacyDocumentation) errors.push('documentation 不得与兼容字段 instructions/coding_standards/documents 同时使用');
+      const documentation = hasDocumentation ? objectField(context, 'documentation', errors) : null;
+      const instructions = hasDocumentation ? null : objectField(context, 'instructions', errors);
       const codingStandards = context.coding_standards === undefined ? null : objectField(context, 'coding_standards', errors);
-      const documents = objectField(context, 'documents', errors);
+      const documents = hasDocumentation ? null : objectField(context, 'documents', errors);
       const runtime = objectField(context, 'runtime', errors);
+      const tooling = context.tooling === undefined ? null : objectField(context, 'tooling', errors);
       const prototypes = context.prototypes === undefined ? null : objectField(context, 'prototypes', errors);
       const requirements = objectField(context, 'requirements', errors);
       const skills = objectField(context, 'skills', errors);
       const verification = context.verification === undefined ? null : objectField(context, 'verification', errors);
       const submission = context.submission === undefined ? null : objectField(context, 'submission', errors);
+      const database = context.database === undefined ? null : objectField(context, 'database', errors);
       const inboxPath = stringField(requirements, 'inbox_path', 'requirements.inbox_path', errors);
 
-      await checkAbsolutePaths(instructions?.files, 'instructions.files', errors, { base: projectRoot });
-      if (codingStandards) await checkAbsolutePaths(codingStandards.files, 'coding_standards.files', errors, { base: projectRoot });
-      for (const key of ['business', 'architecture', 'api']) await checkAbsolutePaths(documents?.[key], `documents.${key}`, errors, { base: projectRoot });
-      await checkAbsolutePaths(runtime?.entrypoints, 'runtime.entrypoints', errors, { base: projectRoot });
-      await checkAbsolutePaths(runtime?.health_checks, 'runtime.health_checks', errors, { allowUrls: true, base: projectRoot });
+      const allowRelativePaths = projectId === 'cg-work';
+      if (!hasDocumentation) {
+        await checkAbsolutePaths(instructions?.files, 'instructions.files', errors, { base: projectRoot, allowRelativePaths });
+      }
+      if (!hasDocumentation) {
+        if (codingStandards) await checkAbsolutePaths(codingStandards.files, 'coding_standards.files', errors, { base: projectRoot, allowRelativePaths });
+        for (const key of ['business', 'architecture', 'api']) await checkAbsolutePaths(documents?.[key], `documents.${key}`, errors, { base: projectRoot, allowRelativePaths });
+      }
+      await checkAbsolutePaths(runtime?.entrypoints, 'runtime.entrypoints', errors, { base: projectRoot, allowRelativePaths });
+      await checkAbsolutePaths(runtime?.health_checks, 'runtime.health_checks', errors, { allowUrls: true, base: projectRoot, allowRelativePaths });
+      await checkAbsolutePaths(tooling?.config_paths, 'tooling.config_paths', errors, { base: projectRoot, allowRelativePaths });
       await checkPrototypePaths(prototypes, projectRoot, errors);
       await checkProductPaths(context.product, projectRoot, errors);
-      await checkAbsolutePaths(context.required_context, 'required_context', errors, { base: projectRoot });
       await checkSubmission(submission, errors);
+      await checkDatabase(database, projectRoot, allowRelativePaths, errors);
       if (inboxPath) {
         const inboxResolved = path.isAbsolute(inboxPath) ? inboxPath : (projectRoot ? path.resolve(projectRoot, inboxPath) : '');
         if (!inboxResolved) errors.push('project.root_path 无法解析，无法校验 requirements.inbox_path');
         else if (path.basename(inboxResolved) !== 'requirements-inbox') errors.push('requirements.inbox_path 必须指向 requirements-inbox 目录');
+        else if (!allowRelativePaths && !path.isAbsolute(inboxPath)) errors.push(`requirements.inbox_path 必须是绝对路径：${inboxPath}`);
         else if (!(await exists(inboxResolved))) errors.push(`requirements.inbox_path 不存在：${inboxResolved}`);
       }
 
@@ -88,7 +102,6 @@ export async function checkProjectContext(contextFile) {
       } else if (skills && projectRoot) {
         for (const value of skills.paths) {
           if (typeof value !== 'string' || !value.trim()) errors.push('skills.paths 中的条目必须是非空字符串');
-          else if (path.isAbsolute(value)) errors.push(`技能路径必须相对于 project.root_path：${value}`);
           else if (!(await exists(path.resolve(projectRoot, value)))) errors.push(`技能路径不存在：${value}`);
         }
       }
@@ -148,6 +161,20 @@ async function checkSubmission(submission, errors) {
   if (submission.policies !== undefined && !isObject(submission.policies)) errors.push('submission.policies 必须是映射对象');
 }
 
+async function checkDatabase(database, projectRoot, allowRelativePaths, errors) {
+  if (database === null) return;
+  const sqlPaths = database.sql_paths;
+  if (sqlPaths === undefined) return;
+  if (!Array.isArray(sqlPaths)) {
+    errors.push('database.sql_paths 必须是列表');
+    return;
+  }
+  await checkAbsolutePaths(sqlPaths, 'database.sql_paths', errors, {
+    base: projectRoot,
+    allowRelativePaths,
+  });
+}
+
 async function checkPrototypePaths(prototypes, projectRoot, errors) {
   if (prototypes === null) return;
   if (!Array.isArray(prototypes.paths)) {
@@ -167,8 +194,7 @@ async function checkPrototypePaths(prototypes, projectRoot, errors) {
     if (id && !ids.add(id)) errors.push(`prototypes.paths[].id 不可重复：${id}`);
     for (const [value, label] of [[prototypePath, 'prototypes.paths[].path'], [entrypoint, 'prototypes.paths[].entrypoint']]) {
       if (!value) continue;
-      if (path.isAbsolute(value)) errors.push(`${label} 必须相对于 project.root_path：${value}`);
-      else if (projectRoot && !(await exists(path.resolve(projectRoot, value)))) errors.push(`登记的路径不存在：${path.resolve(projectRoot, value)}`);
+      if (projectRoot && !(await exists(path.resolve(projectRoot, value)))) errors.push(`登记的路径不存在：${path.resolve(projectRoot, value)}`);
     }
   }
 }
@@ -183,10 +209,6 @@ async function checkProductPaths(product, projectRoot, errors) {
   if (roadmapPath === undefined || roadmapPath === null) return;
   if (typeof roadmapPath !== 'string' || !roadmapPath.trim()) {
     errors.push('product.roadmap_path 必须是非空字符串');
-    return;
-  }
-  if (path.isAbsolute(roadmapPath)) {
-    errors.push(`product.roadmap_path 必须相对于 project.root_path：${roadmapPath}`);
     return;
   }
   if (projectRoot && !(await exists(path.resolve(projectRoot, roadmapPath)))) {
@@ -245,7 +267,7 @@ function stringField(parent, key, label, errors) {
   return parent[key].trim();
 }
 
-async function checkAbsolutePaths(values, label, errors, { allowUrls = false, base = '' } = {}) {
+async function checkAbsolutePaths(values, label, errors, { allowUrls = false, allowRelativePaths = false, base = '' } = {}) {
   if (values === undefined) return;
   if (!Array.isArray(values)) {
     errors.push(`${label} 必须是列表`);
@@ -256,7 +278,8 @@ async function checkAbsolutePaths(values, label, errors, { allowUrls = false, ba
     else if (allowUrls && /^(https?:|mailto:)/.test(value)) continue;
     else if (path.isAbsolute(value)) {
       if (!(await exists(value))) errors.push(`登记的路径不存在：${value}`);
-    } else if (!base) errors.push(`project.root_path 无法解析，登记路径无法校验：${value}`);
+    } else if (!allowRelativePaths) errors.push(`${label} 中的路径必须是绝对路径：${value}`);
+    else if (!base) errors.push(`project.root_path 无法解析，登记路径无法校验：${value}`);
     else if (!(await exists(path.resolve(base, value)))) errors.push(`登记的路径不存在：${path.resolve(base, value)}`);
   }
 }

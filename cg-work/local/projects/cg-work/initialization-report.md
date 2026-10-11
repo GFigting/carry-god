@@ -11,10 +11,10 @@
 
 - 项目 ID 取根目录名，规范化为 `cg-work`。
 - 项目使用 Node.js ECMAScript modules；包管理器为 npm。
-- `npm test` 是已登记的完整测试命令。
+- `npm test` 登记在 `verification.profiles` 的完整测试入口中。
 - 项目不登记服务启动入口或健康检查。
 
 ## 未确认项
 
 - 无项目专属技能路径。
-- 无独立构建命令；因此 `technology.build_command` 保持为空。
+- 无需独立构建命令；`technology` 只记录技术栈与包管理器。

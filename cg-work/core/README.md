@@ -8,6 +8,7 @@
 - `continuous-learning.md`：任务学习的记录、证据和提升规则。
 - `framework-maintenance.md`：框架自身维护。
 - `project-onboarding.md`：项目接入。
+- `documentation-standards.md`：项目文档类别、关联边界和维护规范。
 - `project-code-standards.md`：项目未覆盖时的通用代码规范。
 - `special-operations.md`：外部与高风险操作的触发和授权边界。
 - `project-context.template.yaml`：唯一的项目上下文模板。

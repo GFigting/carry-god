@@ -16,4 +16,4 @@
 
 每个已初始化项目必须拥有原始需求箱，并把绝对路径登记为 `requirements.inbox_path`；任务计划、审查和验证证据仍只保存在 `tasks/<task-id>/`。项目上下文、需求箱和任务记录不得写入密钥、令牌、密码、生产数据或完整个人信息。
 
-项目上下文、需求箱和报告路径必须有效；项目规则入口明确；项目代码规范文件使用可选的 `coding_standards.files` 以绝对路径登记并由校验器检查存在性；项目技能路径可解析并由项目仓库维护，不复制到 `cg-work/skills/`。后续加载按 `required_context`、`coding_standards.files` 和 `skills.paths` 执行。
+项目上下文、需求箱和报告路径必须有效；项目规则入口明确；项目规则和代码规范文档登记在 `documentation.project_rules` 与 `documentation.development_standards`；历史上下文可继续使用 `instructions.files` 和 `coding_standards.files`。项目技能路径可解析并由项目仓库维护，不复制到 `cg-work/skills/`。后续按文档记录的 `load` 值加载，并读取 `skills.paths` 登记的项目技能。

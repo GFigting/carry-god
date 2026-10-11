@@ -4,24 +4,30 @@
 
 对既有项目，再检查 `local/projects/<project-id>/project-context.yaml` 是否存在且有效。
 
-- 存在且有效：读取上下文，再按任务阶段加载项目规则、业务文档、架构文档、接口文档和项目技能路径。
+- 存在且有效：读取上下文，再按任务阶段加载 `documentation` 登记的项目规则、开发规范、业务、架构、接口、数据、运维和安全文档，以及项目技能路径。历史项目可继续使用 `instructions`、`coding_standards` 和 `documents`，新上下文统一使用 `documentation`。
 - 不存在或失效：按 [项目接入规则](project-onboarding.md) 执行 `framework:project-initialization`。新项目必须在识别摘要确认后才进入初始化。
 
 项目上下文创建时使用 `core/project-context.template.yaml`。
 
-加载项目规则时，优先读取 `instructions.files` 与 `coding_standards.files` 登记的项目规则，以及仓库工具配置；对于项目未覆盖的事项，再应用 [项目通用代码规范](project-code-standards.md)。该规范约束计划、编码和提交前自查，不限于最终审查。
+字段职责、必需性和固定顺序见 [项目上下文字段规范](project-context-fields.md)。
+
+`documentation` 是稳定文档的唯一关联入口。每条记录包含 `path` 和 `load`：`always` 表示每项任务都必须读取，`when_relevant` 表示按任务主题读取。同一文档只登记一次；特定操作需要的说明仍放在专属字段，例如 `submission.instructions`。不再使用独立的 `required_context` 字段。
+
+`tooling.config_paths` 登记按需读取的 MCP 或开发工具配置，不作为项目规则或常驻文档加载；`database.sql_paths` 登记项目仓库内 SQL 脚本目录。验证命令统一登记在 `verification.profiles`，不在 `technology` 重复配置测试或构建命令。
+
+加载项目规则时，优先读取 `documentation.project_rules` 与 `documentation.development_standards` 登记的项目规则，以及仓库工具配置；对于项目未覆盖的事项，再应用 [项目通用代码规范](project-code-standards.md)。历史项目对应读取 `instructions.files` 与 `coding_standards.files`。该规范约束计划、编码和提交前自查，不限于最终审查。
 
 原始需求按 [需求包留存判断](operating-model.md#需求包留存判断) 按需存入 `requirements.inbox_path` 所指向的本地需求箱，需求包不是每任务必建文件：判断为需要时，需求箱保存未经拆分的需求包、附件和澄清材料，同一需求包可以支撑多个 task，创建 task 前应先查找并复用已有需求包，并在 task 中以 `requirements_reference` 建立引用；只有没有对应来源时才新增需求包。判断为不需要时（四项全“否”的明确小改动），需求原文、范围和取舍直接写入任务 `plan.md` 或决策记录，不建需求包。若新增业务规则、接口/数据结构或独立验收标准，必须创建新 task，不得仅沿用旧 task 的 `next_action`；可用 `scope_decision` 记录新建或延续的范围判断。符合 [工作模型的低风险变更](operating-model.md#低风险变更) 不创建需求箱或任务记录，直接按 `framework:low-risk-change` 完成最小验证。其他需求先判断是否需要 `framework:large-task-decomposition`：需要时，在 `roadmaps/<roadmap-id>/` 保存决策地图的本地索引、覆盖关系和关闭记录；创建开发任务后，任务记录、计划、审查、验证和学习证据仍只保存在 `tasks/<task-id>/`。使用持续学习协议的任务还须读取 [持续学习与经验沉淀](continuous-learning.md)。具体约束见 [项目接入规则](project-onboarding.md)。
 
 任务产物按生命周期逐步生成：创建阶段先保留原始需求包和 `task.yaml`；开始实施时补充 `plan.md`；实现完成进入审查时补充 `review.md` 和 `verification.md`；任务声明持续学习协议时补充 `learning.md`；交接或关闭时补充 `handoff.md`。这些文件分别记录不同事实，不应以测试结果替代审查结论，也不应以审查结论替代验证证据。
 
-项目技能路径使用 `skills.paths` 声明，路径相对于 `project.root_path` 解析。例如 `.cg-work/skills` 对应项目根目录下的 `.cg-work/skills/`。先加载 `cg-work/skills/` 中的框架技能，再加载这些路径中的项目技能。登记的项目规则与文档路径（`instructions.files`、`coding_standards.files`、`documents.*`、`required_context`、`requirements.inbox_path`）同样相对于 `project.root_path` 解析，绝对路径亦可直接使用——优先相对写法以保证跨机/跨目录可移植。`project.root_path` 自身必须是绝对路径；只有框架受管项目 `cg-work` 可以使用字面量 `.`，表示 cg-work 框架目录自身，使被提交的上下文可以跨机复用。
+项目技能路径使用 `skills.paths` 声明。除框架受管项目 `cg-work` 外，项目上下文中登记的文件和目录路径均使用绝对路径，包括 `documentation.*`、历史文档字段、运行文件入口、需求箱、技能路径、原型路径、SQL 脚本目录和项目路线图路径；术语表归入 `documentation.business`；URL 与执行命令按各自字段语义处理。`cg-work` 可使用相对于框架目录的路径，并可用字面量 `project.root_path: .` 保持已提交上下文跨机可用。先加载 `cg-work/skills/` 中的框架技能，再加载项目技能路径中的技能。
 
 项目上下文可选声明 `submission`，登记业务仓库的提交工具、工具说明、默认参数和推送/合并/部署策略。进入提交或分支收尾流程前，Agent 必须先读取 `submission.instructions`，优先使用 `submission.tool`；`submission.policies` 只表达项目边界，不替代用户对推送、合并、部署等外部操作的明确授权。
 
-依赖业务项目代码的多页面原型可以放在 `<project.root_path>/prototypes/<design-name>/`。此类原型必须在项目上下文的可选 `prototypes.paths` 中登记 `id`、相对 `path` 和 `entrypoint`；这些路径均相对于 `project.root_path`，并由 `scripts/check-project.mjs` 校验。放在 `local/projects/<project-id>/design/<design-name>/` 的框架目录原型不写入该字段，直接由任务的 `prototype_reference` 引用。
+依赖业务项目代码的多页面原型可以放在 `<project.root_path>/prototypes/<design-name>/`。此类原型必须在项目上下文的可选 `prototypes.paths` 中登记 `id`、绝对 `path` 和 `entrypoint`，并由 `scripts/check-project.mjs` 校验。放在 `local/projects/<project-id>/design/<design-name>/` 的框架目录原型不写入该字段，直接由任务的 `prototype_reference` 引用。
 
-项目级路线图是可选的常驻产物，但**存放在原项目仓库内**：路径相对 `project.root_path` 登记在项目上下文的可选字段 `product.roadmap_path`，由 `framework:product-management` 维护，内容由 `scripts/check-product.mjs` 校验，路径存在性由 `scripts/check-project.mjs` 校验。它与框架本地 `roadmaps/<roadmap-id>/`（单个大需求的需求拆分索引）是两种产物，不要混用。
+项目级路线图是可选的常驻产物，但**存放在原项目仓库内**：以绝对路径登记在项目上下文的可选字段 `product.roadmap_path`，由 `framework:product-management` 维护，内容由 `scripts/check-product.mjs` 校验，路径存在性由 `scripts/check-project.mjs` 校验。它与框架本地 `roadmaps/<roadmap-id>/`（单个大需求的需求拆分索引）是两种产物，不要混用。
 
 单仓项目继续以 `project.root_path` 作为主仓库。存在前后端或多个独立仓库时，可在可选的 `repositories` 中登记每个仓库的稳定 `id`、`role` 和绝对 `root_path`；`project.root_path` 不因此失效。执行验证前，先读取可选的 `verification.profiles`：每项声明 `stage`、`command`、`outcome` 及可选 `limitation`。`required` 表示该阶段应执行，`environment_limited` 表示必须保留未完成原因而不能写为通过，`not_applicable` 表示该任务不适用。profile 是项目验证入口的唯一记录处，不替代任务内的新鲜验证证据。
 
