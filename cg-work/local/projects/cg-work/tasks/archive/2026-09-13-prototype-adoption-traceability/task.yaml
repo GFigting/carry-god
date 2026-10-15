@@ -1,11 +1,11 @@
 id: 2026-09-13-prototype-adoption-traceability
 status: done
 archive_reason: "用户授权归档历史任务"
-archived_at: "2026-10-07T07:34:46.009Z"
+archived_at: 2026-10-07T15:34:46
 archived: true
 goal: 让任务原型成为可追溯的正式产物，并在交付前记录其到实现与验证的处置结论。
 workflow: framework:framework-optimization
-created_at: 2026-09-13T00:00:00+08:00
+created_at: 2026-09-13T00:00:00
 next_action: 等待用户验收原型采纳门禁；验收后决定保留与集成方式。
 requirements_reference: ../../../requirements-inbox/archive/2026-09-13-prototype-adoption-traceability.md
 documentation:

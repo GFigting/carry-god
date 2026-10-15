@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 import { checkTaskRecord } from './check-task.mjs';
+import { formatLocalIso } from './local-time.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const projectsRoot = path.join(root, 'local', 'projects');
@@ -63,11 +64,18 @@ function render(items) {
 // 只改三处：状态、状态历史、面向用户的下一步；其余原文不动。
 function markAccepted(text, note) {
   let out = text.replace(/^status:\s*review\s*$/m, 'status: done');
-  const acceptedAt = new Date().toISOString();
+  const acceptedAt = formatLocalIso(new Date());
   const reason = `用户已验收${note ? `：${note}` : '。'}`;
-  out = out.replace(/^(status_history:\r?\n(?:[ \t]*-[^\n]*\r?\n)*)/m,
-    (block) => `${block}  - status: done\n    at: ${JSON.stringify(acceptedAt)}\n    reason: ${JSON.stringify(reason)}\n`);
   const lines = out.split(/\r?\n/);
+  const historyStart = lines.findIndex((line) => /^status_history:\s*$/.test(line));
+  if (historyStart !== -1) {
+    let historyEnd = historyStart + 1;
+    while (historyEnd < lines.length && (lines[historyEnd].trim() === '' || /^\s/.test(lines[historyEnd]))) historyEnd += 1;
+    lines.splice(historyEnd, 0,
+      '  - status: done',
+      `    at: ${JSON.stringify(acceptedAt)}`,
+      `    reason: ${JSON.stringify(reason)}`);
+  }
   const start = lines.findIndex((line) => /^next_user_action:\s*$/.test(line));
   if (start !== -1) {
     let end = start + 1;

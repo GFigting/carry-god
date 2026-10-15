@@ -1,11 +1,11 @@
 id: 2026-09-15-proportionate-bugfix-workflow
 status: done
 archive_reason: "用户授权归档历史任务"
-archived_at: "2026-10-07T09:14:06.375Z"
+archived_at: 2026-10-07T17:14:06
 archived: true
 goal: 为小型确定性缺陷及纯展示调整建立与风险相称的最小执行路径，同时保留必要验证。
 workflow: framework:framework-optimization
-created_at: 2026-09-15T00:00:00+08:00
+created_at: 2026-09-15T00:00:00
 next_action: 任务已关闭；后续按低风险路径或标准工作流分流。
 requirements_reference: ../../../requirements-inbox/2026-09-15-proportionate-bugfix-workflow.md
 documentation:

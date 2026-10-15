@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
+import { formatLocalIso } from './local-time.mjs';
 
 const frameworkRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -140,7 +141,7 @@ export async function archiveTasks({ root = frameworkRoot, before, status = 'rev
   }
 
   if (apply) {
-    const archivedAt = now instanceof Date ? now.toISOString() : String(now);
+    const archivedAt = formatLocalIso(now);
     const candidateRequirements = new Set(candidates.map((candidate) => candidate.requirement).filter(Boolean));
     if (includeRequirements && relocateArchived) {
       for (const requirement of refs.archived.values()) candidateRequirements.add(requirement);

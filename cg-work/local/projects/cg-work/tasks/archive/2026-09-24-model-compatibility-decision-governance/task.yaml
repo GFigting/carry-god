@@ -4,9 +4,9 @@ goal: 将新模块模型优先、历史兼容决策和用户确认门禁纳入�
 workflow: framework:framework-optimization
 status: done
 archive_reason: "用户授权归档历史任务"
-archived_at: "2026-10-07T09:14:06.375Z"
+archived_at: 2026-10-07T17:14:06
 archived: true
-created_at: 2026-09-24T16:00:00+08:00
+created_at: 2026-09-24T16:00:00
 next_action: 已完成框架规则更新，等待后续任务按新决策门禁执行。
 requirements_reference: ../../../requirements-inbox/2026-09-24-model-compatibility-decision-governance.md
 scope_decision:

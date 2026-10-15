@@ -22,9 +22,11 @@ export async function checkTaskRecord(taskFile) {
   const file = path.resolve(taskFile);
   const errors = [];
   let task;
+  let raw = '';
 
   try {
-    task = yaml.load(await fs.readFile(file, 'utf8'), { json: false });
+    raw = await fs.readFile(file, 'utf8');
+    task = yaml.load(raw, { json: false });
   } catch (error) {
     errors.push(`无法读取或解析任务 YAML：${error.message}`);
   }
@@ -37,6 +39,8 @@ export async function checkTaskRecord(taskFile) {
     for (const key of ['id', 'status', 'goal', 'workflow', 'created_at', 'next_action']) {
       if (!(key in task)) errors.push(`缺少任务字段：${key}`);
     }
+
+    validateTimeFields(raw, errors);
 
     if (typeof task.id !== 'string' || !/^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(task.id)) {
       errors.push('task.id 必须使用 YYYY-MM-DD-task-slug 格式');
@@ -372,6 +376,26 @@ function validateDocumentation(value, errors) {
   }
   if (value.summary !== undefined && (typeof value.summary !== 'string' || !value.summary.trim())) {
     errors.push('task.documentation.summary 如填写必须是非空字符串');
+  }
+}
+
+// js-yaml 会把不带时区的时间也解析成 Date，时区后缀在解析阶段就丢失了，
+// 因此时间格式必须基于原始文本校验：统一使用本地墙钟时间，不携带时区。
+function validateTimeFields(raw, errors) {
+  const localDateTime = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
+  const localDate = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?)?$/;
+  for (const line of raw.split(/\r?\n/)) {
+    const field = line.match(/^\s*(created_at|archived_at|at):\s*(.+?)\s*$/);
+    if (!field) continue;
+    const [, name, rawValue] = field;
+    const value = rawValue.replace(/^["']|["']$/g, '');
+    if (name === 'at') {
+      if (value !== 'null' && !(localDateTime.test(value) && !Number.isNaN(Date.parse(value)))) {
+        errors.push('status_history.at 必须是本地时间 YYYY-MM-DDTHH:mm:ss（不带时区）或 null');
+      }
+    } else if (!localDate.test(value) || Number.isNaN(Date.parse(value))) {
+      errors.push(`${name} 必须使用 YYYY-MM-DD 或本地时间 YYYY-MM-DDTHH:mm:ss（不带时区）格式`);
+    }
   }
 }
 

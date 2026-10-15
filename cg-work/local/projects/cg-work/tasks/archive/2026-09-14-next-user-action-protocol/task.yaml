@@ -1,11 +1,11 @@
 id: 2026-09-14-next-user-action-protocol
 status: done
 archive_reason: "用户授权归档历史任务"
-archived_at: "2026-10-07T09:14:06.375Z"
+archived_at: 2026-10-07T17:14:06
 archived: true
 goal: 为任务与大任务路线图建立可追溯的下一步用户提醒协议，避免等待决策或验收时静默停滞。
 workflow: framework:framework-optimization
-created_at: 2026-09-14T00:00:00+08:00
+created_at: 2026-09-14T00:00:00
 next_action: 新任务进入审查、阻塞或完成时，按 interaction_protocol v1 提供用户下一步提醒。
 next_user_action:
   required: false

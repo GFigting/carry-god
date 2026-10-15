@@ -2,7 +2,7 @@ id: 2026-10-02-workflow-and-template-consolidation
 status: done
 goal: 收敛三个工作流的重复正文并把路线图格式归到唯一来源，保持工作流 id 与门禁不变。
 workflow: framework:framework-optimization
-created_at: 2026-10-02T15:20:00+08:00
+created_at: 2026-10-02T15:20:00
 artifact_profile: compact
 artifacts:
   primary: ./plan.md

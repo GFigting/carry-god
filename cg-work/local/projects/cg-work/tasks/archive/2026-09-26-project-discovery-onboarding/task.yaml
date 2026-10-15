@@ -1,7 +1,7 @@
 id: 2026-09-26-project-discovery-onboarding
 status: done
 archive_reason: "用户授权归档历史任务"
-archived_at: "2026-10-07T09:14:06.375Z"
+archived_at: 2026-10-07T17:14:06
 archived: true
 goal: 为框架增加对话式新项目识别与初始化引导
 workflow: framework:framework-optimization

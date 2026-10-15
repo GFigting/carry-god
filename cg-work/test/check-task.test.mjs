@@ -543,9 +543,22 @@ test('接受结构化状态历史并校验原因与时间', async () => {
   const file = path.join(taskDir, 'task.yaml');
   await writeFile(path.join(taskDir, 'review.md'), '# Review\n');
   await writeFile(path.join(taskDir, 'verification.md'), '# Verification\n');
-  await writeFile(file, 'id: 2026-10-01-structured-history\nstatus: review\ngoal: Structured history\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01\ndocumentation:\n  impact: update\n  files:\n    - README.md\nreview_reference: review.md\nverification_reference: verification.md\nnext_action: Review\nstatus_history:\n  - status: pending\n    at: "2026-10-01T09:00:00+08:00"\n    reason: 任务创建\n  - status: in_progress\n    at: "2026-10-01T09:30:00+08:00"\n    reason: 开始实施\n  - status: review\n    at: "2026-10-01T10:00:00+08:00"\n    reason: 完成实现\n');
+  await writeFile(file, 'id: 2026-10-01-structured-history\nstatus: review\ngoal: Structured history\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01\ndocumentation:\n  impact: update\n  files:\n    - README.md\nreview_reference: review.md\nverification_reference: verification.md\nnext_action: Review\nstatus_history:\n  - status: pending\n    at: 2026-10-01T09:00:00\n    reason: 任务创建\n  - status: in_progress\n    at: 2026-10-01T09:30:00\n    reason: 开始实施\n  - status: review\n    at: 2026-10-01T10:00:00\n    reason: 完成实现\n');
   const result = await run(file);
   assert.equal(result.code, 0, result.output);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('拒绝携带时区的时间字段', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cg-work-task-'));
+  const taskDir = path.join(dir, '2026-10-01-timezone-rejected');
+  await mkdir(taskDir);
+  const file = path.join(taskDir, 'task.yaml');
+  await writeFile(file, 'id: 2026-10-01-timezone-rejected\nstatus: pending\ngoal: Reject timezone suffix\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01T09:00:00+08:00\ndocumentation:\n  impact: none\n  not_needed_reason: Framework metadata only\nnext_action: Fix the timestamp\nstatus_history:\n  - status: pending\n    at: "2026-10-01T09:00:00+08:00"\n    reason: 任务创建\n');
+  const result = await run(file);
+  assert.notEqual(result.code, 0);
+  assert.match(result.output, /created_at 必须使用/);
+  assert.match(result.output, /status_history\.at 必须是本地时间/);
   await rm(dir, { recursive: true, force: true });
 });
 

@@ -2,7 +2,7 @@ id: 2026-10-02-project-roadmap
 status: done
 goal: 定义项目级路线图产物：存放在原项目仓库内并由项目上下文登记路径，配套格式模板与校验器。
 workflow: framework:framework-optimization
-created_at: 2026-10-02T16:10:00+08:00
+created_at: 2026-10-02T16:10:00
 artifact_profile: compact
 artifacts:
   primary: ./plan.md

@@ -2,7 +2,7 @@ id: 2026-10-02-localized-skill-registration
 status: done
 goal: 修正本地化技能的镜像登记，并为其补齐正文中的本地化与唯一来源声明。
 workflow: framework:framework-optimization
-created_at: 2026-10-02T12:10:00+08:00
+created_at: 2026-10-02T12:10:00
 artifact_profile: compact
 artifacts:
   primary: ./plan.md

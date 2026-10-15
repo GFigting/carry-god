@@ -3,7 +3,7 @@ status: done
 goal: 对齐框架一致性缺口：测试条款按价值分层统一口径、refactor/framework-optimization 技能按需化、并行派发文件所有权准则成文。
 workflow: framework:feature-development
 execution_profile: lightweight
-created_at: 2026-10-01T22:10:00+08:00
+created_at: 2026-10-01T22:10:00
 next_action: 已完成并验证（check-all 通过、test 48/48）；随框架提交收口。
 requirements_reference: ../../requirements-inbox/2026-10-01-lean-fast-lane.md
 documentation:

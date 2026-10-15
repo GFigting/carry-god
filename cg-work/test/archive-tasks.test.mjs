@@ -38,14 +38,14 @@ test('归档 apply 移入 archive 文件夹并保留原状态和元数据', asyn
       before: '2026-10-07',
       reason: '测试归档',
       apply: true,
-      now: new Date('2026-10-07T08:00:00.000Z'),
+      now: '2026-10-07T08:00:00',
     });
     assert.equal(result.candidates.length, 1);
     const archivedFile = path.join(root, 'local', 'projects', 'fixture', 'tasks', 'archive', id, 'task.yaml');
     const task = yaml.load(await readFile(archivedFile, 'utf8'));
     assert.equal(task.status, 'review');
     assert.equal(task.archived, true);
-    assert.equal(task.archived_at, '2026-10-07T08:00:00.000Z');
+    assert.equal(task.archived_at, '2026-10-07T08:00:00');
     assert.equal(task.archive_reason, '测试归档');
     await assert.rejects(() => readFile(file, 'utf8'));
   } finally {
@@ -93,7 +93,7 @@ test('已归档任务可单独迁移到 archive 且不重复改写元数据', as
   const root = await mkdtemp(path.join(os.tmpdir(), 'cg-work-archive-relocate-'));
   const id = '2026-10-01-already-archived';
   const file = await fixture(root, id);
-  await writeFile(file, `id: ${id}\nstatus: done\narchived: true\narchived_at: 2026-10-07T08:00:00.000Z\narchive_reason: 原因\ngoal: Archive fixture\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01\nnext_action: Review\n`);
+  await writeFile(file, `id: ${id}\nstatus: done\narchived: true\narchived_at: 2026-10-07T08:00:00\narchive_reason: 原因\ngoal: Archive fixture\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01\nnext_action: Review\n`);
   try {
     const result = await archiveTasks({ root, before: '2026-10-07', relocateArchived: true, apply: true });
     assert.equal(result.candidates.length, 1);

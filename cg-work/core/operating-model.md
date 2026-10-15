@@ -83,7 +83,7 @@ pending -> in_progress -> review -> done
 
 ```yaml
 archived: true
-archived_at: 2026-10-07T08:00:00.000Z
+archived_at: 2026-10-07T16:00:00
 archive_reason: 用户授权归档历史任务
 ```
 
@@ -99,19 +99,19 @@ archive_reason: 用户授权归档历史任务
 status_history: [pending, in_progress, review]
 ```
 
-新记录和状态更新优先使用结构化项，`at` 使用 ISO 时间；历史迁移无法恢复的时间使用 `null`，不得用文件修改时间猜测：
+新记录和状态更新优先使用结构化项，`at` 使用本地时间（`YYYY-MM-DDTHH:mm:ss`，不带时区后缀）；历史迁移无法恢复的时间使用 `null`，不得用文件修改时间猜测：
 
 ```yaml
 status_history:
   - status: pending
-    at: 2026-10-07T09:00:00+08:00
+    at: 2026-10-07T09:00:00
     reason: 任务创建
   - status: in_progress
-    at: 2026-10-07T09:30:00+08:00
+    at: 2026-10-07T09:30:00
     reason: 开始实施
 ```
 
-结构化项必须包含非空 `status`、`reason`，`at` 可以是 ISO 时间字符串或 `null`；旧字符串数组在兼容期内继续校验。
+结构化项必须包含非空 `status`、`reason`，`at` 可以是不带时区的本地时间字符串或 `null`；旧字符串数组在兼容期内继续校验。
 
 ### review 阶段统一收尾
 

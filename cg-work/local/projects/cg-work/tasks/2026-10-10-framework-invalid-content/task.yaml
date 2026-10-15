@@ -3,7 +3,7 @@ status: done
 goal: 精简已废弃模板中的无效骨架，保留历史引用兼容并明确现行唯一来源。
 workflow: framework:framework-optimization
 execution_profile: standard
-created_at: 2026-10-10T00:00:00+08:00
+created_at: 2026-10-10T00:00:00
 artifact_profile: compact
 artifacts:
   primary: ./plan.md
@@ -31,14 +31,14 @@ next_user_action:
 interaction_protocol: v1
 status_history:
   - status: pending
-    at: 2026-10-10T00:00:00+08:00
+    at: 2026-10-10T00:00:00
     reason: 用户确认精简已废弃模板中的无效内容
   - status: in_progress
-    at: 2026-10-10T00:10:00+08:00
+    at: 2026-10-10T00:10:00
     reason: 已完成范围盘点并开始实施
   - status: review
-    at: 2026-10-10T00:20:00+08:00
+    at: 2026-10-10T00:20:00
     reason: 已完成精简，待全量校验与用户验收
   - status: done
-    at: 2026-10-10T00:30:00+08:00
+    at: 2026-10-10T00:30:00
     reason: 用户已验收，校验通过并完成本地提交

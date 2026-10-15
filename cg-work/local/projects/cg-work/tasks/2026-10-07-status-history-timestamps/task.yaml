@@ -1,9 +1,9 @@
 id: 2026-10-07-status-history-timestamps
-status: review
+status: done
 goal: 将新任务 status_history 升级为带时间和原因的结构化记录并兼容历史数组。
 workflow: framework:framework-optimization
 execution_profile: standard
-created_at: 2026-10-07T17:00:00+08:00
+created_at: 2026-10-07T17:00:00
 requirements_reference: ../../requirements-inbox/2026-10-07-status-history-timestamps.md
 scope_decision:
   mode: independent
@@ -25,12 +25,13 @@ documentation:
 plan_reference: plan.md
 review_reference: review.md
 verification_reference: verification.md
+handoff_reference: handoff.md
 next_action: 等待用户验收结构化 status_history 与兼容迁移结果。
 interaction_protocol: v1
 next_user_action:
-  required: true
-  action: 验收
-  message: 请验收结构化 status_history、验收队列写入和迁移 dry-run 结果。
+  required: false
+  action: none
+  message: 用户已验收：用户于 2026-10-12 明确统一验收 2026-10-11 及以前任务；已补齐交接记录。
 status_history:
   - status: pending
     at: null
@@ -41,3 +42,7 @@ status_history:
   - status: review
     at: null
     reason: 测试、全量检查和迁移 dry-run 已完成
+
+  - status: done
+    at: 2026-10-12T15:06:52
+    reason: "用户已验收：用户于 2026-10-12 明确统一验收 2026-10-11 及以前任务；已补齐交接记录。"
