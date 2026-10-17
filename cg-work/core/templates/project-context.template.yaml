@@ -60,7 +60,7 @@ verification:
 requirements:
   # 该项目 requirements-inbox 目录的路径。
   inbox_path: D:/path/to/framework/local/projects/example-project/requirements-inbox
-# 除 cg-work 外，登记的文件和目录路径使用绝对路径；URL 与命令除外。
+# 登记的文件和目录路径使用绝对路径，或相对 project.root_path 解析的路径；URL 与命令除外。
 # 项目级产品规划产物。
 product:
   # 原项目仓库中的路线图文件；没有时为 null。

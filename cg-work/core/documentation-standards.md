@@ -8,7 +8,7 @@
 
 登记文档必须满足：
 
-- 路径真实存在；除框架受管项目 `cg-work` 外，项目上下文中的文件和目录路径使用绝对路径；
+- 路径真实存在；项目上下文中的文件和目录路径使用绝对路径，或相对 `project.root_path` 解析的路径；
 - 有明确维护责任和适用范围；
 - 内容描述稳定规则，而不是某一次任务的临时结论；
 - 能帮助 Agent 或开发者作出实现、验证、运行或交付判断。
@@ -98,9 +98,9 @@
 2. 按需关联：接口契约、数据与数据库、运维、安全、交付与路线图文档。
 3. 缺口记录：重要类别暂时没有文档时，在项目初始化或任务审查中记录缺口、影响和补齐计划，不伪造空文档。
 
-项目文档路径统一登记在 `documentation` 下：`project_rules`、`development_standards`、`business`、`architecture`、`api`、`data`、`operations` 和 `security`。项目上下文另有 `runtime` 和 `verification` 字段记录运行入口与验证命令，路线图使用 `product.roadmap_path`；这些可执行配置和单一产物路径不重复登记为普通文档清单。`delivery` 不单独设为文档类别，路线图、任务证据、架构决策和发布记录分别遵循各自的权威存储位置。
+项目文档路径统一登记在 `documentation` 下，字段清单、`runtime`、`verification`、`product.roadmap_path` 等可执行配置的登记边界见 [项目上下文](project-context.md) 的字段规范；这些可执行配置和单一产物路径不重复登记为普通文档清单。`delivery` 不单独设为文档类别，路线图、任务证据、架构决策和发布记录分别遵循各自的权威存储位置。
 
-同一文档只登记在一个 `documentation.*` 类别。每项记录包含 `path` 和 `load`：`always` 表示每项任务都读取，`when_relevant` 表示按任务主题读取。只在特定操作时需要的说明，应留在其专属入口（如 `submission.instructions`）；不再设置独立的 `required_context` 清单。
+同一文档只登记在一个 `documentation.*` 类别。每项记录包含 `path` 和 `load`，字段语义见 [项目上下文](project-context.md) 的字段规范。只在特定操作时需要的说明，应留在其专属入口（如 `submission.instructions`）；不再设置独立的 `required_context` 清单。
 
 ## 4. 命名规范
 
@@ -134,7 +134,7 @@
 
 ### 4.4 特殊名称
 
-项目根目录入口可使用约定名称 `README.md`、`AGENTS.md`、`CONTRIBUTING.md`。这些是协作入口的固定例外，不作为普通主题文件名的通用模板。框架产物的任务 ID、项目 ID 和其他结构化标识继续遵循 `core/naming-and-submission.md` 及对应校验器规则。
+项目根目录入口可使用约定名称 `README.md`、`AGENTS.md`、`CONTRIBUTING.md`。这些是协作入口的固定例外，不作为普通主题文件名的通用模板。框架产物的任务 ID、项目 ID 和其他结构化标识继续遵循 `core/naming-and-submission.md` 及 `scripts/check-project.mjs` 的规则。
 
 ## 5. 文档质量与维护
 

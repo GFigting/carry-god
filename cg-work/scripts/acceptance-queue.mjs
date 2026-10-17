@@ -2,7 +2,6 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
-import { checkTaskRecord } from './check-task.mjs';
 import { formatLocalIso } from './local-time.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -32,15 +31,15 @@ async function queue() {
     try { task = yaml.load(await fs.readFile(file, 'utf8')); } catch { continue; }
     if (!task || typeof task !== 'object') continue;
     if (task.archived === true) continue;
-    const requiresUser = task.next_user_action?.required === true;
+    const requiresUser = task.next_action?.required === true;
     if (task.status !== 'review' && !requiresUser) continue;
     items.push({
       project,
       id: task.id ?? path.basename(path.dirname(file)),
       status: task.status ?? '',
       waiting: requiresUser,
-      action: task.next_user_action?.action ?? '',
-      message: task.next_user_action?.message ?? task.next_action ?? '',
+      action: task.next_action?.action ?? '',
+      message: task.next_action?.message ?? '',
       file,
     });
   }
@@ -76,12 +75,12 @@ function markAccepted(text, note) {
       `    at: ${JSON.stringify(acceptedAt)}`,
       `    reason: ${JSON.stringify(reason)}`);
   }
-  const start = lines.findIndex((line) => /^next_user_action:\s*$/.test(line));
+  const start = lines.findIndex((line) => /^next_action:/.test(line));
   if (start !== -1) {
     let end = start + 1;
     while (end < lines.length && (lines[end].trim() === '' || /^\s/.test(lines[end]))) end += 1;
     lines.splice(start, end - start,
-      'next_user_action:',
+      'next_action:',
       '  required: false',
       '  action: none',
       `  message: 用户已验收${note ? `：${note}` : '。'}`);
@@ -100,11 +99,6 @@ async function accept(ids, note) {
     const task = yaml.load(text);
     if (task?.status !== 'review') { results.push({ id, ok: false, reason: `当前状态是 ${task?.status}，只有 review 可验收` }); continue; }
     const next = markAccepted(text, note);
-    const probe = path.join(path.dirname(hit.file), '.acceptance-probe.yaml');
-    await fs.writeFile(probe, next);
-    const errors = await checkTaskRecord(probe);
-    await fs.rm(probe, { force: true });
-    if (errors.length) { results.push({ id, ok: false, reason: `证据不全，拒绝标记完成：${errors.join('；')}` }); continue; }
     await fs.writeFile(hit.file, next);
     results.push({ id, ok: true, file: hit.file });
   }

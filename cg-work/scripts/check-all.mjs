@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkTaskRecord } from './check-task.mjs';
+import yaml from 'js-yaml';
 import { checkProjectContext } from './check-project.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -113,26 +113,22 @@ async function checkManagedProjectRecords() {
       errors.push(`local/projects/cg-work/project-context.yaml: ${error}`);
     }
   }
+  // 任务记录不再做 YAML 内容校验；归档记录仅要求可解析（见工作模型的任务归档）。
   const tasksRoot = path.join(projectRoot, 'tasks');
   if (!(await exists(tasksRoot))) return;
   for (const entry of await fs.readdir(tasksRoot, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
-    if (entry.name === 'archive') {
-      // 归档记录退出生命周期门禁，但必须保持 YAML 可解析（见工作模型的任务归档）。
-      const archiveRoot = path.join(tasksRoot, entry.name);
-      for (const archived of await fs.readdir(archiveRoot, { withFileTypes: true })) {
-        if (!archived.isDirectory()) continue;
-        const archivedFile = path.join(archiveRoot, archived.name, 'task.yaml');
-        if (!(await exists(archivedFile))) continue;
-        const label = path.relative(root, archivedFile).replaceAll(path.sep, '/');
-        for (const error of await checkTaskRecord(archivedFile)) errors.push(`${label}: ${error}`);
-      }
-      continue;
+    const roots = entry.name === 'archive'
+      ? (await fs.readdir(path.join(tasksRoot, entry.name), { withFileTypes: true }))
+          .filter((archived) => archived.isDirectory())
+          .map((archived) => path.join(tasksRoot, entry.name, archived.name))
+      : [path.join(tasksRoot, entry.name)];
+    for (const taskDir of roots) {
+      const taskFile = path.join(taskDir, 'task.yaml');
+      if (!(await exists(taskFile))) continue;
+      try { yaml.load(await fs.readFile(taskFile, 'utf8')); }
+      catch (error) { errors.push(`${path.relative(root, taskFile).replaceAll(path.sep, '/')}: task.yaml 无法解析：${error.message}`); }
     }
-    const taskFile = path.join(tasksRoot, entry.name, 'task.yaml');
-    if (!(await exists(taskFile))) continue;
-    const label = path.relative(root, taskFile).replaceAll(path.sep, '/');
-    for (const error of await checkTaskRecord(taskFile)) errors.push(`${label}: ${error}`);
   }
 }
 
@@ -181,7 +177,7 @@ for (const file of workflowFiles) {
   }
 }
 
-if (!(await exists(path.join(root, 'core', 'project-context.template.yaml')))) errors.push('missing project context template');
+if (!(await exists(path.join(root, 'core', 'templates', 'project-context.template.yaml')))) errors.push('missing project context template');
 const ignore = await fs.readFile(path.join(root, '.gitignore'), 'utf8');
 for (const requiredIgnoreRule of [
   '/local/projects/*',
@@ -208,6 +204,7 @@ async function checkRequirementsInboxes() {
     const projectRoot = path.join(projectsRoot, entry.name);
     if (!(await exists(path.join(projectRoot, 'project-context.yaml')))) continue;
     const inbox = path.join(projectRoot, 'requirements-inbox');
+    // 需求箱目录必须存在，但内容只允许手动添加。
     if (!(await exists(inbox))) {
       errors.push(`missing requirements-inbox: local/projects/${entry.name}`);
       continue;

@@ -74,26 +74,24 @@ export async function checkProjectContext(contextFile) {
       const database = context.database === undefined ? null : objectField(context, 'database', errors);
       const inboxPath = stringField(requirements, 'inbox_path', 'requirements.inbox_path', errors);
 
-      const allowRelativePaths = projectId === 'cg-work';
       if (!hasDocumentation) {
-        await checkAbsolutePaths(instructions?.files, 'instructions.files', errors, { base: projectRoot, allowRelativePaths });
+        await checkAbsolutePaths(instructions?.files, 'instructions.files', errors, { base: projectRoot });
       }
       if (!hasDocumentation) {
-        if (codingStandards) await checkAbsolutePaths(codingStandards.files, 'coding_standards.files', errors, { base: projectRoot, allowRelativePaths });
-        for (const key of ['business', 'architecture', 'api']) await checkAbsolutePaths(documents?.[key], `documents.${key}`, errors, { base: projectRoot, allowRelativePaths });
+        if (codingStandards) await checkAbsolutePaths(codingStandards.files, 'coding_standards.files', errors, { base: projectRoot });
+        for (const key of ['business', 'architecture', 'api']) await checkAbsolutePaths(documents?.[key], `documents.${key}`, errors, { base: projectRoot });
       }
-      await checkAbsolutePaths(runtime?.entrypoints, 'runtime.entrypoints', errors, { base: projectRoot, allowRelativePaths });
-      await checkAbsolutePaths(runtime?.health_checks, 'runtime.health_checks', errors, { allowUrls: true, base: projectRoot, allowRelativePaths });
-      await checkAbsolutePaths(tooling?.config_paths, 'tooling.config_paths', errors, { base: projectRoot, allowRelativePaths });
+      await checkAbsolutePaths(runtime?.entrypoints, 'runtime.entrypoints', errors, { base: projectRoot });
+      await checkAbsolutePaths(runtime?.health_checks, 'runtime.health_checks', errors, { allowUrls: true, base: projectRoot });
+      await checkAbsolutePaths(tooling?.config_paths, 'tooling.config_paths', errors, { base: projectRoot });
       await checkPrototypePaths(prototypes, projectRoot, errors);
       await checkProductPaths(context.product, projectRoot, errors);
       await checkSubmission(submission, errors);
-      await checkDatabase(database, projectRoot, allowRelativePaths, errors);
+      await checkDatabase(database, projectRoot, errors);
       if (inboxPath) {
         const inboxResolved = path.isAbsolute(inboxPath) ? inboxPath : (projectRoot ? path.resolve(projectRoot, inboxPath) : '');
         if (!inboxResolved) errors.push('project.root_path 无法解析，无法校验 requirements.inbox_path');
         else if (path.basename(inboxResolved) !== 'requirements-inbox') errors.push('requirements.inbox_path 必须指向 requirements-inbox 目录');
-        else if (!allowRelativePaths && !path.isAbsolute(inboxPath)) errors.push(`requirements.inbox_path 必须是绝对路径：${inboxPath}`);
         else if (!(await exists(inboxResolved))) errors.push(`requirements.inbox_path 不存在：${inboxResolved}`);
       }
 
@@ -161,7 +159,7 @@ async function checkSubmission(submission, errors) {
   if (submission.policies !== undefined && !isObject(submission.policies)) errors.push('submission.policies 必须是映射对象');
 }
 
-async function checkDatabase(database, projectRoot, allowRelativePaths, errors) {
+async function checkDatabase(database, projectRoot, errors) {
   if (database === null) return;
   const sqlPaths = database.sql_paths;
   if (sqlPaths === undefined) return;
@@ -169,10 +167,7 @@ async function checkDatabase(database, projectRoot, allowRelativePaths, errors) 
     errors.push('database.sql_paths 必须是列表');
     return;
   }
-  await checkAbsolutePaths(sqlPaths, 'database.sql_paths', errors, {
-    base: projectRoot,
-    allowRelativePaths,
-  });
+  await checkAbsolutePaths(sqlPaths, 'database.sql_paths', errors, { base: projectRoot });
 }
 
 async function checkPrototypePaths(prototypes, projectRoot, errors) {
@@ -267,7 +262,7 @@ function stringField(parent, key, label, errors) {
   return parent[key].trim();
 }
 
-async function checkAbsolutePaths(values, label, errors, { allowUrls = false, allowRelativePaths = false, base = '' } = {}) {
+async function checkAbsolutePaths(values, label, errors, { allowUrls = false, base = '' } = {}) {
   if (values === undefined) return;
   if (!Array.isArray(values)) {
     errors.push(`${label} 必须是列表`);
@@ -278,8 +273,7 @@ async function checkAbsolutePaths(values, label, errors, { allowUrls = false, al
     else if (allowUrls && /^(https?:|mailto:)/.test(value)) continue;
     else if (path.isAbsolute(value)) {
       if (!(await exists(value))) errors.push(`登记的路径不存在：${value}`);
-    } else if (!allowRelativePaths) errors.push(`${label} 中的路径必须是绝对路径：${value}`);
-    else if (!base) errors.push(`project.root_path 无法解析，登记路径无法校验：${value}`);
+    } else if (!base) errors.push(`${label} 中的路径必须是绝对路径：${value}`);
     else if (!(await exists(path.resolve(base, value)))) errors.push(`登记的路径不存在：${path.resolve(base, value)}`);
   }
 }

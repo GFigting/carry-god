@@ -7,8 +7,8 @@ const read = (relativePath) => fs.readFileSync(new URL(`../${relativePath}`, imp
 test('项目识别协议覆盖三类分类与确认后路由', () => {
   const skill = read('skills/project-discovery/SKILL.md');
   const workflow = read('workflows/project-discovery.md');
-  const context = read('core/context-loading.md');
-  const onboarding = read('core/project-onboarding.md');
+  const context = read('core/project-context.md');
+  const onboarding = context;
   const readme = read('README.md');
 
   for (const state of ['existing-project', 'new-project', 'needs-clarification']) assert.ok(skill.includes('`' + state + '`'));

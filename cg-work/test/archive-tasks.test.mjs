@@ -10,7 +10,7 @@ async function fixture(root, id, status = 'review') {
   const dir = path.join(root, 'local', 'projects', 'fixture', 'tasks', id);
   await mkdir(dir, { recursive: true });
   const file = path.join(dir, 'task.yaml');
-  await writeFile(file, `id: ${id}\nstatus: ${status}\ngoal: Archive fixture\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01\nnext_action: Review\n`);
+  await writeFile(file, `id: ${id}\nstatus: ${status}\ngoal: Archive fixture\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01\nnext_action:\n  required: false\n  action: none\n  message: "Review"\n`);
   return file;
 }
 
@@ -77,7 +77,7 @@ test('归档迁移可将仅被归档任务引用的需求包一并移入 archive
   const inbox = path.join(root, 'local', 'projects', 'fixture', 'requirements-inbox');
   await mkdir(inbox, { recursive: true });
   await writeFile(path.join(inbox, 'req.md'), '# Requirement\n');
-  await writeFile(file, `id: ${id}\nstatus: review\ngoal: Archive fixture\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01\nrequirements_reference: ../../requirements-inbox/req.md\nnext_action: Review\n`);
+  await writeFile(file, `id: ${id}\nstatus: review\ngoal: Archive fixture\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01\nrequirements_reference: ../../requirements-inbox/req.md\nnext_action:\n  required: false\n  action: none\n  message: "Review"\n`);
   try {
     await archiveTasks({ root, before: '2026-10-07', includeRequirements: true, apply: true });
     const archivedFile = path.join(root, 'local', 'projects', 'fixture', 'tasks', 'archive', id, 'task.yaml');
@@ -93,7 +93,7 @@ test('已归档任务可单独迁移到 archive 且不重复改写元数据', as
   const root = await mkdtemp(path.join(os.tmpdir(), 'cg-work-archive-relocate-'));
   const id = '2026-10-01-already-archived';
   const file = await fixture(root, id);
-  await writeFile(file, `id: ${id}\nstatus: done\narchived: true\narchived_at: 2026-10-07T08:00:00\narchive_reason: 原因\ngoal: Archive fixture\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01\nnext_action: Review\n`);
+  await writeFile(file, `id: ${id}\nstatus: done\narchived: true\narchived_at: 2026-10-07T08:00:00\narchive_reason: 原因\ngoal: Archive fixture\nworkflow: framework:framework-optimization\ncreated_at: 2026-10-01\nnext_action:\n  required: false\n  action: none\n  message: "Review"\n`);
   try {
     const result = await archiveTasks({ root, before: '2026-10-07', relocateArchived: true, apply: true });
     assert.equal(result.candidates.length, 1);

@@ -1,10 +1,10 @@
 # 技能索引
 
-本目录包含三类技能：框架自有技能、框架本地化技能和原始技能镜像。原始镜像的内容和附属资源不在 `cg-work` 中修改；镜像同步检查使用 `scripts/check-skills.mjs`，不属于日常框架检查。
+本目录包含三类技能：框架自有技能、框架本地化技能和原始技能镜像。原始镜像的内容和附属资源不在 `cg-work` 中修改；同步镜像时保持来源目录完整复制，不做本地改写。
 
-框架自有技能包括 `project-initialization`、`framework-optimization` 与 `large-task-decomposition`，由本框架维护，不参与镜像哈希校验。`large-task-decomposition` 只定义本地路线图与归档约定，分别引用原始镜像技能 `wayfinder` 和 `to-tickets`，不复制其正文。
+框架自有技能包括 `project-initialization`、`framework-optimization` 与 `large-task-decomposition`，由本框架维护，保持来源登记。`large-task-decomposition` 只定义本地路线图与归档约定，分别引用原始镜像技能 `wayfinder` 和 `to-tickets`，不复制其正文。
 
-框架本地化技能包括 `baoyu-design`。它复用上游设计方法，但其目录与任务记录规则由 cg-work 维护，因此不参与 `scripts/check-skills.mjs` 的镜像哈希校验。
+框架本地化技能包括 `baoyu-design`。它复用上游设计方法，但其目录与任务记录规则由 cg-work 维护，因此不登记为原始镜像。
 
 ## 核心技能
 
@@ -22,4 +22,4 @@
 
 ## 来源快照
 
-本次镜像来源均来自当前仓库，来源快照提交为 `5997d6fbf0f34317c9d800afce90563e3180220e`。具体映射和校验规则见 `scripts/check-skills.mjs`；新增或同步技能时只更新该映射和本节快照信息，不修改镜像内容。
+本次镜像来源均来自当前仓库，来源快照提交为 `5997d6fbf0f34317c9d800afce90563e3180220e`。新增或同步技能时更新本节快照信息，不修改镜像内容。

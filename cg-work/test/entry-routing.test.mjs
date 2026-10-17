@@ -28,7 +28,7 @@ test('入口路由完整覆盖 core 规则入口与特殊操作门禁', () => {
   // 精简入口不得丢掉任一 core 入口的指向。
   for (const ruleFile of [
     'operating-model.md',
-    'context-loading.md',
+    'project-context.md',
     'naming-and-submission.md',
     'framework-maintenance.md',
     'special-operations.md',

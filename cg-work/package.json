@@ -7,7 +7,8 @@
     "check": "node scripts/check-all.mjs",
     "queue": "node scripts/acceptance-queue.mjs",
     "archive": "node scripts/archive-tasks.mjs",
-    "migrate-task-metadata": "node scripts/migrate-task-metadata.mjs"
+    "migrate-task-metadata": "node scripts/migrate-task-metadata.mjs",
+    "task-stamp": "node scripts/task-stamp.mjs"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"

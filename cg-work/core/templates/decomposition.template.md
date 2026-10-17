@@ -8,7 +8,7 @@
 id: <roadmap-id>
 status: active
 destination: <完成后可交付或可决策的结果>
-requirements_reference: <相对 requirements-inbox 的原始需求包路径>
+requirements_reference: <可选；指向需求箱中用户手动添加的原始需求包，相对 requirements-inbox 的路径>
 decisions:
   confirmed: []
   open: []
@@ -16,11 +16,12 @@ decisions:
 task_references: []
 dependencies: []
 coverage_reference: coverage.md
-closure_reference: null
-next_user_action:
+artifacts:
+  closure: null
+next_action:
   required: false
   action: <用户需要执行的动作；无操作时为 continue_progress>
-  message: <面向用户的一句明确提示>
+  message: <面向用户的一句明确提示；可为空>
 ```
 
 ## `closure.md`
@@ -49,4 +50,4 @@ next_user_action:
 列出决策地图、原始需求包和关键交付证据的引用。
 ```
 
-`coverage.md` 为每条可验收需求指定一个结果：子任务、已关闭决策、明确延期或排除；不得用“待处理”作为关闭结论。流程见 [大任务拆分与关闭](../skills/large-task-decomposition/SKILL.md) 与 [工作模型的路线图](operating-model.md#大任务路线图)。
+`coverage.md` 为每条可验收需求指定一个结果：子任务、已关闭决策、明确延期或排除；不得用“待处理”作为关闭结论。流程见 [大任务拆分与关闭](../../skills/large-task-decomposition/SKILL.md) 与 [工作模型的路线图](../operating-model.md#大任务路线图)。

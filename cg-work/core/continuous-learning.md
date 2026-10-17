@@ -4,9 +4,9 @@
 
 ## 协议与兼容性
 
-标准新任务（可显式声明 `execution_profile: standard`，或省略该字段）在 `task.yaml` 中声明 `learning_protocol: v1`。轻量执行（`framework:bugfix` 与 `framework:feature-development` 的 `execution_profile: lightweight`）不声明该协议：这类任务的范围已限定为无可复用经验的小改动；一旦出现值得沉淀的经验，必须按 [交付路径升级](operating-model.md#交付路径升级) 升级为标准执行。该协议对历史任务兼容：未声明执行模式或学习协议的既有记录无需迁移，也不会因本规则失效。
+标准新任务（可显式声明 `delivery_path: standard`，或省略该字段）在需要沉淀经验时于 `artifacts` 中引用 `learning.md`，即视为启用持续学习；不再存在协议开关字段。轻量执行（`framework:bugfix` 与 `framework:feature-development` 的 `delivery_path: lightweight`）不得引用学习记录：这类任务的范围已限定为无可复用经验的小改动；一旦出现值得沉淀的经验，必须按 [交付路径升级](operating-model.md#交付路径升级) 升级为标准执行。
 
-使用 `v1` 的任务在进入 `review` 或 `done` 前必须填写 `learning_reference`，并指向任务目录内的 `learning.md`。校验器负责检查该引用和文件存在性。
+引用了 `artifacts.learning` 的任务必须指向任务目录内真实存在的 `learning.md`。
 
 ## 工作循环
 

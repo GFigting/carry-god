@@ -14,8 +14,8 @@ disable-model-invocation: true
 4. 探测项目自身的 `AGENTS.md`、`CLAUDE.md`、`CODING_STANDARDS.md`、`CONTRIBUTING.md`、`README.md`、包管理文件、格式化/Lint 配置、测试配置、构建配置和文档目录。
 5. 识别技术栈、包管理器、测试命令和构建命令；无法确认的字段保持为空并记录缺口，不猜测。
 6. 识别启动入口、健康检查、业务文档、架构文档、接口文档、词汇表和项目技能路径。
-7. 创建 `local/projects/<project-id>/requirements-inbox/`，写入固定 `README.md`；只在此目录保存原始需求包与附件，不写入任务过程产物。
-8. 使用 `core/project-context.template.yaml` 生成 `local/projects/<project-id>/project-context.yaml`，将需求箱绝对路径登记到 `requirements.inbox_path`，并将已发现的项目代码规范文件以绝对路径登记到可选字段 `coding_standards.files`。未发现专门规范时保留空列表，并在初始化任务记录中说明。
-9. 检查所有登记路径是否存在，项目根路径、项目文档路径和需求箱路径使用绝对路径。
+7. 创建 `local/projects/<project-id>/requirements-inbox/`，写入固定 `README.md`；需求包与附件只允许用户手动添加，Agent 不在此目录生成需求包，也不写入任务过程产物。
+8. 使用 `core/templates/project-context.template.yaml` 生成 `local/projects/<project-id>/project-context.yaml`，将需求箱路径登记到 `requirements.inbox_path`，并将已发现的项目代码规范文件登记到可选字段 `coding_standards.files`。未发现专门规范时保留空列表，并在初始化任务记录中说明。
+9. 检查所有登记路径是否存在；项目根路径使用绝对路径，其余登记路径可使用绝对路径或相对 `project.root_path` 解析的路径。
 
-执行时遵循 [项目接入规则](../../core/project-onboarding.md)；该规则定义确认门禁、数据边界和完成不变量。无法确认的技术或业务信息保持为空，并在初始化任务记录中记录缺口和待确认项。
+执行时遵循 [项目接入规则](../../core/project-context.md)；该规则定义确认门禁、数据边界和完成不变量。无法确认的技术或业务信息保持为空，并在初始化任务记录中记录缺口和待确认项。

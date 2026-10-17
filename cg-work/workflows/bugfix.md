@@ -14,11 +14,11 @@ conditional_skills:
 
 # 缺陷修复
 
-先按 [工作模型的低风险变更](../core/operating-model.md#低风险变更) 筛选：纯展示问题且不涉及行为时改用 `framework:low-risk-change`，不得创建需求箱或任务记录。其余缺陷创建 `pending` 任务记录后，再选择执行模式。标准缺陷可显式声明 `execution_profile: standard`；省略该字段也按标准路径处理。
+先按 [工作模型的低风险变更](../core/operating-model.md#低风险变更) 筛选：纯展示问题且不涉及行为时改用 `framework:low-risk-change`，不得创建需求箱或任务记录。其余缺陷创建 `pending` 任务记录后，再选择执行模式。标准缺陷可显式声明 `delivery_path: standard`；省略该字段也按标准路径处理。
 
 ### 轻量缺陷
 
-仅当根因已由错误信息或精确调用路径确认、修复仅恢复既有行为，且 [轻量执行决策清单](../core/operating-model.md#轻量执行决策清单) 五项全部为“否”时，才可声明 `execution_profile: lightweight`。轻量任务仍须保留 `task.yaml`；需求包按 [需求包留存判断](../core/operating-model.md#需求包留存判断) 按需生成。轻量任务不创建独立计划、审查、验证、学习或交接文件，也不得声明原型、路线图、父子任务或任务依赖。
+仅当根因已由错误信息或精确调用路径确认、修复仅恢复既有行为，且 [轻量执行决策清单](../core/operating-model.md#轻量执行决策清单) 五项全部为“否”时，才可声明 `delivery_path: lightweight`。轻量任务仍须保留 `task.yaml`；需求箱只接受用户手动添加的需求包，任务无需关联需求。轻量任务不创建独立计划、审查、验证、学习或交接文件，也不得声明原型、路线图、父子任务或任务依赖。
 
 在进入 `review` 或 `done` 前，任务内 `lightweight_evidence` 必须记录根因、影响范围、能覆盖原始症状的验证、自审结论和集成决定。任何条件不满足、无法得到针对性验证，或修复扩展到多个业务边界时，按 [交付路径升级](../core/operating-model.md#交付路径升级) 保留原 `task.yaml` 与历史，升级为标准执行并补建计划、审查和验证记录。
 
