@@ -2,8 +2,7 @@ id: 2026-10-07-requirement-package-on-demand
 status: done
 goal: 需求包从“每任务必建”改为按「需求包留存判断」四项清单按需生成，明确小改动的需求与取舍直接写 plan.md 或决策记录。
 workflow: framework:framework-optimization
-execution_profile: standard
-artifact_profile: compact
+delivery_path: compact
 artifacts:
   primary: plan.md
 created_at: 2026-10-07T17:30:00
@@ -22,12 +21,10 @@ documentation:
     - local/README.md
     - test/requirement-package-policy.test.mjs
     - VERSION
-next_action: 等待用户验收需求包按需生成政策；审查与验证结论已写入主产物 plan.md。
-interaction_protocol: v1
-next_user_action:
+next_action:
   required: false
   action: none
-  message: 用户已验收：用户于 2026-10-12 明确统一验收 2026-10-11 及以前任务。归档 review 任务保持现有的恢复归档后验收路径。
+  message: ""
 status_history:
   - status: pending
     at: 2026-10-07T17:30:00

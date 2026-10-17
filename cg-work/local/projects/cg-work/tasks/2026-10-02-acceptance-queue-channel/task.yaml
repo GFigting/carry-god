@@ -2,8 +2,8 @@ id: 2026-10-02-acceptance-queue-channel
 status: done
 goal: 提供待验收清单与批量验收通道，在不弱化 done 门禁的前提下解决 review 积压。
 workflow: framework:framework-optimization
+delivery_path: compact
 created_at: 2026-10-02T14:00:00
-artifact_profile: compact
 artifacts:
   primary: ./plan.md
 requirements_reference: ../../requirements-inbox/2026-10-02-acceptance-queue-channel.md
@@ -24,12 +24,10 @@ documentation:
     - scripts/README.md
     - package.json
     - VERSION
-next_action: 等待用户验收验收通道，再并入框架提交。
-interaction_protocol: v1
-next_user_action:
+next_action:
   required: false
   action: none
-  message: 用户已验收：用户授权：归档 2026-10-07 之前的 review 任务
+  message: ""
 status_history:
   - status: pending
     at: null

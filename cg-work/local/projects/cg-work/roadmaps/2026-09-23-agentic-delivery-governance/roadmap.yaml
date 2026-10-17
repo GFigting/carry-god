@@ -22,7 +22,7 @@ task_references:
 dependencies: []
 coverage_reference: coverage.md
 closure_reference: closure.md
-next_user_action:
+next_action:
   required: false
   action: roadmap_closed
   message: 框架治理路线图已关闭；业务周报保持在业务工具范围内。

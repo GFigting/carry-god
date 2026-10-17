@@ -1,0 +1,40 @@
+id: 2026-10-16-remove-redundant-task-fields
+status: review
+goal: 删除 task.yaml 中 5 个零使用且职责被覆盖的冗余字段（open_decisions、parent_task_reference、requirements_coverage、learning_protocol、scope_decision.prior_task_reference）。
+workflow: framework:framework-optimization
+delivery_path: standard
+created_at: 2026-10-16
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+scope_decision:
+  mode: independent
+  rationale: 冗余字段清理聚焦封闭 schema 的 allowlist 与校验分支，与前序合并 next_action 的交付内容不同，独立建任务。
+documentation:
+  impact: update
+  files:
+    - scripts/check-task.mjs
+    - scripts/README.md
+    - core/operating-model.md
+    - core/continuous-learning.md
+    - workflows/README.md
+  reason: 字段清单与门禁表述需随 schema 同步。
+acceptance_summary:
+  - 5 个字段从 allowlist 移除，出现即报"未知字段"
+  - learning 基础门禁改为 artifacts.learning 存在性检查，不依赖协议字段
+  - npm run check 全绿，npm test 除 2 个存量 check-project 失败外全部通过
+status_history:
+  - status: pending
+    at: null
+    reason: 用户确认执行冗余字段删除方案
+  - status: in_progress
+    at: null
+    reason: 进入实施，字段使用率统计已完成
+  - status: review
+    at: null
+    reason: 校验器、数据、测试、文档四层同步完成；npm run check 全绿，npm test 88/2（2 个存量失败）
+next_action:
+  required: true
+  action: accept-result
+  message: 请验收冗余字段删除结果（npm run check 全绿，npm test 88/2，2 个失败为 check-project 存量）

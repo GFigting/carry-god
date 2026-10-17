@@ -1,0 +1,51 @@
+id: 2026-10-15-task-yaml-field-refactor
+status: review
+goal: 重构 task.yaml 字段：合并 execution_profile + artifact_profile 为单一 delivery_path、把 6 个扁平引用字段分组进 artifacts、清理历史兼容字段残留（含 status_history 字符串简写与 requirements_reference_note）、放宽 next_action 终态门禁、补齐活跃任务时间格式迁移
+workflow: framework:framework-optimization
+delivery_path: standard
+created_at: 2026-10-15T16:39:45
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+scope_decision:
+  mode: independent
+  rationale: 本次重构涉及校验脚本、迁移脚本、活跃任务文件和规则文档的全量字段 schema 变更，具有独立迁移路径、验收边界和回退点，不能并入其他框架优化任务。
+documentation:
+  impact: update
+  files:
+    - scripts/check-task.mjs
+    - scripts/migrate-task-metadata.mjs
+    - scripts/README.md
+    - core/operating-model.md
+    - core/continuous-learning.md
+    - core/decomposition.template.md
+    - README.md
+    - workflows/README.md
+    - workflows/bugfix.md
+    - workflows/feature-development.md
+    - skills/large-task-decomposition/SKILL.md
+    - VERSION
+acceptance_summary:
+  - 非归档任务全部通过新 schema 校验，npm run check 全绿
+  - execution_profile + artifact_profile 两字段合并为单一 delivery_path 三选一枚举
+  - plan/review/verification/handoff/learning/closure 六个引用字段嵌套进 artifacts 分组
+  - project_id、title、documentation.targets、documentation.not_needed_reason 从校验器移除
+  - status_history 字符串简写兼容分支清理，活跃任务统一为结构化项
+  - done/cancelled 终态 next_action 不再强制
+  - 活跃任务中带时区的 created_at / status_history.at 统一迁移为本地无时区格式
+
+next_action:
+  required: false
+  action: none
+  message: ""
+status_history:
+  - status: pending
+    at: 2026-10-15T16:39:45
+    reason: 用户确认执行方向 E（全部重构），创建任务与设计方案
+  - status: in_progress
+    at: 2026-10-16T09:27:26
+    reason: 过渡态校验器→迁移→收紧→文档同步已执行；用户复核后追加清理 status_history 字符串简写兼容分支
+  - status: review
+    at: 2026-10-16T10:25:00
+    reason: 用户选定选项 A 删除 requirements_reference_note 并清理悬空引用；同步移除全部过渡兼容分支（status_history 简写、文档"继续兼容"措辞），测试 85/87 通过（2 个为存量问题），npm run check 全绿

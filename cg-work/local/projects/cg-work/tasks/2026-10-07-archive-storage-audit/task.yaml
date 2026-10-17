@@ -2,29 +2,28 @@ id: 2026-10-07-archive-storage-audit
 status: done
 goal: 审校归档目录拆分实现（目录布局、引用迁移、共享需求包保护、历史数据处理），补“引用迁移”需求说明并补正归档≠验收规则与 check-all 归档巡检缺口。
 workflow: framework:framework-optimization
-execution_profile: standard
-artifact_profile: compact
+delivery_path: compact
 artifacts:
   primary: plan.md
-plan_reference: plan.md
+  plan: plan.md
+
 created_at: 2026-10-07T18:00:00
 requirements_reference: ../../requirements-inbox/2026-10-07-task-archive-storage.md
 scope_decision:
   mode: continuation
-  prior_task_reference: ../2026-10-07-task-archive-storage/task.yaml
-  rationale: 归档目录拆分的审校与补正属于同一范围；实现已由并行会话完成并归档，本任务在其上补充审校证据与缺口修复。
+  rationale: 归档目录拆分的审校与补正属于同一范围；实现已由并行会话完成并归档，本任务在其上补充审校证据与缺口修复。前序任务见 depends_on。
+depends_on:
+  - ../2026-10-07-task-archive-storage/task.yaml
 documentation:
   impact: update
   files:
     - core/operating-model.md
     - scripts/check-all.mjs
     - local/projects/cg-work/requirements-inbox/2026-10-07-task-archive-storage.md
-next_action: 等待用户验收审校结论，并裁定归档 review 任务的验收通道（恢复归档后验收，或为 acceptance-queue 增加显式入口）。
-interaction_protocol: v1
-next_user_action:
+next_action:
   required: false
   action: none
-  message: 用户已验收：用户于 2026-10-12 明确统一验收 2026-10-11 及以前任务。归档 review 任务保持现有的恢复归档后验收路径。
+  message: ""
 status_history:
   - status: pending
     at: 2026-10-07T18:00:00

@@ -1,0 +1,32 @@
+id: 2026-10-16-merge-next-action
+status: in_progress
+goal: 删除 interaction_protocol 与 next_user_action 顶层字段，将下一步动作合并为单一 next_action 对象。
+workflow: framework:framework-optimization
+delivery_path: standard
+created_at: 2026-10-16
+scope_decision:
+  mode: independent
+  rationale: 双字段合并是独立的 schema 变更，与封闭 schema 重构任务交付内容不同。
+documentation:
+  impact: update
+  files:
+    - D:/songgf/Projects/all-work/carry-god/cg-work/core/operating-model.md
+    - D:/songgf/Projects/all-work/carry-god/cg-work/scripts/README.md
+  reason: 字段清单删除 interaction_protocol/next_user_action，next_action 改为对象结构说明。
+acceptance_summary:
+  - 校验器与验收队列只认单一 next_action 对象
+  - 46 个活跃任务数据迁移完成且单文件校验通过
+  - npm run check 与 npm test 全绿（存量失败除外）
+artifacts:
+  plan: plan.md
+status_history:
+  - status: pending
+    at: null
+    reason: 用户确认合并 next_action 方案
+  - status: in_progress
+    at: 2026-10-16T02:00:00
+    reason: 进入实施，数据分布与消费者已摸清
+next_action:
+  required: false
+  action: none
+  message: ""

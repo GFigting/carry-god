@@ -28,7 +28,7 @@ documentation:
   architecture:
     - path: ./core/operating-model.md
       load: when_relevant
-    - path: ./core/context-loading.md
+    - path: ./core/project-context.md
       load: when_relevant
   # API、事件和消息契约。
   api: []

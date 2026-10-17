@@ -1,0 +1,36 @@
+id: 2026-10-16-script-stamped-timestamps
+status: review
+goal: 任务时间字段改为由脚本写入真实墙钟时间：新增 task-stamp.mjs 提供 create/transition/fix-placeholders，禁止手工占位时间
+workflow: framework:framework-optimization
+delivery_path: standard
+created_at: 2026-10-16T17:23:10
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+documentation:
+  impact: update
+  files:
+    - scripts/task-stamp.mjs
+    - scripts/README.md
+    - core/operating-model.md
+    - package.json
+  reason: 新增时间戳脚本并同步时间字段规则与命令入口。
+acceptance_summary:
+  - 新任务 created_at 与 status_history.at 由脚本盖真实墙钟（17:23:10 / 17:23:42）
+  - fix-placeholders 修复 js-yaml Date 解析漏报后清理 10 个任务共 14 条 T00:00:00 占位为 null
+  - npm run check 全绿，复扫无残留占位
+status_history:
+  - status: pending
+    at: 2026-10-16T17:23:10
+    reason: "用户要求用脚本生成时间字段，不再手工填占位值"
+  - status: in_progress
+    at: 2026-10-16T17:23:42
+    reason: "task-stamp.mjs 已实现并通过自举验证，进入文档同步"
+  - status: review
+    at: 2026-10-16T17:27:10
+    reason: "task-stamp 脚本、文档同步与 14 条存量占位清理全部完成，npm run check 全绿，复扫无残留"
+next_action:
+  required: true
+  action: accept-result
+  message: "请验收任务时间脚本化结果（npm run check 全绿）"

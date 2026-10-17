@@ -1,0 +1,45 @@
+id: 2026-10-17-path-gate-and-template-move
+status: done
+goal: 把 core 的 4 个模板文件移入 core/templates/ 独立文件夹，并同步全部引用与目录索引
+workflow: feature-development
+delivery_path: standard
+created_at: 2026-10-17T13:17:19
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+scope_decision:
+  mode: independent
+  rationale: 模板归档与引用同步独立记录；绝对路径校验移除已由 2026-10-17-remove-path-absolute-gate 任务覆盖，不重复记账。
+documentation:
+  impact: update
+  files:
+    - core/templates/README.md
+    - core/README.md
+    - README.md
+    - local/README.md
+    - core/project-context.md
+    - scripts/check-all.mjs
+    - workflows/feature-development.md
+    - skills/project-initialization/SKILL.md
+    - skills/large-task-decomposition/SKILL.md
+    - skills/product-management/SKILL.md
+    - core/templates/project-roadmap.template.md
+  reason: 模板移入 core/templates/ 后，索引、校验脚本、规则与技能中的全部路径引用需同步，新目录需 README。
+status_history:
+  - status: pending
+    at: 2026-10-17T13:17:19
+    reason: "任务创建"
+  - status: in_progress
+    at: 2026-10-17T13:28:19
+    reason: "模板已移入 core/templates/，引用盘点与同步完成，进入验证"
+  - status: review
+    at: 2026-10-17T13:31:01
+    reason: "模板迁入 core/templates/ 并同步 11 处引用；npm run check 全绿，npm test 45/45"
+  - status: done
+    at: "2026-10-17T13:46:43"
+    reason: "用户已验收：用户验收：core 文件合并、绝对路径校验移除、模板归档三项完成，npm run check 全绿，npm test 45/45"
+next_action:
+  required: false
+  action: none
+  message: 用户已验收：用户验收：core 文件合并、绝对路径校验移除、模板归档三项完成，npm run check 全绿，npm test 45/45

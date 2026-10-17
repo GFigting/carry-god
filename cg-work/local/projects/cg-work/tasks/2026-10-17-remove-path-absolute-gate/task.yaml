@@ -1,0 +1,46 @@
+id: 2026-10-17-remove-path-absolute-gate
+status: done
+goal: 移除 check-project 对业务项目登记路径的绝对路径强制校验，允许相对 project.root_path 解析，同步规则文档
+workflow: framework:framework-optimization
+delivery_path: standard
+created_at: 2026-10-17T13:15:29
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+scope_decision:
+  mode: independent
+  rationale: 独立处理 check-project 绝对路径校验移除与规则文档同步，不并入处于 review 的 core 合并任务。
+documentation:
+  impact: update
+  files:
+    - scripts/check-project.mjs
+    - core/project-context.md
+    - core/documentation-standards.md
+    - core/project-context.template.yaml
+    - skills/project-initialization/SKILL.md
+    - README.md
+  reason: 校验放宽后同步全部声明「除 cg-work 外必须绝对路径」的规则、模板与技能文档。
+acceptance_summary:
+  - 删除 allowRelativePaths 开关与 inbox_path 绝对路径强制，相对路径统一相对 project.root_path 解析并检查存在性
+  - 保留 project.root_path、repositories[].root_path 与无基准字段的绝对路径约束
+  - 5 处规则文档同步改写，文档与校验器行为一致
+  - 测试零改动，npm test 45/45 全绿，原 2 个存量失败自然消除
+  - npm run check 全绿
+status_history:
+  - status: pending
+    at: 2026-10-17T13:15:29
+    reason: "用户确认该绝对路径校验无意义，且导致两个测试夹具与规则长期脱节"
+  - status: in_progress
+    at: 2026-10-17T13:15:45
+    reason: "规则与引用盘点完成，开始改造校验器"
+  - status: review
+    at: 2026-10-17T13:18:30
+    reason: "校验移除与文档同步完成；npm test 45/45 全绿，npm run check 通过"
+  - status: done
+    at: "2026-10-17T13:46:43"
+    reason: "用户已验收：用户验收：core 文件合并、绝对路径校验移除、模板归档三项完成，npm run check 全绿，npm test 45/45"
+next_action:
+  required: false
+  action: none
+  message: 用户已验收：用户验收：core 文件合并、绝对路径校验移除、模板归档三项完成，npm run check 全绿，npm test 45/45

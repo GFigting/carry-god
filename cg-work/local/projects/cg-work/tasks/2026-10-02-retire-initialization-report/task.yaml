@@ -2,8 +2,8 @@ id: 2026-10-02-retire-initialization-report
 status: done
 goal: 正式废弃 initialization-report.md 产物，同步结构清单与技能正文，并保留替代说明。
 workflow: framework:framework-optimization
+delivery_path: compact
 created_at: 2026-10-02T11:25:00
-artifact_profile: compact
 artifacts:
   primary: ./plan.md
 requirements_reference: ../../requirements-inbox/2026-10-02-retire-initialization-report.md
@@ -22,12 +22,10 @@ documentation:
     - workflows/project-initialization.md
     - skills/project-initialization/SKILL.md
     - skills/project-discovery/SKILL.md
-next_action: 等待用户验收 initialization-report 废弃结论，再并入框架提交。
-interaction_protocol: v1
-next_user_action:
+next_action:
   required: false
   action: none
-  message: 用户已验收：用户授权：归档 2026-10-07 之前的 review 任务
+  message: ""
 status_history:
   - status: pending
     at: null

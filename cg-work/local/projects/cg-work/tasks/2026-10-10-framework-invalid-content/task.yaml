@@ -2,9 +2,8 @@ id: 2026-10-10-framework-invalid-content
 status: done
 goal: 精简已废弃模板中的无效骨架，保留历史引用兼容并明确现行唯一来源。
 workflow: framework:framework-optimization
-execution_profile: standard
+delivery_path: compact
 created_at: 2026-10-10T00:00:00
-artifact_profile: compact
 artifacts:
   primary: ./plan.md
 scope_decision:
@@ -23,15 +22,13 @@ acceptance_summary:
   - 已废弃模板不再保留可复制的旧字段或章节骨架
   - 历史文件路径继续存在并指向现行唯一来源
   - 现行规则与校验器行为不变
-next_action: 已完成验收与本地提交。
-next_user_action:
+next_action:
   required: false
   action: none
-  message: 无；精简结果已验收并完成本地提交。
-interaction_protocol: v1
+  message: ""
 status_history:
   - status: pending
-    at: 2026-10-10T00:00:00
+    at: null
     reason: 用户确认精简已废弃模板中的无效内容
   - status: in_progress
     at: 2026-10-10T00:10:00

@@ -1,0 +1,38 @@
+id: 2026-10-16-task-yaml-closed-schema
+status: review
+goal: 将 task.yaml 校验从废弃字段黑名单改为封闭 allowlist，删除历史专用分支并补正残留字段数据。
+workflow: framework:framework-optimization
+delivery_path: standard
+created_at: 2026-10-16
+scope_decision:
+  mode: independent
+  rationale: 封闭 schema 重构聚焦校验器结构，与字段重构任务的交付内容不同，独立建任务。
+documentation:
+  impact: update
+  files:
+    - D:/songgf/Projects/all-work/carry-god/cg-work/core/operating-model.md
+    - D:/songgf/Projects/all-work/carry-god/cg-work/scripts/README.md
+  reason: 字段清单改为封闭列表，删除废弃与迁移提示措辞。
+acceptance_summary:
+  - check-task.mjs 不再含 legacy 黑名单和历史字段专用拒绝分支
+  - schema 外未知字段统一报"未知字段"错误
+  - fms/lasen 三个漏网任务的残留字段补正到 schema 内
+  - npm run check 与 npm test 全绿
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+status_history:
+  - status: pending
+    at: null
+    reason: 用户确认执行封闭 schema 重构方案
+  - status: in_progress
+    at: 2026-10-16T00:30:00
+    reason: 进入实施，校验器全文已读
+  - status: review
+    at: 2026-10-16T01:20:00
+    reason: 封闭 schema 改造、3 个数据补正、测试与文档同步完成，npm run check 全绿、npm test 87/2（2 个存量失败）
+next_action:
+  required: false
+  action: none
+  message: ""

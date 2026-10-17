@@ -2,7 +2,13 @@ id: 2026-10-07-status-history-timestamps
 status: done
 goal: 将新任务 status_history 升级为带时间和原因的结构化记录并兼容历史数组。
 workflow: framework:framework-optimization
-execution_profile: standard
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+  handoff: handoff.md
+
+delivery_path: standard
 created_at: 2026-10-07T17:00:00
 requirements_reference: ../../requirements-inbox/2026-10-07-status-history-timestamps.md
 scope_decision:
@@ -22,16 +28,11 @@ documentation:
     - test/acceptance-queue.test.mjs
     - test/check-task.test.mjs
     - VERSION
-plan_reference: plan.md
-review_reference: review.md
-verification_reference: verification.md
-handoff_reference: handoff.md
-next_action: 等待用户验收结构化 status_history 与兼容迁移结果。
-interaction_protocol: v1
-next_user_action:
+
+next_action:
   required: false
   action: none
-  message: 用户已验收：用户于 2026-10-12 明确统一验收 2026-10-11 及以前任务；已补齐交接记录。
+  message: ""
 status_history:
   - status: pending
     at: null

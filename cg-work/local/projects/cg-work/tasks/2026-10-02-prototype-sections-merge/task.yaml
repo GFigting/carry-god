@@ -2,8 +2,8 @@ id: 2026-10-02-prototype-sections-merge
 status: done
 goal: 把原型实现契约与采纳结论并入任务的计划与评审记录，废弃两个独立引用字段，门禁强度不变。
 workflow: framework:framework-optimization
+delivery_path: compact
 created_at: 2026-10-02T14:40:00
-artifact_profile: compact
 artifacts:
   primary: ./plan.md
 requirements_reference: ../../requirements-inbox/2026-10-02-prototype-sections-merge.md
@@ -31,12 +31,10 @@ documentation:
     - scripts/README.md
     - scripts/check-task.mjs
     - VERSION
-next_action: 等待用户验收原型章节合并结论，再并入框架提交。
-interaction_protocol: v1
-next_user_action:
+next_action:
   required: false
   action: none
-  message: 用户已验收：用户授权：归档 2026-10-07 之前的 review 任务
+  message: ""
 status_history:
   - status: pending
     at: null

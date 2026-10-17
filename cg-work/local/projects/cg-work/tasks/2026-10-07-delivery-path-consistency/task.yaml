@@ -2,7 +2,13 @@ id: 2026-10-07-delivery-path-consistency
 status: done
 goal: 统一交付路径口径：修正轻量执行适用范围的文档矛盾，区分低风险变更/execution_profile/artifact_profile 三概念并给出组合规则，补充升级规则与轻量执行决策清单。
 workflow: framework:framework-optimization
-execution_profile: standard
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+  handoff: handoff.md
+
+delivery_path: standard
 created_at: 2026-10-07T16:40:00
 requirements_reference: ../../requirements-inbox/2026-10-07-delivery-path-consistency.md
 scope_decision:
@@ -24,16 +30,10 @@ documentation:
     - AGENTS.md
     - local/README.md
     - VERSION
-next_action: 等待用户验收交付路径口径统一结果，并裁定 lightweight+compact 组合决策点。
-plan_reference: plan.md
-review_reference: review.md
-verification_reference: verification.md
-handoff_reference: handoff.md
-interaction_protocol: v1
-next_user_action:
+next_action:
   required: false
   action: none
-  message: 用户已验收：用户于 2026-10-12 明确统一验收 2026-10-11 及以前任务；已补齐交接记录。
+  message: ""
 status_history:
   - status: pending
     at: 2026-10-07T16:40:00

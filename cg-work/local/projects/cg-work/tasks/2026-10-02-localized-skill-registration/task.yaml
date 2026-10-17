@@ -2,8 +2,8 @@ id: 2026-10-02-localized-skill-registration
 status: done
 goal: 修正本地化技能的镜像登记，并为其补齐正文中的本地化与唯一来源声明。
 workflow: framework:framework-optimization
+delivery_path: compact
 created_at: 2026-10-02T12:10:00
-artifact_profile: compact
 artifacts:
   primary: ./plan.md
 requirements_reference: ../../requirements-inbox/2026-10-02-localized-skill-registration.md
@@ -21,12 +21,10 @@ documentation:
     - skills/prototype/SKILL.md
     - skills/code-review/SKILL.md
     - skills/grilling/SKILL.md
-next_action: 等待用户验收登记修正与声明结论，再并入框架提交。
-interaction_protocol: v1
-next_user_action:
+next_action:
   required: false
   action: none
-  message: 用户已验收：用户授权：归档 2026-10-07 之前的 review 任务
+  message: ""
 status_history:
   - status: pending
     at: null

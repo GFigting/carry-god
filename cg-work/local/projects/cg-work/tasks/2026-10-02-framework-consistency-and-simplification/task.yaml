@@ -2,8 +2,8 @@ id: 2026-10-02-framework-consistency-and-simplification
 status: done
 goal: 修复框架入口、政策与校验器之间的一致性缺口，并收敛重复叙述，使规则只有一个来源。
 workflow: framework:framework-optimization
+delivery_path: compact
 created_at: 2026-10-02T10:45:00
-artifact_profile: compact
 artifacts:
   primary: ./plan.md
 requirements_reference: ../../requirements-inbox/2026-10-02-framework-consistency-and-simplification.md
@@ -34,12 +34,10 @@ documentation:
     - scripts/check-task.mjs
     - scripts/README.md
     - VERSION
-next_action: 任务已关闭；产物废弃由 2026-10-02-retire-initialization-report 单独处理。
-interaction_protocol: v1
-next_user_action:
+next_action:
   required: false
   action: none
-  message: 框架一致性收敛已验收并提交（规则与校验为 1c7ebef），未推送、未合并。剩余待办：initialization-report 废弃已立项，check-skills 换行符宽容化可在下次框架维护处理。
+  message: ""
 status_history:
   - status: pending
     at: null

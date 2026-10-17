@@ -1,0 +1,36 @@
+id: 2026-10-16-timestamp-tooling-hardening
+status: done
+goal: 优化时间戳相关脚本：migrate 的 timezones/deprecate-fields 纯文本转换在 YAML 损坏时仍可执行、--all-projects 动态扫描项目目录；task-stamp 的 --apply 改为布尔旗标并统一时间写入格式
+workflow: framework:framework-optimization
+delivery_path: lightweight
+created_at: 2026-10-16T18:02:02
+documentation:
+  impact: update
+  files:
+    - scripts/migrate-task-metadata.mjs
+    - scripts/task-stamp.mjs
+    - scripts/README.md
+    - core/operating-model.md
+  reason: 迁移与盖章脚本行为优化，同步用法说明与 --apply 旗标表述。
+lightweight_evidence:
+  scope: migrate-task-metadata.mjs 三处优化（timezones/deprecate-fields 纯文本转换绕过 YAML 解析、--all-projects 动态扫描项目、stripTimezones 只在后缀/毫秒/引号存在时判变更）；task-stamp.mjs 两处优化（--apply 改布尔旗标、at 字段写入不再带 JSON 引号）。
+  verification: 一次性脚本验证三项全过（损坏 YAML 纯文本迁移成功、结构化转换仍报解析错、已迁移文件不重复报变更）；--timezones --all-projects 预览由 83 个误报降到 0；npm run check 全绿；专项测试 migrate/archive/acceptance 11/11 通过；npm test 仅剩 2 个 check-project 存量失败。
+  review: 修复了上轮清理依赖临时脚本的绕行——现可直接用 --timezones --all-projects 覆盖损坏任务；stripTimezones 的 changed 误报是隐性 bug，会导致重复预览与误 apply。
+  integration_decision: 框架自身变更，随 cg-work 本地提交收口，不推送。
+status_history:
+  - status: pending
+    at: 2026-10-16T18:02:02
+    reason: "用户要求优化时间相关内容；修复上轮 lasen/job-hunt 损坏 YAML 阻塞时区迁移的痛点"
+  - status: in_progress
+    at: 2026-10-16T18:07:51
+    reason: "三项优化实施完成，进入验证"
+  - status: review
+    at: 2026-10-16T18:08:06
+    reason: "验证完成：损坏 YAML 迁移场景、动态扫描、误报修复三项全过；npm run check 全绿，专项测试 11/11"
+  - status: done
+    at: 2026-10-16T18:08:29
+    reason: "轻量单模块任务，定向验证通过（check 全绿、专项测试 11/11），按工作模型自动收尾为 done"
+next_action:
+  required: false
+  action: none
+  message: "已完成"

@@ -2,9 +2,12 @@ id: 2026-10-01-lean-fast-lane
 status: done
 goal: "为框架增加轻量档与比例原则：feature-development 支持 execution_profile lightweight、技能加载按需化、测试按价值分层、验证绑定交付点，减少小任务仪式开销。"
 workflow: framework:framework-optimization
-artifact_profile: compact
+delivery_path: compact
 created_at: 2026-10-01T21:30:00
-next_action: 已验收并提交（62b4596）；一致性缺口转轻量档任务 2026-10-01-consistency-alignments。
+next_action:
+  required: false
+  action: none
+  message: ""
 requirements_reference: ../../requirements-inbox/2026-10-01-lean-fast-lane.md
 scope_decision:
   mode: independent
@@ -16,11 +19,6 @@ acceptance_summary:
   - VERSION 升次版本；README 与相关引用同步；check-all 与 test 全量通过。
 documentation:
   impact: update
-interaction_protocol: v1
-next_user_action:
-  required: false
-  action: none
-  message: 已验收提交（62b4596），无待办；一致性缺口由轻量档任务跟进。
 artifacts:
   primary: optimization-report.md
 status_history:

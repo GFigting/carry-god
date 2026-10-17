@@ -1,0 +1,53 @@
+id: 2026-10-16-core-context-merge
+status: done
+goal: core 规则文件优化分类：字段职责去重、framework-maintenance 去冗余、合并项目接入链三文件为 project-context.md
+workflow: framework:framework-optimization
+delivery_path: standard
+created_at: 2026-10-16T18:00:31
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+scope_decision:
+  mode: independent
+  rationale: 聚焦 core 规则文件分类与去重，独立于时间戳与字段清理等前序框架任务。
+documentation:
+  impact: update
+  files:
+    - core/project-context.md
+    - core/README.md
+    - core/documentation-standards.md
+    - core/framework-maintenance.md
+    - core/operating-model.md
+    - AGENTS.md
+    - scripts/README.md
+    - workflows/project-initialization.md
+    - skills/project-initialization/SKILL.md
+    - local/projects/cg-work/project-context.yaml
+    - test/project-discovery.test.mjs
+    - test/entry-routing.test.mjs
+    - test/requirement-package-policy.test.mjs
+  reason: 三文件合并为 project-context.md 后同步全部引用方与索引。
+acceptance_summary:
+  - core/ 由 15 项减至 13 项，三份接入链文件合并为 project-context.md 四节结构
+  - 字段职责正文只保留 project-context.md 一处，documentation-standards 改为指针
+  - framework-maintenance 原型/路线图/设计产物路径重复正文改为指针
+  - 全仓库无 context-loading/project-onboarding/project-context-fields 残留引用
+  - npm run check 全绿；npm test 45 项中 43 通过，2 个失败为 check-project 路径校验存量
+status_history:
+  - status: pending
+    at: 2026-10-16T18:00:31
+    reason: "用户确认按方案二执行"
+  - status: in_progress
+    at: 2026-10-17T12:59:22
+    reason: "引用盘点完成，进入合并实施"
+  - status: review
+    at: 2026-10-17T13:02:00
+    reason: "合并、去重、索引与引用同步完成；npm run check 全绿，npm test 43/45（2 个失败为 check-project 存量问题）"
+  - status: done
+    at: "2026-10-17T13:46:43"
+    reason: "用户已验收：用户验收：core 文件合并、绝对路径校验移除、模板归档三项完成，npm run check 全绿，npm test 45/45"
+next_action:
+  required: false
+  action: none
+  message: 用户已验收：用户验收：core 文件合并、绝对路径校验移除、模板归档三项完成，npm run check 全绿，npm test 45/45

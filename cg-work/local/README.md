@@ -27,20 +27,20 @@ projects/<project-id>/
     └── closure.md
 ```
 
-**项目路线图不放在框架本地**：它属于项目文档，存放在原项目仓库内（惯例 `docs/roadmap.md`），路径登记在项目上下文的可选字段 `product.roadmap_path`，格式见 `core/project-roadmap.template.md`，由 `framework:product-management` 维护。框架本地的 `roadmaps/<roadmap-id>/` 是另一种产物——单个大需求的**需求拆分索引**（格式见 `core/decomposition.template.md`），不是项目路线图。
+**项目路线图不放在框架本地**：它属于项目文档，存放在原项目仓库内（惯例 `docs/roadmap.md`），路径登记在项目上下文的可选字段 `product.roadmap_path`，格式见 `core/templates/project-roadmap.template.md`，由 `framework:product-management` 维护。框架本地的 `roadmaps/<roadmap-id>/` 是另一种产物——单个大需求的**需求拆分索引**（格式见 `core/templates/decomposition.template.md`），不是项目路线图。
 
 `initialization-report.md` 自 2026-10-02 起废弃：探测范围、事实来源、缺口和待确认项改记在项目的初始化任务记录（`tasks/<task-id>/`）中，耐久事实写入 `project-context.yaml`。历史报告文件保留原样，不再新增，也不强制迁移。任务不需要的产物可以省略，但已有产物必须使用上述固定名称。不要在此目录保存密钥、令牌、密码或生产数据。
 
-`requirements-inbox/` 是原始需求的唯一入口：保存尚未拆分的需求包、附件、原文和澄清材料。需求包按 [需求包留存判断](../core/operating-model.md#需求包留存判断) 按需生成，不是每任务必建；不建需求包时，需求原文、范围和取舍直接写入任务 `plan.md` 或决策记录。一个需求包可以拆分为多个 `tasks/<task-id>/`；任务记录、计划、审查和验证证据不得写回需求箱。业务项目的需求内容保持本地忽略，仅需求箱的 `README.md` 可提交（它同时保证目录非空，不再需要 `.gitkeep`）；框架受管项目 `cg-work` 的需求包随框架提交。
+`requirements-inbox/` 是原始需求的唯一入口：保存尚未拆分的需求包、附件、原文和澄清材料，**内容只允许用户手动添加**，Agent 不生成需求包（规则正文见 [需求箱与需求引用](../core/operating-model.md#需求箱与需求引用)）。任务不需要关联需求，需求原文、范围和取舍直接写入任务 `plan.md` 或决策记录；用户已放入对应需求包时可用 `requirements_reference` 复用，一个需求包可以拆分为多个 `tasks/<task-id>/`；任务记录、计划、审查和验证证据不得写回需求箱。业务项目的需求内容保持本地忽略，仅需求箱的 `README.md` 可提交（它同时保证目录非空，不再需要 `.gitkeep`）；框架受管项目 `cg-work` 的需求包随框架提交。
 
 任务记录的最小字段：
 
-- `task.yaml`：`id`、`status`、`goal`、`workflow`、`created_at`、`next_action`；新任务必须声明 `interaction_protocol: v1`，并配套 `next_user_action.required`、`action`、`message`，用于向用户说明是否需要操作及具体动作。`learning_protocol: v1` 按需声明，轻量执行任务不得声明。
+- `task.yaml`：`id`、`status`、`goal`、`workflow`、`created_at`、`next_action`；`next_action` 为 `required`、`action`、`message` 对象，用于向用户说明是否需要操作及具体动作。学习记录按需在 `artifacts.learning` 引用，轻量执行任务不得引用。
 - `plan.md`：范围、验收标准、涉及文件、实施步骤、风险和验证方案。
 - `review.md`：审查基线、问题、严重性、处理结论和遗留风险。
 - `verification.md`：验证命令、执行时间、结果、证据和未验证项。
-- `learning.md`：执行过程中的候选经验、审查结论、证据、适用范围和沉淀去向；使用学习协议的任务在 `review` 或 `done` 时必须由 `learning_reference` 引用它。
+- `learning.md`：执行过程中的候选经验、审查结论、证据、适用范围和沉淀去向；在 `artifacts.learning` 引用了它的任务必须保证文件真实存在。
 
 任务状态使用 `pending`、`in_progress`、`review`、`done`、`blocked` 或 `cancelled`。计划、审查和验证正文只保存在这里；项目自己的用户文档仍放在项目仓库的 `docs/` 目录。
 
-`roadmaps/` 仅用于复杂需求的项目级编排：记录从决策地图到研发任务的覆盖、依赖和关闭结论。它不替代 `tasks/`，也不保存原始需求副本。任务可以通过 `roadmap_reference`、`parent_task_reference`、`depends_on`、`requirements_coverage` 与 `closure_reference` 建立可选关联；所有路径相对 `task.yaml` 解析。带 `roadmap_reference` 的任务进入 `done` 时必须引用路线图的 `closure.md`。路线图也要维护 `next_user_action`：不能继续推进时明确请求用户决定，可继续时告知下一项由 Agent 推进的任务。
+`roadmaps/` 仅用于复杂需求的项目级编排：记录从决策地图到研发任务的覆盖、依赖和关闭结论。它不替代 `tasks/`，也不保存原始需求副本。任务可以通过 `roadmap_reference`、`depends_on` 与 `artifacts.closure` 建立可选关联；所有路径相对 `task.yaml` 解析。带 `roadmap_reference` 的任务进入 `done` 时必须引用路线图的 `closure.md`。路线图也要维护 `next_action`：不能继续推进时明确请求用户决定，可继续时告知下一项由 Agent 推进的任务。
