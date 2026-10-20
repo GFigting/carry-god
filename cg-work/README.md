@@ -5,8 +5,8 @@
 ## 使用顺序
 
 1. 读取 `AGENTS.md` 和本文件。
-2. 先执行 `framework:project-discovery`：通过一问一答判断请求属于既有项目、新项目或信息不足，并等待用户确认识别摘要。
-3. 对既有项目检查 `local/projects/<project-id>/project-context.yaml`；对新项目确认后执行 `framework:project-initialization`，缺失或失效时等待初始化确认。
+2. 先执行 `framework:project-discovery`：先自查已有项目候选再一问一答，判断请求属于既有项目、新项目或信息不足；既有项目唯一匹配时展示识别摘要后直接继续，新项目与信息不足等待确认识别摘要。
+3. 对既有项目检查 `local/projects/<project-id>/project-context.yaml`，缺失或失效时直接执行 `framework:project-initialization`；对新项目确认识别摘要后执行 `framework:project-initialization`。
 4. 再按 `core/operating-model.md` 识别低风险变更：纯文案、样式或静态布局调整使用 `framework:low-risk-change`，不创建需求箱、task 或自动化测试；其他变更创建 `pending` task，需求原文与取舍直接写入任务 `plan.md` 或决策记录。需求箱只接受用户手动添加的原始需求，Agent 不生成需求包；任务无需关联需求，用户已放入对应需求包时按 [需求箱与需求引用](core/operating-model.md#需求箱与需求引用) 复用引用。
 5. 按流程声明加载 `skills/` 中的 required skills。
 6. 进入工作流前展示决策预检简报；低风险或可逆事项可自动继续，高风险或不可逆事项等待用户确认，并在需要时再加载 `grilling` 或其他特殊技能。
