@@ -1,0 +1,45 @@
+id: 2026-10-20-project-discovery-auto-continue
+status: done
+goal: project-discovery 减少确认：既有项目唯一匹配时自查后直接进入上下文加载，上下文缺失直接初始化
+workflow: framework:framework-optimization
+delivery_path: standard
+created_at: 2026-10-20T15:50:04
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+scope_decision:
+  mode: independent
+  rationale: 项目识别门禁调整独立记录；与已验收的 core 合并、路径校验移除、模板归档任务互不重复。
+documentation:
+  impact: update
+  files:
+    - skills/project-discovery/SKILL.md
+    - core/project-context.md
+    - README.md
+    - workflows/project-discovery.md
+    - workflows/README.md
+    - test/project-discovery.test.mjs
+  reason: 识别门禁从统一确认改为按分类门禁，规则、工作流、技能与测试断言需口径一致。
+acceptance_summary:
+  - 既有项目唯一匹配时自查候选后展示摘要即自动继续，不等待确认
+  - 上下文缺失或失效直接执行 project-initialization，差异报告入任务记录
+  - 新项目与信息不足仍需确认摘要，初始化产物边界与特殊操作门禁未削弱
+  - 旧门禁措辞活跃规则零残留；npm run check 全绿，npm test 49/49
+status_history:
+  - status: pending
+    at: 2026-10-20T15:50:04
+    reason: "用户确认方案两节：仅既有项目唯一匹配自动继续，新项目与歧义保留确认"
+  - status: in_progress
+    at: 2026-10-20T15:51:03
+    reason: "设计两节已确认，开始实施"
+  - status: review
+    at: 2026-10-20T15:53:48
+    reason: "门禁按分类改造完成；npm run check 全绿，npm test 49/49，旧措辞零残留"
+  - status: done
+    at: "2026-10-20T17:29:54"
+    reason: "用户已验收：识别门禁按分类改造验收通过：唯一匹配自动继续，测试与检查全绿"
+next_action:
+  required: false
+  action: none
+  message: 用户已验收：识别门禁按分类改造验收通过：唯一匹配自动继续，测试与检查全绿
