@@ -1,5 +1,5 @@
 id: 2026-10-16-remove-redundant-task-fields
-status: review
+status: done
 goal: 删除 task.yaml 中 5 个零使用且职责被覆盖的冗余字段（open_decisions、parent_task_reference、requirements_coverage、learning_protocol、scope_decision.prior_task_reference）。
 workflow: framework:framework-optimization
 delivery_path: standard
@@ -34,7 +34,10 @@ status_history:
   - status: review
     at: null
     reason: 校验器、数据、测试、文档四层同步完成；npm run check 全绿，npm test 88/2（2 个存量失败）
+  - status: done
+    at: "2026-10-20T09:17:52"
+    reason: "用户已验收：用户于 2026-10-20 确认全部已完成，统一验收通过。"
 next_action:
-  required: true
-  action: accept-result
-  message: 请验收冗余字段删除结果（npm run check 全绿，npm test 88/2，2 个失败为 check-project 存量）
+  required: false
+  action: none
+  message: 用户已验收：用户于 2026-10-20 确认全部已完成，统一验收通过。

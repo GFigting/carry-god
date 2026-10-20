@@ -1,0 +1,45 @@
+id: 2026-10-19-parent-child-task-decomposition
+status: done
+goal: 大任务拆分从 roadmaps 三件套索引改为「主任务 + 子任务」扁平结构：task.yaml 增 role/parent_reference 字段（文档约定，不建校验器），覆盖与决策写入主任务 plan，迁移 FMS 存量路线图，同步模板与文档
+workflow: feature-development
+delivery_path: standard
+created_at: 2026-10-19T16:26:28
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+scope_decision:
+  mode: independent
+  rationale: 大任务结构改造独立记录；与同日 sync-display-facts 等 FMS 业务任务无交集，FMS 子任务仅做引用字段改写。
+documentation:
+  impact: update
+  files:
+    - skills/large-task-decomposition/SKILL.md
+    - core/operating-model.md
+    - README.md
+    - local/README.md
+    - core/project-context.md
+    - core/README.md
+    - core/templates/parent-plan.template.md
+    - core/templates/README.md
+    - core/templates/project-roadmap.template.md
+    - skills/product-management/SKILL.md
+    - VERSION
+  reason: 主从扁平结构取代路线图索引，规则、模板、索引与版本号同步描述新结构；不涉及脚本校验改动。
+status_history:
+  - status: pending
+    at: 2026-10-19T16:26:28
+    reason: "用户确认主从扁平结构方案，按设计三部分实施"
+  - status: in_progress
+    at: 2026-10-20T09:08:18
+    reason: "plan 经执行中两项范围调整同步完成（不建校验器、只迁 FMS），开始 FMS 迁移"
+  - status: review
+    at: 2026-10-20T09:21:44
+    reason: "实施与验证完成：FMS 迁移、文档模板同步、全量校验测试通过，review.md 已写审查结论"
+  - status: done
+    at: 2026-10-20T10:02:23
+    reason: "用户于 2026-10-20 执行验收通过，授权提交本地 commit"
+next_action:
+  required: true
+  action: accept-result
+  message: "请验收大任务主从扁平结构改造（含 FMS 迁移与文档同步）；验收后做本地 commit 集成，另有空目录 local/projects/fms/roadmaps/ 需您手动移除或授权删除"

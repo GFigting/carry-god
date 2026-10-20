@@ -1,5 +1,5 @@
 id: 2026-10-15-task-yaml-field-refactor
-status: review
+status: done
 goal: 重构 task.yaml 字段：合并 execution_profile + artifact_profile 为单一 delivery_path、把 6 个扁平引用字段分组进 artifacts、清理历史兼容字段残留（含 status_history 字符串简写与 requirements_reference_note）、放宽 next_action 终态门禁、补齐活跃任务时间格式迁移
 workflow: framework:framework-optimization
 delivery_path: standard
@@ -38,7 +38,7 @@ acceptance_summary:
 next_action:
   required: false
   action: none
-  message: ""
+  message: 用户已验收：用户于 2026-10-20 确认全部已完成，统一验收通过。
 status_history:
   - status: pending
     at: 2026-10-15T16:39:45
@@ -49,3 +49,7 @@ status_history:
   - status: review
     at: 2026-10-16T10:25:00
     reason: 用户选定选项 A 删除 requirements_reference_note 并清理悬空引用；同步移除全部过渡兼容分支（status_history 简写、文档"继续兼容"措辞），测试 85/87 通过（2 个为存量问题），npm run check 全绿
+
+  - status: done
+    at: "2026-10-20T09:19:43"
+    reason: "用户已验收：用户于 2026-10-20 确认全部已完成，统一验收通过。"

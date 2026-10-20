@@ -1,0 +1,46 @@
+id: 2026-10-19-lasen-dashboard-browser-suite
+status: done
+goal: 为 LASEN 海外税务看板新增可复用的浏览器自动化套件
+workflow: framework:feature-development
+delivery_path: standard
+created_at: 2026-10-19T14:47:11
+scope_decision:
+  mode: independent
+  rationale: 为 LASEN 海外税务前端功能模块增加独立浏览器验证入口，首个套件聚焦用户指定的合规资产看板。
+acceptance_summary:
+  - LASEN 测试配置包含 overseas-tax-dashboard 套件并复用登录 flow
+  - 套件覆盖看板加载、已到期指标与队列核对、重置和控制台检查
+  - 动态资产数量不固定，执行说明要求等待加载完成并核对队列行数
+documentation:
+  impact: update
+  files:
+    - local/tools/browser-test/README.md
+    - local/tools/browser-test/lasen/test-suites.json
+  reason: 记录新的 LASEN 看板浏览器自动化套件及覆盖范围
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+status_history:
+  - status: pending
+    at: 2026-10-19T14:47:11
+    reason: "按前端功能模块补充对应的配置驱动浏览器测试套件"
+  - status: in_progress
+    at: 2026-10-19T14:48:35
+    reason: "计划已记录，开始添加看板浏览器测试 suite 与使用说明"
+  - status: review
+    at: 2026-10-19T14:50:56
+    reason: "看板 suite、使用文档与验证记录完成；配置和框架校验通过，实际浏览器执行留待本地凭据环境"
+  - status: in_progress
+    at: 2026-10-19T16:30:25
+    reason: "用户扩展范围：按海外税务其他前端模块继续新增测试套件"
+  - status: review
+    at: 2026-10-19T16:30:25
+    reason: "8 个海外税务模块 suite 配置、说明与结构校验完成；实际浏览器执行仍待本地凭据环境"
+  - status: done
+    at: "2026-10-20T09:17:52"
+    reason: "用户已验收：用户于 2026-10-20 确认全部已完成，统一验收通过。"
+next_action:
+  required: false
+  action: none
+  message: 用户已验收：用户于 2026-10-20 确认全部已完成，统一验收通过。
