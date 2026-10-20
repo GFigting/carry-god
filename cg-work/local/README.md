@@ -21,13 +21,13 @@ projects/<project-id>/
     └── learning.md
 ├── tasks/archive/<task-id>/
 │   └── 原任务目录中的完整证据
-└── roadmaps/<roadmap-id>/
+└── roadmaps/<roadmap-id>/     # 存量双轨保留，不再新建；新大任务用主任务结构
     ├── roadmap.yaml
     ├── coverage.md
     └── closure.md
 ```
 
-**项目路线图不放在框架本地**：它属于项目文档，存放在原项目仓库内（惯例 `docs/roadmap.md`），路径登记在项目上下文的可选字段 `product.roadmap_path`，格式见 `core/templates/project-roadmap.template.md`，由 `framework:product-management` 维护。框架本地的 `roadmaps/<roadmap-id>/` 是另一种产物——单个大需求的**需求拆分索引**（格式见 `core/templates/decomposition.template.md`），不是项目路线图。
+**项目路线图不放在框架本地**：它属于项目文档，存放在原项目仓库内（惯例 `docs/roadmap.md`），路径登记在项目上下文的可选字段 `product.roadmap_path`，格式见 `core/templates/project-roadmap.template.md`，由 `framework:product-management` 维护。框架本地单个大需求的拆分记录在主任务（`role: parent`）自身的 `task.yaml` 与 `plan.md` 中（格式见 `core/templates/parent-plan.template.md`），不是项目路线图。
 
 `initialization-report.md` 自 2026-10-02 起废弃：探测范围、事实来源、缺口和待确认项改记在项目的初始化任务记录（`tasks/<task-id>/`）中，耐久事实写入 `project-context.yaml`。历史报告文件保留原样，不再新增，也不强制迁移。任务不需要的产物可以省略，但已有产物必须使用上述固定名称。不要在此目录保存密钥、令牌、密码或生产数据。
 
@@ -43,4 +43,4 @@ projects/<project-id>/
 
 任务状态使用 `pending`、`in_progress`、`review`、`done`、`blocked` 或 `cancelled`。计划、审查和验证正文只保存在这里；项目自己的用户文档仍放在项目仓库的 `docs/` 目录。
 
-`roadmaps/` 仅用于复杂需求的项目级编排：记录从决策地图到研发任务的覆盖、依赖和关闭结论。它不替代 `tasks/`，也不保存原始需求副本。任务可以通过 `roadmap_reference`、`depends_on` 与 `artifacts.closure` 建立可选关联；所有路径相对 `task.yaml` 解析。带 `roadmap_reference` 的任务进入 `done` 时必须引用路线图的 `closure.md`。路线图也要维护 `next_action`：不能继续推进时明确请求用户决定，可继续时告知下一项由 Agent 推进的任务。
+大任务的拆分记录在主任务中：主任务 `task.yaml` 声明 `role: parent` 并以 `decisions` 保存决策，`plan.md` 保存需求覆盖、排除范围、依赖与遗留（格式见 `core/templates/parent-plan.template.md`）；子任务通过 `parent_reference` 挂靠，所有路径相对 `task.yaml` 解析，集合以该反向关系为准。主任务也维护 `next_action`：不能继续推进时明确请求用户决定，可继续时告知下一项由 Agent 推进的子任务；全部子任务终态并完成集成核对后主任务才进入验收关闭，关闭不删除子任务证据。存量 `roadmaps/` 三件套（lasen、job-hunt、cg-work 项目）双轨保留可继续读写，但不再新建，迁移按项目另立任务进行。

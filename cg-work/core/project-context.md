@@ -68,7 +68,7 @@
 | `verification` | 推荐 | 可执行验证 profile 及限制 | 某次任务的新鲜结果 |
 | `requirements` | 必需 | 原始需求箱路径 | 已拆分任务 |
 | `prototypes` | 可选 | 项目仓库内原型目录和入口 | 框架本地设计产物 |
-| `product` | 可选 | 项目级路线图路径 | 单个大需求拆分索引 |
+| `product` | 可选 | 项目级路线图路径 | 大任务主任务（`role: parent`） |
 | `database` | 可选 | SQL 变更、初始化和修复脚本目录 | 数据字典和数据库规则文档 |
 | `skills` | 必需 | 项目专属技能路径 | 通用框架技能 |
 | `submission` | 可选 | 项目专用提交工具和策略 | 用户临时授权 |
@@ -95,7 +95,7 @@
 
 加载项目规则时，优先读取 `documentation.project_rules` 与 `documentation.development_standards` 登记的项目规则，以及仓库工具配置；对于项目未覆盖的事项，再应用 [项目通用代码规范](project-code-standards.md)。历史项目对应读取 `instructions.files` 与 `coding_standards.files`。该规范约束计划、编码和提交前自查，不限于最终审查。
 
-原始需求只由用户手动添加到 `requirements.inbox_path` 所指向的本地需求箱，Agent 不生成需求包：任务不需要关联需求，需求原文、范围和取舍直接写入任务 `plan.md` 或决策记录；用户已手动放入对应需求包时，创建 task 前先查找并以 `requirements_reference` 复用，同一需求包可以支撑多个 task。规则正文见 [需求箱与需求引用](operating-model.md#需求箱与需求引用)。若新增业务规则、接口/数据结构或独立验收标准，必须创建新 task，不得仅沿用旧 task 的 `next_action`；可用 `scope_decision` 记录新建或延续的范围判断。符合 [工作模型的低风险变更](operating-model.md#低风险变更) 不创建需求箱或任务记录，直接按 `framework:low-risk-change` 完成最小验证。其他需求先判断是否需要 `framework:large-task-decomposition`：需要时，在 `roadmaps/<roadmap-id>/` 保存决策地图的本地索引、覆盖关系和关闭记录；创建开发任务后，任务记录、计划、审查、验证和学习证据仍只保存在 `tasks/<task-id>/`。使用持续学习协议的任务还须读取 [持续学习与经验沉淀](continuous-learning.md)。
+原始需求只由用户手动添加到 `requirements.inbox_path` 所指向的本地需求箱，Agent 不生成需求包：任务不需要关联需求，需求原文、范围和取舍直接写入任务 `plan.md` 或决策记录；用户已手动放入对应需求包时，创建 task 前先查找并以 `requirements_reference` 复用，同一需求包可以支撑多个 task。规则正文见 [需求箱与需求引用](operating-model.md#需求箱与需求引用)。若新增业务规则、接口/数据结构或独立验收标准，必须创建新 task，不得仅沿用旧 task 的 `next_action`；可用 `scope_decision` 记录新建或延续的范围判断。符合 [工作模型的低风险变更](operating-model.md#低风险变更) 不创建需求箱或任务记录，直接按 `framework:low-risk-change` 完成最小验证。其他需求先判断是否需要 `framework:large-task-decomposition`：需要时创建主任务（`role: parent`），在其任务记录与 `plan.md` 保存决策、需求覆盖和遗留，子任务以 `parent_reference` 挂靠；创建开发任务后，任务记录、计划、审查、验证和学习证据仍只保存在各自的 `tasks/<task-id>/`。使用持续学习协议的任务还须读取 [持续学习与经验沉淀](continuous-learning.md)。
 
 任务产物按生命周期逐步生成：创建阶段先写 `task.yaml`，需求原文记入任务记录或引用用户手动添加的需求包；开始实施时补充 `plan.md`；实现完成进入审查时补充 `review.md` 和 `verification.md`；任务声明持续学习协议时补充 `learning.md`；交接或关闭时补充 `handoff.md`。这些文件分别记录不同事实，不应以测试结果替代审查结论，也不应以审查结论替代验证证据。字段职责与必需性见本文「字段规范」。
 
@@ -105,7 +105,7 @@
 
 依赖业务项目代码的多页面原型可以放在 `<project.root_path>/prototypes/<design-name>/`。此类原型必须在项目上下文的可选 `prototypes.paths` 中登记 `id`、`path` 和 `entrypoint`，并由 `scripts/check-project.mjs` 校验。放在 `local/projects/<project-id>/design/<design-name>/` 的框架目录原型不写入该字段，直接由任务的 `prototype_reference` 引用。
 
-项目级路线图是可选的常驻产物，但**存放在原项目仓库内**：登记在项目上下文的可选字段 `product.roadmap_path`，由 `framework:product-management` 维护，内容由 `scripts/check-product.mjs` 校验，路径存在性由 `scripts/check-project.mjs` 校验。它与框架本地 `roadmaps/<roadmap-id>/`（单个大需求的需求拆分索引）是两种产物，不要混用。
+项目级路线图是可选的常驻产物，但**存放在原项目仓库内**：登记在项目上下文的可选字段 `product.roadmap_path`，由 `framework:product-management` 维护，内容由 `scripts/check-product.mjs` 校验，路径存在性由 `scripts/check-project.mjs` 校验。它与框架本地大任务的主任务（`role: parent`，单个大需求的拆分与覆盖记录）是两种产物，不要混用。
 
 单仓项目继续以 `project.root_path` 作为主仓库。存在前后端或多个独立仓库时，可在可选的 `repositories` 中登记每个仓库的稳定 `id`、`role` 和绝对 `root_path`；`project.root_path` 不因此失效。执行验证前，先读取可选的 `verification.profiles`：每项声明 `stage`、`command`、`outcome` 及可选 `limitation`。`required` 表示该阶段应执行，`environment_limited` 表示必须保留未完成原因而不能写为通过，`not_applicable` 表示该任务不适用。profile 是项目验证入口的唯一记录处，不替代任务内的新鲜验证证据。
 

@@ -6,7 +6,7 @@
 - 多仓项目在 `project.root_path` 对应的主仓库登记；路线图覆盖多个仓库时，在文件内注明每个切片所属仓库；
 - 路径登记后由 `scripts/check-project.mjs` 校验存在性，内容由 `node scripts/check-product.mjs <registered path>` 校验。
 
-它与 `local/projects/<project-id>/roadmaps/<roadmap-id>/` 是两种东西：那个目录是**单个大需求的需求拆分索引**（按 `core/templates/decomposition.template.md` 创建，属于框架本地任务证据），把一个大需求拆成可独立验收的任务；项目路线图编排的是整个项目的版本与主题，放在原项目仓库里。
+它与框架本地大任务的主任务（`role: parent`，按 `core/templates/parent-plan.template.md` 记录单个大需求的拆分与覆盖，属于框架本地任务证据）是两种东西：主任务把一个大需求拆成可独立验收的任务；项目路线图编排的是整个项目的版本与主题，放在原项目仓库里。
 
 编写要求：
 

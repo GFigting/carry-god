@@ -129,6 +129,8 @@ status_history:
 - `acceptance_summary`：非空字符串数组，记录任务级可观察验收条件的短摘要。详细验收仍保存在 `plan.md` 或需求包（如有），该字段不替代它们。
 - `documentation`：`impact` 取 `add`、`update` 或 `none`；`files` 表示受影响路径数组，`impact: none` 使用 `reason` 说明无需文档更新。
 - `decisions`：已确认决策数组，用于记录历史数据删除、迁移、语义转换、旧接口兼容等需要用户拍板的决策。每项必须包含非空 `name` 和 `detail`，可选 `confirmed_by` 与 `confirmed_at`（`YYYY-MM-DD`）。
+- `role`：仅取 `parent`，声明本任务是大任务的主任务（见 [大任务主从拆分](#大任务主从拆分)）；普通任务省略。
+- `parent_reference`：指向主任务 `task.yaml` 的相对路径，声明本任务是某主任务的子任务；与 `role: parent` 互斥（主任务自身不写）。已废弃字段 `roadmap_reference` 不再使用，历史存量迁移为本字段。
 - `standards_preflight` 不是任务字段：它是 `plan.md` 与 `verification.md` 中的证据段落，不应写入 `task.yaml`。
 
 `task.yaml` 使用封闭 schema：顶层及 `artifacts.*`、`documentation.*`、`lightweight_evidence.*` 嵌套键均限定为本文件与 [项目上下文](project-context.md) 登记的字段，schema 外的任何字段（包括历史遗留字段名）都不应写入。
@@ -164,7 +166,7 @@ artifacts:
   closure: closure.md
 ```
 
-外部关联引用（`prototype_reference`、`requirements_reference`、`roadmap_reference`、`depends_on` 等）保持顶层不动，不属于产物文件路径。
+外部关联引用（`prototype_reference`、`requirements_reference`、`parent_reference`、`depends_on` 等）保持顶层不动，不属于产物文件路径。
 
 三种交付路径天然互斥，不存在组合规则；`delivery_path` 是单一枚举值。
 
@@ -236,17 +238,17 @@ artifacts:
 - **现状证据保鲜**：计划、路线图与文档中的"当前/已实现/未实现/仍有限制"断言必须标注核对日期与核对方式；定范围前用一手核查（如 `git log -S`、grep 能力标记）确认，发现证据过期时显式记录修正，不沿用旧断言。
 - **验证绑定交付点**：全量验证在交付与提交节点执行；过程汇报引用最近一次同代码状态的验证证据并注明时点，不以重复全量验证为代价。
 
-## 大任务路线图
+## 大任务主从拆分
 
-当需求跨模块、跨会话、存在关键未决决策，或不能作为一个独立任务验收时，先建立 Roadmap，而非直接拆分研发任务。Roadmap 的生命周期是：`wayfinder 决策 → 结构化需求覆盖 → 可验收子任务 → 集成核对 → 关闭归档`。
+当需求跨模块、跨会话或不能作为一个独立任务验收，且包含 2 个以上可独立验收的切片时，创建**主任务**承载拆分，而非建立独立索引目录。生命周期是：`决策（必要时 wayfinder）→ 主任务记录覆盖 → 可验收子任务 → 集成核对 → 主任务关闭`。
 
-Roadmap 是项目级索引，不是任务目录的替代品。其唯一默认位置为 `local/projects/<project-id>/roadmaps/<roadmap-id>/`；`roadmap.yaml` 保存目标、决策、任务和依赖，`coverage.md` 记录原始需求覆盖，`closure.md` 记录关闭结论与遗留项。子任务仍保持各自的状态机和证据目录，通过可选引用字段关联路线图。路线图关闭不删除、不移动历史任务。
+主任务是普通任务目录中的 `role: parent` 任务：决策写入其 `task.yaml` 的 `decisions`，需求覆盖、排除范围、依赖与遗留写入其 `plan.md`（格式见 [主任务计划模板](templates/parent-plan.template.md)）。子任务通过 `parent_reference` 挂靠，集合以该反向关系为准，不维护第二份清单；子任务仍保持各自的状态机和证据目录。主任务 `next_action` 必须与前沿子任务联动：存在等待验收、停滞或需要决策的子任务时必须 `required: true`。全部子任务终态并完成集成核对后主任务进入 `review`，遗留与后续写入其审查记录；关闭主任务不删除、不移动子任务证据。框架存量路线图（`roadmaps/<roadmap-id>/` 三件套）双轨保留可继续使用，但不再新建，迁移按项目另立任务进行。
 
 ## 用户下一步提醒
 
 任务以 `next_action` 向用户表达当前是否需要其操作。该对象含有 `required`（布尔值）、`action`（动作标识）和 `message`（面向用户的提示，可为空字符串）。任务进入 `review`、`blocked` 或 `done` 时必须提供 `required` 与 `action`：审查阶段请求验收或补充决定；阻塞阶段说明解除动作；完成阶段明确无需操作或给出后续入口。没有需要用户操作时，`required: false`，可在 `message` 中说明 Agent 将继续什么或任务已关闭。
 
-大任务路线图也维护同名字段。当没有可执行的无依赖任务、需要范围确认或关键决策时，路线图的该字段必须转为 `required: true`，而不是静默等待。
+大任务的主任务同样维护 `next_action`。当没有可执行的无依赖子任务、需要范围确认或关键决策时，主任务的该字段必须转为 `required: true`，而不是静默等待。
 
 ### 待验收清单与批量验收
 

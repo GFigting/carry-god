@@ -10,7 +10,7 @@
 4. 再按 `core/operating-model.md` 识别低风险变更：纯文案、样式或静态布局调整使用 `framework:low-risk-change`，不创建需求箱、task 或自动化测试；其他变更创建 `pending` task，需求原文与取舍直接写入任务 `plan.md` 或决策记录。需求箱只接受用户手动添加的原始需求，Agent 不生成需求包；任务无需关联需求，用户已放入对应需求包时按 [需求箱与需求引用](core/operating-model.md#需求箱与需求引用) 复用引用。
 5. 按流程声明加载 `skills/` 中的 required skills。
 6. 进入工作流前展示决策预检简报；低风险或可逆事项可自动继续，高风险或不可逆事项等待用户确认，并在需要时再加载 `grilling` 或其他特殊技能。
-7. 标准任务在同一任务目录保存计划、审查、验证、学习证据、风险和下一步行动；跨模块、高风险或用户要求审查的任务在 `plan.md` 内增加计划审核章节，不另建计划审查文件；满足 `workflows/bugfix.md` 轻量条件的缺陷仅在 `task.yaml` 保留根因、范围、验证、自审和集成结论，满足 `workflows/feature-development.md` 轻量条件的小功能同样在 `task.yaml` 合并范围、验证、自审与集成结论（见 [最小充分流程](core/operating-model.md#最小充分流程)）。大任务额外在 `roadmaps/` 保存决策、覆盖与关闭索引。
+7. 标准任务在同一任务目录保存计划、审查、验证、学习证据、风险和下一步行动；跨模块、高风险或用户要求审查的任务在 `plan.md` 内增加计划审核章节，不另建计划审查文件；满足 `workflows/bugfix.md` 轻量条件的缺陷仅在 `task.yaml` 保留根因、范围、验证、自审和集成结论，满足 `workflows/feature-development.md` 轻量条件的小功能同样在 `task.yaml` 合并范围、验证、自审与集成结论（见 [最小充分流程](core/operating-model.md#最小充分流程)）。大任务创建主任务（`role: parent`）承载决策、覆盖与遗留，子任务以 `parent_reference` 挂靠（见 [大任务主从拆分](core/operating-model.md#大任务主从拆分)）。
    新任务可使用 `delivery_path: compact`：先有 `task.yaml`，再按任务意图生成一个主产物；验证、学习和交接默认回写任务记录或主产物。历史任务继续按原有产物引用规则运行；详见 [任务证据生命周期](core/operating-model.md#任务证据生命周期)。
    若创建原型，记录原型引用及其采纳结论、实现映射和验证映射。
 8. 在 `review` 阶段完成统一收尾（验证、测试处理、冗余清理、文档同步和集成决策）后：轻量、单模块且不改变业务规则/接口/数据/权限的任务，验证通过后可由 Agent 自动标记为 `done`；其他任务必须等待用户验收。
@@ -35,9 +35,9 @@
 
 单页面原型和不依赖业务仓库的多页面原型存放在 `local/projects/<project-id>/design/<design-name>/`；根目录 `designs/` 已废弃，不再用于新产物。依赖真实项目路由、组件或运行入口的多页面原型，可由用户选择存放在关联项目的 `<project.root_path>/prototypes/<design-name>/`，并在项目上下文的 `prototypes.paths` 中登记路径和入口。
 
-跨模块、跨会话、未决关键决策较多或不能作为单个任务验收的需求，使用 `framework:large-task-decomposition`：先通过 `framework:wayfinder` 明确决策，再在 `local/projects/<project-id>/roadmaps/<roadmap-id>/` 建立**需求拆分索引**，最后创建可独立验收的研发任务（格式见 [需求拆分索引模板](core/templates/decomposition.template.md)）。关闭索引时只生成索引记录，不迁移或删除任务证据。
+跨模块、跨会话、未决关键决策较多或不能作为单个任务验收的需求，使用 `framework:large-task-decomposition`：先按决策分级明确关键决策（模糊时经 `framework:wayfinder`），再创建主任务（`role: parent`），其 `task.yaml` 记录决策、`plan.md` 记录需求覆盖与拆分（格式见 [主任务计划模板](core/templates/parent-plan.template.md)），最后创建以 `parent_reference` 挂靠、可独立验收的研发任务。关闭主任务只在其审查记录留存结论，不迁移或删除子任务证据。存量路线图（`roadmaps/` 三件套）双轨保留可继续使用，但不再新建。
 
-**项目路线图**是另一种产物：它存放在**原项目仓库内**（惯例 `docs/roadmap.md`），登记在项目上下文的 `product.roadmap_path`，按版本与主题编排整个项目的切片、状态与验收，由 `framework:product-management` 维护，格式见 [项目路线图模板](core/templates/project-roadmap.template.md)，内容校验见 `scripts/check-product.mjs`。需求拆分索引服务于"一个大需求"且留在框架本地，项目路线图服务于"整个项目"且随项目代码版本化，两者不互相替代。
+**项目路线图**是另一种产物：它存放在**原项目仓库内**（惯例 `docs/roadmap.md`），登记在项目上下文的 `product.roadmap_path`，按版本与主题编排整个项目的切片、状态与验收，由 `framework:product-management` 维护，格式见 [项目路线图模板](core/templates/project-roadmap.template.md)，内容校验见 `scripts/check-product.mjs`。主任务服务于"一个大需求"且留在框架本地任务目录内，项目路线图服务于"整个项目"且随项目代码版本化，两者不互相替代。
 
 新任务使用 `next_action` 记录面向用户的下一步（`required`/`action`/`message`）。等待确认、外部输入、审查验收或完成交接时，必须明确说明用户是否需要操作以及具体动作；没有操作时说明 Agent 将继续处理什么。
 
