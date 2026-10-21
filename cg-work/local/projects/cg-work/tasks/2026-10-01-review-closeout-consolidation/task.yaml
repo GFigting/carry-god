@@ -7,7 +7,7 @@ artifacts:
   verification: verification.md
   handoff: handoff.md
 
-created_at: 2026-10-01T00:00:00
+created_at: 2026-10-01
 scope_decision:
   mode: independent
   rationale: 独立收敛 review、done 与提交收尾之间的规则边界。原需求包在提交策略统一前未随框架提交，本机已不可恢复，其需求内容以本任务 goal 为准。

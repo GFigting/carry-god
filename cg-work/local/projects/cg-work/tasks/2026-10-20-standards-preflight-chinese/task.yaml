@@ -1,0 +1,47 @@
+id: 2026-10-20-standards-preflight-chinese
+status: done
+goal: standards_preflight 标识符全框架统一改为中文表述「标准编码前置检查」（规则、工作流、脚本说明与测试断言）
+workflow: framework:framework-optimization
+delivery_path: standard
+created_at: 2026-10-20T15:23:47
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+scope_decision:
+  mode: independent
+  rationale: 独立的术语中文化变更；不改写历史任务产物，与其他框架任务不重叠。
+documentation:
+  impact: update
+  files:
+    - core/operating-model.md
+    - core/project-code-standards.md
+    - workflows/README.md
+    - workflows/feature-development.md
+    - workflows/bugfix.md
+    - scripts/README.md
+    - test/standards-preflight.test.mjs
+  reason: 英文标识符全框架统一为中文表述，规则、工作流、脚本说明与测试断言同步。
+acceptance_summary:
+  - 规则层 6 个文件的 standards_preflight 全部替换为「标准编码前置检查」，残留扫描零命中
+  - 中文名沿用 workflows/README 既有章节，锚点与唯一来源指针关系不变
+  - 测试断言同步中文，npm test 49/49 全绿
+  - 历史任务产物与需求包中的旧章节标题按审计记录不改写规则保留
+  - npm run check 全绿
+status_history:
+  - status: pending
+    at: 2026-10-20T15:23:47
+    reason: "用户确认全框架统一改中文"
+  - status: in_progress
+    at: 2026-10-20T15:23:59
+    reason: "引用盘点完成（7 个规则/测试文件），开始替换"
+  - status: review
+    at: 2026-10-20T15:26:29
+    reason: "规则层 7 文件替换完成；npm run check 全绿，npm test 49/49"
+  - status: done
+    at: "2026-10-21T15:17:07"
+    reason: "用户已验收：用户确认四任务一并验收合并提交：框架改动合一个 commit，任务记录合一个 commit"
+next_action:
+  required: false
+  action: none
+  message: 用户已验收：用户确认四任务一并验收合并提交：框架改动合一个 commit，任务记录合一个 commit

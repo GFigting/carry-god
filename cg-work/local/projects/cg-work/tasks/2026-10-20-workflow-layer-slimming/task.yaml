@@ -1,0 +1,23 @@
+id: 2026-10-20-workflow-layer-slimming
+status: done
+goal: workflows 层按方案A减薄：仅保留 frontmatter 技能调度、阶段顺序与指针，删除与 core 重复的规则正文；同步修复 4 处旧路线图口径与 1 处 delivery_path 组合矛盾
+workflow: framework:framework-optimization
+delivery_path: standard
+created_at: 2026-10-20T13:57:44
+status_history:
+  - status: pending
+    at: 2026-10-20T13:57:44
+    reason: "任务创建"
+  - status: in_progress
+    at: 2026-10-20T14:01:45
+    reason: "计划完成并经用户选定方案A，开始按步骤实施"
+  - status: review
+    at: 2026-10-20T14:13:42
+    reason: "workflows 减薄完成，check/test 全绿，verification 与 review 记录已写入"
+  - status: done
+    at: "2026-10-21T15:17:07"
+    reason: "用户已验收：用户确认四任务一并验收合并提交：框架改动合一个 commit，任务记录合一个 commit"
+next_action:
+  required: false
+  action: none
+  message: 用户已验收：用户确认四任务一并验收合并提交：框架改动合一个 commit，任务记录合一个 commit

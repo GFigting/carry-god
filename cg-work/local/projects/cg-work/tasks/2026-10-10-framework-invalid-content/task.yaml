@@ -3,7 +3,7 @@ status: done
 goal: 精简已废弃模板中的无效骨架，保留历史引用兼容并明确现行唯一来源。
 workflow: framework:framework-optimization
 delivery_path: compact
-created_at: 2026-10-10T00:00:00
+created_at: 2026-10-10
 artifacts:
   primary: ./plan.md
 scope_decision:

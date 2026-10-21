@@ -6,7 +6,7 @@ artifacts:
   plan: plan.md
   verification: verification.md
 
-created_at: 2026-09-13T00:00:00
+created_at: 2026-09-13
 next_action:
   required: false
   action: none

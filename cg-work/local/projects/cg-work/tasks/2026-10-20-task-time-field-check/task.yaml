@@ -1,0 +1,44 @@
+id: 2026-10-20-task-time-field-check
+status: done
+goal: 为 npm run check 增加活跃任务时间字段校验：拒绝 created_at/status_history.at 的 T00:00:00 占位与时区后缀，at 拒绝纯日期；扩展 fix-placeholders 处理 created_at 占位并修复存量
+workflow: framework:bugfix
+delivery_path: lightweight
+created_at: 2026-10-20T11:45:30
+status_history:
+  - status: pending
+    at: 2026-10-20T11:45:30
+    reason: "AI 直接写 task.yaml 绕过 task-stamp 填占位时间，npm run check 无时间字段校验一路放行"
+  - status: in_progress
+    at: 2026-10-20T11:51:44
+    reason: "实施时间字段校验与存量修复"
+  - status: review
+    at: 2026-10-20T11:55:37
+    reason: "校验与存量修复完成：npm run check 全绿、npm test 49/49、fix-placeholders 预览 0 占位；含 17 个业务任务文件批量改写，待用户验收"
+  - status: done
+    at: "2026-10-21T15:17:07"
+    reason: "用户已验收：用户确认四任务一并验收合并提交：框架改动合一个 commit，任务记录合一个 commit"
+next_action:
+  required: false
+  action: none
+  message: 用户已验收：用户确认四任务一并验收合并提交：框架改动合一个 commit，任务记录合一个 commit
+documentation:
+  impact: update
+  files:
+    - scripts/check-all.mjs
+    - scripts/task-time-fields.mjs
+    - scripts/task-stamp.mjs
+    - scripts/README.md
+    - core/operating-model.md
+    - test/task-time-fields.test.mjs
+  reason: 新增时间字段校验能力，同步校验脚本说明与工作模型规则正文。
+decisions:
+  - name: 存量占位批量修复
+    detail: 用户选定“时间戳防再犯”优化方向，包含用 fix-placeholders --apply 修复全仓活跃任务的 created_at T00:00:00 占位（改写为纯日期，创建日可确认）。
+    confirmed_by: user
+    confirmed_at: 2026-10-20
+lightweight_evidence:
+  root_cause: 时间字段规则只写在 core/operating-model.md 与脚本约定中，check-all.mjs 对任务记录仅做 YAML 可解析校验，没有时间字段检查；AI 直接写 task.yaml 绕过 task-stamp 填入 T00:00:00 占位时 npm run check 一路放行（fms 2026-10-20-finished-inventory-export 事发后全仓扫描发现 21 个活跃任务占位）。
+  scope: 新增 scripts/task-time-fields.mjs（created_at/status_history.at 占位、时区后缀、at 纯日期与空值校验，用 JSON_SCHEMA 解析保留原始时间字符串）并在 check-all.mjs 接入，覆盖所有项目的活跃任务、跳过 tasks/archive 与解析失败的文件；task-stamp 的 fix-placeholders 扩展识别 created_at 占位并退化为纯日期，输出同步展示两类占位；批量修复 17 个可解析活跃任务的 created_at 存量；同步 core/operating-model.md 与 scripts/README.md，VERSION 2.29.0 -> 2.30.0。
+  verification: fix-placeholders 预览的 17 条与 npm run check 报出的错误完全一致，--apply 后 npm run check 全绿；npm test 49/49 通过，新增 test/task-time-fields.test.mjs 覆盖 created_at 占位/时区后缀/at 纯日期/合法值接受/归档豁免/解析失败不阻塞六类场景。
+  review: 关键点是校验必须用 JSON_SCHEMA：js-yaml 默认 schema 会把未加引号的时间解析成 Date，占位与时区信息会丢失导致校验形同虚设。21 个活跃占位中 17 个可解析已修复，其余 4 个（lasen 3、job-hunt 1）task.yaml 历史 YAML 损坏无法解析，本次不纳入校验范围，作为遗留单独告知用户；业务项目记录为本机数据不入库，批量改写不可回滚，已由用户在优化方向中明确批准。
+  integration_decision: 框架自身变更与业务项目记录修复，随 cg-work 本地提交收口，不推送。
