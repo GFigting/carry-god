@@ -26,7 +26,7 @@
 **现行模板**（位于 `templates/`）
 
 - `templates/parent-plan.template.md`：大任务主任务计划的需求拆分章节格式。
-- `templates/project-roadmap.template.md`：项目路线图格式。
+- `templates/product-roadmap.template.md`：项目路线图格式。
 - `templates/plan.template.md`：计划结构；原型章节见 `operating-model.md` 的"原型与任务记录"。
 
 不再保留无消费者的废弃模板文件。

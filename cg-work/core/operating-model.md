@@ -107,7 +107,7 @@ status_history:
 
 结构化项必须包含非空 `status`、`reason`，`at` 可以是不带时区的本地时间字符串或 `null`；不再接受旧的字符串数组简写。
 
-`created_at` 和 `status_history[].at` 必须由 `scripts/task-stamp.mjs` 写入真实本地墙钟时间（`create` 与 `transition` 子命令自动盖章），禁止手工填写或占位（如 `T00:00:00`、缺秒的纯日期仅允许用于历史 `created_at` 的创建日语义）。无法还原的历史占位时间使用 `null`，用 `scripts/task-stamp.mjs fix-placeholders` 识别，追加 `--apply` 写入；已归档任务不处理。
+`created_at` 和 `status_history[].at` 必须由 `scripts/task-stamp.mjs` 写入真实本地墙钟时间（`create` 与 `transition` 子命令自动盖章），禁止手工填写或占位（如 `T00:00:00`、缺秒的纯日期仅允许用于历史 `created_at` 的创建日语义）。无法还原的历史占位时间使用 `null`，用 `scripts/task-stamp.mjs fix-placeholders` 识别，追加 `--apply` 写入；已归档任务不处理。该规则由 `npm run check` 对所有项目的活跃任务强制校验（YAML 可解析为前提）：`T00:00:00` 占位、时区后缀、`at` 使用纯日期或 `created_at` 缺失语义的空值都会直接报错，占位存量同样用 `fix-placeholders --apply` 修复。
 
 ### review 阶段统一收尾
 
@@ -131,7 +131,7 @@ status_history:
 - `decisions`：已确认决策数组，用于记录历史数据删除、迁移、语义转换、旧接口兼容等需要用户拍板的决策。每项必须包含非空 `name` 和 `detail`，可选 `confirmed_by` 与 `confirmed_at`（`YYYY-MM-DD`）。
 - `role`：仅取 `parent`，声明本任务是大任务的主任务（见 [大任务主从拆分](#大任务主从拆分)）；普通任务省略。
 - `parent_reference`：指向主任务 `task.yaml` 的相对路径，声明本任务是某主任务的子任务；与 `role: parent` 互斥（主任务自身不写）。已废弃字段 `roadmap_reference` 不再使用，历史存量迁移为本字段。
-- `standards_preflight` 不是任务字段：它是 `plan.md` 与 `verification.md` 中的证据段落，不应写入 `task.yaml`。
+- 标准编码前置检查不是任务字段：它是 `plan.md` 与 `verification.md` 中「标准编码前置检查」的证据段落，不应写入 `task.yaml`。
 
 `task.yaml` 使用封闭 schema：顶层及 `artifacts.*`、`documentation.*`、`lightweight_evidence.*` 嵌套键均限定为本文件与 [项目上下文](project-context.md) 登记的字段，schema 外的任何字段（包括历史遗留字段名）都不应写入。
 

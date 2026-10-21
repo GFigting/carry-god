@@ -95,9 +95,9 @@
 
 加载项目规则时，优先读取 `documentation.project_rules` 与 `documentation.development_standards` 登记的项目规则，以及仓库工具配置；对于项目未覆盖的事项，再应用 [项目通用代码规范](project-code-standards.md)。历史项目对应读取 `instructions.files` 与 `coding_standards.files`。该规范约束计划、编码和提交前自查，不限于最终审查。
 
-原始需求只由用户手动添加到 `requirements.inbox_path` 所指向的本地需求箱，Agent 不生成需求包：任务不需要关联需求，需求原文、范围和取舍直接写入任务 `plan.md` 或决策记录；用户已手动放入对应需求包时，创建 task 前先查找并以 `requirements_reference` 复用，同一需求包可以支撑多个 task。规则正文见 [需求箱与需求引用](operating-model.md#需求箱与需求引用)。若新增业务规则、接口/数据结构或独立验收标准，必须创建新 task，不得仅沿用旧 task 的 `next_action`；可用 `scope_decision` 记录新建或延续的范围判断。符合 [工作模型的低风险变更](operating-model.md#低风险变更) 不创建需求箱或任务记录，直接按 `framework:low-risk-change` 完成最小验证。其他需求先判断是否需要 `framework:large-task-decomposition`：需要时创建主任务（`role: parent`），在其任务记录与 `plan.md` 保存决策、需求覆盖和遗留，子任务以 `parent_reference` 挂靠；创建开发任务后，任务记录、计划、审查、验证和学习证据仍只保存在各自的 `tasks/<task-id>/`。使用持续学习协议的任务还须读取 [持续学习与经验沉淀](continuous-learning.md)。
+原始需求只由用户手动添加到 `requirements.inbox_path` 所指向的本地需求箱，Agent 不生成需求包；任务是否需要关联需求、需求引用复用的规则正文见 [需求箱与需求引用](operating-model.md#需求箱与需求引用)，新范围何时拆分新任务见 [需求范围变化与任务拆分](operating-model.md#需求范围变化与任务拆分)。符合 [工作模型的低风险变更](operating-model.md#低风险变更) 不创建需求箱或任务记录，直接按 `framework:low-risk-change` 完成最小验证。其他需求先判断是否需要 `framework:parent-child-decomposition`：需要时按 [大任务主从拆分](operating-model.md#大任务主从拆分) 创建主任务（`role: parent`）与挂靠的子任务。使用持续学习协议的任务还须读取 [持续学习与经验沉淀](continuous-learning.md)。
 
-任务产物按生命周期逐步生成：创建阶段先写 `task.yaml`，需求原文记入任务记录或引用用户手动添加的需求包；开始实施时补充 `plan.md`；实现完成进入审查时补充 `review.md` 和 `verification.md`；任务声明持续学习协议时补充 `learning.md`；交接或关闭时补充 `handoff.md`。这些文件分别记录不同事实，不应以测试结果替代审查结论，也不应以审查结论替代验证证据。字段职责与必需性见本文「字段规范」。
+任务产物按生命周期逐步生成，计划、审查、验证、学习各文件记录不同事实，不互相替代（例如不以测试结果替代审查结论）；阶段、必要产物与内容的规则正文见 [工作模型的任务证据生命周期](operating-model.md#任务证据生命周期)。字段职责与必需性见本文「字段规范」。
 
 项目技能路径使用 `skills.paths` 声明。项目上下文中登记的文件和目录路径可使用绝对路径，或相对 `project.root_path` 解析的路径，覆盖 `documentation.*`、历史文档字段、运行文件入口、需求箱、技能路径、原型路径、SQL 脚本目录和项目路线图路径；术语表归入 `documentation.business`；URL 与执行命令按各自字段语义处理。`cg-work` 的相对路径相对框架目录解析，并可用字面量 `project.root_path: .` 保持已提交上下文跨机可用。先加载 `cg-work/skills/` 中的框架技能，再加载项目技能路径中的技能。
 

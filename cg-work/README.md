@@ -21,7 +21,7 @@
 
 工作流使用 `framework:<skill-name>` 引用框架技能，使用 `project:<skill-name>` 引用项目技能。`framework:<name>` 的含义由所在位置决定：在 `task.yaml` 的 `workflow` 字段中指向 `workflows/<name>.md`，在工作流的技能字段和正文中指向 `skills/<name>/`——按字段判定，不按名字猜。项目技能目录由项目上下文的 `skills.paths` 指定，登记绝对路径或相对 `project.root_path` 解析的路径。
 
-产品需求、用户故事、验收标准、优先级、路线图或版本验收尚未成形时，可显式调用 `framework:product-management`。该技能只负责产品定义和交付边界，不自动修改业务代码或外部系统；项目级路线图写入**原项目仓库内**并登记到项目上下文的 `product.roadmap_path`（格式见 [项目路线图模板](core/templates/project-roadmap.template.md)），确认后的定义可继续交给 `framework:to-spec` 或 `framework:to-tickets`，实现仍遵循 `framework:feature-development`。
+产品需求、用户故事、验收标准、优先级、路线图或版本验收尚未成形时，可显式调用 `framework:product-management`。该技能只负责产品定义和交付边界，不自动修改业务代码或外部系统；项目级路线图写入**原项目仓库内**并登记到项目上下文的 `product.roadmap_path`（格式见 [项目路线图模板](core/templates/product-roadmap.template.md)），确认后的定义可继续交给 `framework:to-spec` 或 `framework:to-tickets`，实现仍遵循 `framework:feature-development`。
 
 ## 目录边界
 
@@ -35,9 +35,9 @@
 
 单页面原型和不依赖业务仓库的多页面原型存放在 `local/projects/<project-id>/design/<design-name>/`；根目录 `designs/` 已废弃，不再用于新产物。依赖真实项目路由、组件或运行入口的多页面原型，可由用户选择存放在关联项目的 `<project.root_path>/prototypes/<design-name>/`，并在项目上下文的 `prototypes.paths` 中登记路径和入口。
 
-跨模块、跨会话、未决关键决策较多或不能作为单个任务验收的需求，使用 `framework:large-task-decomposition`：先按决策分级明确关键决策（模糊时经 `framework:wayfinder`），再创建主任务（`role: parent`），其 `task.yaml` 记录决策、`plan.md` 记录需求覆盖与拆分（格式见 [主任务计划模板](core/templates/parent-plan.template.md)），最后创建以 `parent_reference` 挂靠、可独立验收的研发任务。关闭主任务只在其审查记录留存结论，不迁移或删除子任务证据。存量路线图（`roadmaps/` 三件套）双轨保留可继续使用，但不再新建。
+跨模块、跨会话、未决关键决策较多或不能作为单个任务验收的需求，使用 `framework:parent-child-decomposition`：先按决策分级明确关键决策（模糊时经 `framework:wayfinder`），再创建主任务（`role: parent`），其 `task.yaml` 记录决策、`plan.md` 记录需求覆盖与拆分（格式见 [主任务计划模板](core/templates/parent-plan.template.md)），最后创建以 `parent_reference` 挂靠、可独立验收的研发任务。关闭主任务只在其审查记录留存结论，不迁移或删除子任务证据。存量路线图（`roadmaps/` 三件套）双轨保留可继续使用，但不再新建。
 
-**项目路线图**是另一种产物：它存放在**原项目仓库内**（惯例 `docs/roadmap.md`），登记在项目上下文的 `product.roadmap_path`，按版本与主题编排整个项目的切片、状态与验收，由 `framework:product-management` 维护，格式见 [项目路线图模板](core/templates/project-roadmap.template.md)，内容校验见 `scripts/check-product.mjs`。主任务服务于"一个大需求"且留在框架本地任务目录内，项目路线图服务于"整个项目"且随项目代码版本化，两者不互相替代。
+**项目路线图**是另一种产物：它存放在**原项目仓库内**（惯例 `docs/roadmap.md`），登记在项目上下文的 `product.roadmap_path`，按版本与主题编排整个项目的切片、状态与验收，由 `framework:product-management` 维护，格式见 [项目路线图模板](core/templates/product-roadmap.template.md)，内容校验见 `scripts/check-product.mjs`。主任务服务于"一个大需求"且留在框架本地任务目录内，项目路线图服务于"整个项目"且随项目代码版本化，两者不互相替代。
 
 新任务使用 `next_action` 记录面向用户的下一步（`required`/`action`/`message`）。等待确认、外部输入、审查验收或完成交接时，必须明确说明用户是否需要操作以及具体动作；没有操作时说明 Agent 将继续处理什么。
 

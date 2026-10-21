@@ -1,5 +1,5 @@
 ---
-name: large-task-decomposition
+name: parent-child-decomposition
 description: Use when a confirmed multi-session requirement must be split into a parent task that carries decisions and requirement coverage in its own records, independently verifiable child tasks linked by parent_reference, and a durable closeout inside the parent's review.
 ---
 

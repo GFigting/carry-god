@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 import { checkProjectContext } from './check-project.mjs';
+import { collectTaskTimeErrors } from './task-time-fields.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
@@ -152,6 +153,8 @@ async function walk(dir) {
 
 await walk(root);
 await checkManagedProjectRecords();
+// 时间字段校验覆盖所有项目（含业务项目）的活跃任务：占位与时区后缀是 AI 绕过 task-stamp 的高发点。
+errors.push(...await collectTaskTimeErrors(root));
 await checkRequirementsInboxes();
 const workflowFiles = (await fs.readdir(path.join(root, 'workflows'), { withFileTypes: true }))
   .filter((entry) => entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'README.md')

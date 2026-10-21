@@ -27,7 +27,7 @@ projects/<project-id>/
     └── closure.md
 ```
 
-**项目路线图不放在框架本地**：它属于项目文档，存放在原项目仓库内（惯例 `docs/roadmap.md`），路径登记在项目上下文的可选字段 `product.roadmap_path`，格式见 `core/templates/project-roadmap.template.md`，由 `framework:product-management` 维护。框架本地单个大需求的拆分记录在主任务（`role: parent`）自身的 `task.yaml` 与 `plan.md` 中（格式见 `core/templates/parent-plan.template.md`），不是项目路线图。
+**项目路线图不放在框架本地**：它属于项目文档，存放在原项目仓库内（惯例 `docs/roadmap.md`），路径登记在项目上下文的可选字段 `product.roadmap_path`，格式见 `core/templates/product-roadmap.template.md`，由 `framework:product-management` 维护。框架本地单个大需求的拆分记录在主任务（`role: parent`）自身的 `task.yaml` 与 `plan.md` 中（格式见 `core/templates/parent-plan.template.md`），不是项目路线图。
 
 `initialization-report.md` 自 2026-10-02 起废弃：探测范围、事实来源、缺口和待确认项改记在项目的初始化任务记录（`tasks/<task-id>/`）中，耐久事实写入 `project-context.yaml`。历史报告文件保留原样，不再新增，也不强制迁移。任务不需要的产物可以省略，但已有产物必须使用上述固定名称。不要在此目录保存密钥、令牌、密码或生产数据。
 

@@ -27,4 +27,4 @@
 - `<完成结论与未完成项；主任务 review 阶段填写，done 时即为关闭记录>`
 - `<后续任务引用、责任边界与证据索引；没有则明确写「无」>`
 
-格式规则见 [大任务主从拆分与关闭](../../skills/large-task-decomposition/SKILL.md) 与 [工作模型的大任务主从拆分](../operating-model.md#大任务主从拆分)。
+格式规则见 [大任务主从拆分与关闭](../../skills/parent-child-decomposition/SKILL.md) 与 [工作模型的大任务主从拆分](../operating-model.md#大任务主从拆分)。

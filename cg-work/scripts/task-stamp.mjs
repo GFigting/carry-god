@@ -98,8 +98,9 @@ async function transition({ project, id, status, reason, nextAction }) {
   return { ok: true, file, at: now };
 }
 
-// --- fix-placeholders：识别活跃任务中手工占位的时间，预览；--apply 时置为 null（不可考） ---
-// 只处理严格 T00:00:00 的 status_history.at；无法自动识别的编造时刻不在范围内。
+// --- fix-placeholders：识别活跃任务中手工占位的时间，预览；--apply 时修复 ---
+// status_history.at 的严格 T00:00:00 置为 null（时刻不可考）；created_at 的 T00:00:00 退化为纯日期
+// （创建日可确认，符合工作模型的历史 created_at 语义）。无法自动识别的编造时刻不在范围内。
 async function fixPlaceholders({ project, apply }) {
   const projects = project ? [project] : (await fs.readdir(projectsRoot, { withFileTypes: true }))
     .filter((entry) => entry.isDirectory()).map((entry) => entry.name);
@@ -116,14 +117,20 @@ async function fixPlaceholders({ project, apply }) {
       try { task = yaml.load(text); } catch { continue; }
       if (!task || typeof task !== 'object' || task.archived === true) continue;
       // js-yaml 会把 2026-10-16T00:00:00 解析成 Date 对象，识别占位必须基于原始文本。
-      const matches = text.match(/^\s*at:\s*"?(\d{4}-\d{2}-\d{2})T00:00:00"?\s*$/gm) ?? [];
-      if (!matches.length) continue;
-      findings.push({ project: proj, id: task.id ?? entry.name, count: matches.length, file });
+      const atMatches = text.match(/^\s*at:\s*"?(\d{4}-\d{2}-\d{2})T00:00:00"?\s*$/gm) ?? [];
+      const createdMatches = text.match(/^created_at:\s*"?(\d{4}-\d{2}-\d{2})T00:00:00"?\s*$/gm) ?? [];
+      if (!atMatches.length && !createdMatches.length) continue;
+      findings.push({
+        project: proj,
+        id: task.id ?? entry.name,
+        count: atMatches.length,
+        created_at: createdMatches.length,
+        file,
+      });
       if (apply) {
-        const output = text.replace(
-          /^(\s*at:\s*)"?(\d{4}-\d{2}-\d{2})T00:00:00"?\s*$/gm,
-          '$1null',
-        );
+        const output = text
+          .replace(/^(\s*at:\s*)"?(\d{4}-\d{2}-\d{2})T00:00:00"?\s*$/gm, '$1null')
+          .replace(/^(created_at:\s*)"?(\d{4}-\d{2}-\d{2})T00:00:00"?\s*$/gm, '$1$2');
         await fs.writeFile(file, output);
       }
     }
@@ -171,8 +178,9 @@ if (action === 'create') {
   if (!findings.length) { console.log('没有发现占位时间。'); }
   else {
     const total = findings.reduce((sum, item) => sum + item.count, 0);
-    console.log(`${options.apply ? '已修复' : '预览'}：${findings.length} 个任务、${total} 条 status_history.at 占位时间${options.apply ? '（已置 null）' : '（追加 --apply 才写入）'}`);
-    for (const item of findings) console.log(`  ${item.project}/${item.id}：${item.count} 条`);
+    const createdTotal = findings.reduce((sum, item) => sum + item.created_at, 0);
+    console.log(`${options.apply ? '已修复' : '预览'}：${findings.length} 个任务、${total} 条 status_history.at 占位（${options.apply ? '已置 null' : '追加 --apply 才写入'}）、${createdTotal} 条 created_at 占位（${options.apply ? '已退化为纯日期' : '追加 --apply 才写入'}）`);
+    for (const item of findings) console.log(`  ${item.project}/${item.id}：at ${item.count} 条、created_at ${item.created_at} 条`);
   }
 } else {
   console.error(usage);
