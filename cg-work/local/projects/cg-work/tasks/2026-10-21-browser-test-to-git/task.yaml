@@ -1,5 +1,5 @@
 id: 2026-10-21-browser-test-to-git
-status: review
+status: done
 goal: 将 local/tools/browser-test 浏览器验收测试工具纳入框架 git：白名单保留原路径，排除凭据、runs 证据与 exports 业务数据；README 目录边界补工具入口指针解决发现性。
 workflow: framework:framework-optimization
 delivery_path: compact
@@ -23,9 +23,9 @@ acceptance_summary:
   - 入库前清理个人绝对路径与示例文本中的真实测试密码
   - README 目录边界补 browser-test 入口指针，新会话经路由文档即可发现该工具
 next_action:
-  required: true
-  action: confirm
-  message: "验收入库与规则层指针结果，确认后置 done"
+  required: false
+  action: none
+  message: 用户已验收：用户验收通过：入库与规则层指针均确认
 status_history:
   - status: pending
     at: 2026-10-21T16:07:28
@@ -38,3 +38,7 @@ status_history:
   - status: review
     at: 2026-10-21T16:10:42
     reason: "工具 11 文件与 .gitignore 已入库，凭据/证据/导出排除验证通过，待用户验收"
+
+  - status: done
+    at: "2026-10-21T16:20:51"
+    reason: "用户已验收：用户验收通过：入库与规则层指针均确认"
