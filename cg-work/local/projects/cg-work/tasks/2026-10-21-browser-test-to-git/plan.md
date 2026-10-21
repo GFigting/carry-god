@@ -5,7 +5,7 @@
 用户反馈"框架项目测试工具发现，目前不太容易发现"，经确认真实诉求：`local/tools/browser-test/`（fms/lasen 共用的浏览器验收测试工具）被 `.gitignore` 的 `/local/tools/` 整目录排除，从未进入框架 git。用户指令"测试工具加入 git"，确认两点：
 
 - 入库位置：**白名单保留原路径**（不迁根 `tools/`，避免 fms/lasen 上下文 4 处绝对路径与历史任务证据引用断裂）；
-- 规则层接入（README/core 补工具入口指针）**本次不做**，先只入库。
+- 规则层接入：用户先选"只入库"，验收时反馈"看过去不好忽略啊"——入库只解决存在性不解决发现性，遂并入本任务在 README 目录边界补入口指针。
 
 ## 入库前安全核查
 
@@ -22,12 +22,13 @@
 | 文件 | 变更 |
 |---|---|
 | `.gitignore` | `/local/tools/` 改为 `/local/tools/*` + `!browser-test/` 白名单；排除 `*.local.json`、`runs/`、`exports/`、`_tmp-*.mjs` |
-| `local/tools/browser-test/**`（12 个文件） | 首次入库：run.mjs、README、scripts/ 5 个、fms 与 lasen 的 test-suites.json 与凭据示例 |
+| `local/tools/browser-test/**`（11 个文件） | 首次入库：run.mjs、README、scripts/ 5 个、fms 与 lasen 的 test-suites.json 与凭据示例 |
+| `README.md` | 目录边界表后补一段 browser-test 入口指针：用途、位置、套件配置与 `tooling.config_paths` 登记方式 |
+| `VERSION` | 2.33.0 → 2.33.1（文档指针修订） |
 
 ## 已知限制
 
 - `startScript` 相对引用 `../lasen-runtime-center/scripts/*.ps1`，该工具未入库——新克隆环境需自备运行中心或仅用 `prepare` 不带 `--start`。
-- 规则层暂无工具入口指针，发现性依赖 fms/lasen 项目上下文的 `tooling.config_paths` 与 `verification.profiles` 登记（本地文件，不随框架提交）。后续接入规则层另立任务。
 
 ## 测试用例
 
@@ -39,4 +40,4 @@
 
 ## 兼容性
 
-文件物理位置不变，fms/lasen 上下文与历史任务证据引用全部继续有效；不涉及规则、模板与校验器，VERSION 不升级。
+文件物理位置不变，fms/lasen 上下文与历史任务证据引用全部继续有效；规则层仅 README 加一段指针，VERSION 修订号升至 2.33.1。

@@ -1,28 +1,31 @@
 id: 2026-10-21-browser-test-to-git
 status: review
-goal: 将 local/tools/browser-test 浏览器验收测试工具纳入框架 git：白名单保留原路径，排除凭据、runs 证据与 exports 业务数据；规则层接入暂不做。
+goal: 将 local/tools/browser-test 浏览器验收测试工具纳入框架 git：白名单保留原路径，排除凭据、runs 证据与 exports 业务数据；README 目录边界补工具入口指针解决发现性。
 workflow: framework:framework-optimization
 delivery_path: compact
 created_at: 2026-10-21T16:07:28
 artifacts:
   primary: ./plan.md
 scope_decision:
-  mode: independent
-  rationale: 工具入库与探测线索规则补齐是两个独立诉求，用户明确本次只做入库，规则层接入另立任务。
+  mode: extended
+  rationale: 用户验收时反馈"看过去不好忽略"，入库只解决存在性不解决发现性，规则层指针并入本任务完成；与探测线索规则补齐仍是独立诉求。
 documentation:
   impact: update
   files:
     - .gitignore
+    - README.md
+    - VERSION
     - local/tools/browser-test/README.md
     - local/tools/browser-test/run.mjs
 acceptance_summary:
-  - browser-test 工具 12 个文件进入框架 git，物理路径不变，fms/lasen 上下文与历史证据引用零断裂
+  - browser-test 工具 11 个文件与 .gitignore 进入框架 git，物理路径不变，fms/lasen 上下文与历史证据引用零断裂
   - 凭据、runs 证据、exports 业务数据与 _tmp 临时脚本由 .gitignore 排除并经 check-ignore 验证
   - 入库前清理个人绝对路径与示例文本中的真实测试密码
+  - README 目录边界补 browser-test 入口指针，新会话经路由文档即可发现该工具
 next_action:
   required: true
   action: confirm
-  message: "验收入库结果（提交清单与排除规则），确认后置 done"
+  message: "验收入库与规则层指针结果，确认后置 done"
 status_history:
   - status: pending
     at: 2026-10-21T16:07:28
@@ -31,10 +34,6 @@ status_history:
   - status: in_progress
     at: 2026-10-21T16:10:21
     reason: "gitignore 白名单与排除规则完成，入库前清理三处敏感内容，check 全绿"
-
-  - status: review
-    at: 2026-10-21T16:10:32
-    reason: "工具 11 文件与 .gitignore 已入库，凭据/证据/导出排除验证通过，待用户验收"
 
   - status: review
     at: 2026-10-21T16:10:42
