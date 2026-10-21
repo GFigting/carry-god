@@ -1,0 +1,39 @@
+id: 2026-10-21-verification-tool-discovery
+status: done
+goal: 补齐项目验证入口探测线索：core 登记探测顺序与登记口径，初始化技能改指针，模板补 profile 示例，加载规则补 profiles 缺失兜底。
+workflow: framework:framework-optimization
+delivery_path: compact
+created_at: 2026-10-21T15:36:34
+artifacts:
+  primary: ./plan.md
+scope_decision:
+  mode: independent
+  rationale: 验证入口探测线索是新增规则小节与指针同步，不改变校验器行为与既有字段语义，存量上下文无需迁移。
+documentation:
+  impact: update
+  files:
+    - core/project-context.md
+    - core/templates/project-context.template.yaml
+    - skills/project-initialization/SKILL.md
+    - VERSION
+acceptance_summary:
+  - core/project-context.md 有唯一的「验证入口探测线索」小节，覆盖四层探测顺序与登记口径
+  - project-initialization 第 5 步以指针引用该小节并明确登记到 verification.profiles
+  - 模板 profiles 带注释示例条目；加载规则含 profiles 缺失兜底口径
+status_history:
+  - status: pending
+    at: 2026-10-21T15:36:34
+    reason: "用户反馈框架对业务项目测试工具的发现能力弱，规则层无探测线索"
+  - status: in_progress
+    at: 2026-10-21T15:38:04
+    reason: "四处变更完成：core 探测线索小节、技能指针、模板示例、VERSION 2.33.0"
+  - status: review
+    at: 2026-10-21T15:38:05
+    reason: "npm run check 全绿、npm test 51/51，待用户验收"
+  - status: done
+    at: "2026-10-21T15:52:52"
+    reason: "用户已验收：用户验收通过并要求提交 git"
+next_action:
+  required: false
+  action: none
+  message: 用户已验收：用户验收通过并要求提交 git
