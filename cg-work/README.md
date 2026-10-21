@@ -33,6 +33,8 @@
 | `scripts/` | 结构、命名、链接和镜像一致性校验 |
 | `local/` | 项目上下文、原始需求箱与任务产物，不提交真实数据 |
 
+`local/tools/` 是本机工具副本目录，默认不入库；例外：`local/tools/browser-test/` 是 Web 项目共用的浏览器验收测试工具（配置驱动、证据可校验），随框架提交，用法见 [browser-test README](local/tools/browser-test/README.md)，各项目的套件配置在工具内 `<project>/test-suites.json` 并登记到项目上下文的 `tooling.config_paths`。
+
 单页面原型和不依赖业务仓库的多页面原型存放在 `local/projects/<project-id>/design/<design-name>/`；根目录 `designs/` 已废弃，不再用于新产物。依赖真实项目路由、组件或运行入口的多页面原型，可由用户选择存放在关联项目的 `<project.root_path>/prototypes/<design-name>/`，并在项目上下文的 `prototypes.paths` 中登记路径和入口。
 
 跨模块、跨会话、未决关键决策较多或不能作为单个任务验收的需求，使用 `framework:parent-child-decomposition`：先按决策分级明确关键决策（模糊时经 `framework:wayfinder`），再创建主任务（`role: parent`），其 `task.yaml` 记录决策、`plan.md` 记录需求覆盖与拆分（格式见 [主任务计划模板](core/templates/parent-plan.template.md)），最后创建以 `parent_reference` 挂靠、可独立验收的研发任务。关闭主任务只在其审查记录留存结论，不迁移或删除子任务证据。存量路线图（`roadmaps/` 三件套）双轨保留可继续使用，但不再新建。
