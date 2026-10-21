@@ -8,7 +8,13 @@
 # cg-work 自身是框架受管项目：其上下文、需求包、任务和报告随框架提交，但不得摘录业务项目真实数据。
 !/local/projects/cg-work/**
 # 本机工具副本可能包含个人路径或运行参数，不进入框架提交。
-/local/tools/
+# 例外：browser-test 浏览器验收测试工具作为框架共用资产入库；凭据、执行证据与业务导出一律排除。
+/local/tools/*
+!/local/tools/browser-test/
+/local/tools/browser-test/**/*.local.json
+/local/tools/browser-test/**/runs/
+/local/tools/browser-test/**/exports/
+/local/tools/browser-test/**/_tmp-*.mjs
 node_modules/
 /.workbuddy/
 /.obsidian/

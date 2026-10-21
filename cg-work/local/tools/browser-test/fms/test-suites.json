@@ -1,0 +1,282 @@
+{
+  "targets": {
+    "fms-ui": {
+      "url": "http://127.0.0.1:80/",
+      "health": "http://127.0.0.1:80/",
+      "startScript": "../lasen-runtime-center/scripts/start-fms-ui.ps1",
+      "runtimeService": "FMS:frontend",
+      "hint": "FMS 前端 Vite dev server（运行中心以 pnpm run front 启动；租户开关开启、验证码关闭）。"
+    },
+    "fms-server": {
+      "url": "http://127.0.0.1:50110/actuator/health",
+      "health": "http://127.0.0.1:50110/actuator/health",
+      "startScript": "../lasen-runtime-center/scripts/start-fms.ps1",
+      "runtimeService": "FMS:backend",
+      "hint": "FMS 后端健康检查地址；仅作前端测试的依赖预检。启动前需先在 IDEA 编译出 target/classes。"
+    }
+  },
+  "credentials": {
+    "file": "test-credentials.local.json",
+    "required": ["tenant", "username", "password"]
+  },
+  "flows": {
+    "login": [
+      {
+        "id": "open-login",
+        "action": "navigate",
+        "url": "{target.url}",
+        "expect": {
+          "visible": "placeholder=请输入用户名",
+          "text_includes": "登录"
+        },
+        "note": "会话检查步：访问根路径后若落在登录页（/login）说明未登录，继续执行标记 when:logged_out 的步骤；若已跳到 /index 等首页，说明登录态有效，后续 when:logged_out 步骤全部标记 skipped，直接进入套件自己的步骤。"
+      },
+      {
+        "id": "fill-tenant",
+        "action": "fill",
+        "when": "logged_out",
+        "selector_hint": "placeholder=请输入租户名称",
+        "value": "{credentials.tenant}",
+        "note": "FMS 租户开关开启，登录页多一个租户名称输入框；默认值取自 .env 的 VITE_APP_DEFAULT_LOGIN_TENANT（拉森-财务）。"
+      },
+      {
+        "id": "fill-username",
+        "action": "fill",
+        "when": "logged_out",
+        "selector_hint": "placeholder=请输入用户名",
+        "value": "{credentials.username}"
+      },
+      {
+        "id": "fill-password",
+        "action": "fill",
+        "when": "logged_out",
+        "selector_hint": "placeholder=请输入密码",
+        "value": "{credentials.password}"
+      },
+      {
+        "id": "submit-login",
+        "action": "click",
+        "when": "logged_out",
+        "selector_hint": "按钮文字=登录"
+      },
+      {
+        "id": "assert-home",
+        "action": "assert",
+        "expect": {
+          "url_not_includes": "/login"
+        },
+        "note": "无论新登录还是复用登录态都断言：最终必须不在 /login。控制台断言由各套件自己的步骤负责。"
+      }
+    ]
+  },
+  "suites": {
+    "smoke": {
+      "target": "fms-ui",
+      "dependsOn": ["fms-server"],
+      "description": "登录冒烟：打开登录页、填写租户+账号密码登录、断言进入首页且无控制台错误。",
+      "flows": ["login"],
+      "steps": [
+        {
+          "id": "assert-console-clean",
+          "action": "assert",
+          "expect": {
+            "console_errors": "none"
+          },
+          "note": "登录后控制台不允许报错，失败网络请求记入 failed_requests；验证码/百度统计 ERR_ABORTED 按已知噪音归类。"
+        }
+      ]
+    },
+    "export-document-rule": {
+      "target": "fms-ui",
+      "dependsOn": ["fms-server"],
+      "description": "登录后进入单据生成规则列表页，在页面上下文中调用 page/get 接口导出全部规则及详情数据。",
+      "flows": ["login"],
+      "steps": [
+        {
+          "id": "open-document-rule",
+          "action": "click",
+          "selector_hint": "首页控制面板卡片「单据规则」（routeKey=documentRule，图标 ep:operation），或侧边菜单进入单据生成规则页",
+          "note": "走真实用户入口点击进入；点击后应跳转到单据规则列表页（路径含 documentRule 或 document-rule）。"
+        },
+        {
+          "id": "assert-document-rule-page",
+          "action": "assert",
+          "expect": {
+            "url_includes": "documentRule",
+            "console_errors": "report"
+          },
+          "note": "若 URL 片段不匹配（实际路由可能为 document-rule），以列表页出现「规则编码」列头且页面标题/菜单为单据规则为准，符合则记 pass 并在 summary 说明实际 URL；控制台错误仅记录报告，不直接判失败。"
+        },
+        {
+          "id": "export-rule-data",
+          "action": "assert",
+          "expect": {
+            "console_errors": "report"
+          },
+          "note": "核心导出步：接口为跨域直连后端，base=http://127.0.0.1:50110/admin-api，鉴权为 Authorization: Bearer <token>（token 从页面 storage 取，key 含 accessToken/ACCESS_TOKEN 等，先在页面上下文列出 localStorage/sessionStorage 全部键值定位）。页面上下文执行：1) GET {base}/fms/document-rule/page?pageNo=1&pageSize=500（带 Authorization 头）取 total/list；2) 对每条 id 循环 GET {base}/fms/document-rule/get?id=<id> 取详情（含条件子表与财务单据子表）；3) 组装为 {exported_at, source, total, list:[{summary, detail}]} 的 JSON。若 token 取不到或 401，兜底方案：手动触发一次真实列表查询（点查询按钮），从浏览器 Network 面板读取 /fms/document-rule/page 的请求头（含 Authorization）与响应体，再用该头循环调 get 接口。在最终回复中原样完整输出该 JSON（不截断、不省略），同时报告：列表 total、实际取到的详情条数、任何非 200 或 code 非成功的响应。字段值保留数据库原始值（如字典 value），不翻译。主 Agent 会将该 JSON 落盘为导出文件。"
+        }
+      ]
+    },
+    "smoke-download-center": {
+      "target": "fms-ui",
+      "dependsOn": ["fms-server"],
+      "description": "登录后从顶部工具栏进入下载中心，验证导出任务列表页可正常打开。",
+      "flows": ["login"],
+      "steps": [
+        {
+          "id": "open-download-center",
+          "action": "click",
+          "selector_hint": "顶部工具栏下载图标，title=下载中心（位于 ElBadge 内，图标 ep:download）",
+          "note": "走真实用户入口（点击顶部图标），而非直接改 URL；点击后 URL 应包含 download-center。"
+        },
+        {
+          "id": "assert-download-center",
+          "action": "assert",
+          "expect": {
+            "url_includes": "download-center",
+            "text_includes": "集中查看本人发起的导出任务",
+            "console_errors": "none"
+          },
+          "note": "下载中心列表页应渲染说明文案；列表列头含「文件名称」，空态文案为「暂无导出任务，请先在业务列表发起导出」。"
+        }
+      ]
+    },
+    "download-center-interactions": {
+      "target": "fms-ui",
+      "dependsOn": ["fms-server"],
+      "description": "下载中心影响面验收：列表筛选/重置、关键字搜索、详情弹窗、下载动作与接口网络断言。",
+      "flows": ["login"],
+      "steps": [
+        {
+          "id": "open-download-center",
+          "action": "click",
+          "selector_hint": "顶部工具栏下载图标，title=下载中心（位于 ElBadge 内，图标 ep:download）",
+          "note": "走真实用户入口点击，URL 应包含 download-center。"
+        },
+        {
+          "id": "assert-list-loaded",
+          "action": "assert",
+          "expect": {
+            "url_includes": "download-center",
+            "text_includes": "集中查看本人发起的导出任务",
+            "console_errors": "report"
+          },
+          "note": "列表页加载完成：列头含「文件名称」「状态」「操作」；记录当前总行数与首行任务编号，供后续筛选断言对比。"
+        },
+        {
+          "id": "filter-by-status",
+          "action": "fill",
+          "selector_hint": "状态筛选下拉（placeholder=全部状态），选择「生成完成」；随后点击查询按钮",
+          "value": "生成完成",
+          "note": "核心筛选步：选择状态=生成完成后点查询，断言列表所有行状态标签均为「生成完成」或「已下载」（COMPLETED 且已下载会显示已下载），且网络请求 /fms/download/my-page 的 status 参数=COMPLETED。网络用 report 记录，筛选结果不符则 outcome=fail。"
+        },
+        {
+          "id": "reset-filters",
+          "action": "click",
+          "selector_hint": "查询区「重置」按钮",
+          "note": "重置后断言状态筛选恢复为空（placeholder=全部状态），列表行数恢复到 assert-list-loaded 记录的行数，my-page 请求不带 status 参数。"
+        },
+        {
+          "id": "keyword-search",
+          "action": "fill",
+          "selector_hint": "关键字输入框（placeholder=文件名、来源或任务编号），输入后点查询按钮",
+          "value": "库存",
+          "note": "输入「库存」后点查询，断言网络请求 keyword=库存，列表只保留文件名称或来源含「库存」的行；若无匹配行则空态文案「暂无导出任务，请先在业务列表发起导出」出现也算通过。"
+        },
+        {
+          "id": "reset-filters-again",
+          "action": "click",
+          "selector_hint": "查询区「重置」按钮",
+          "note": "再次重置，恢复全量列表，为详情/下载步骤准备。"
+        },
+        {
+          "id": "open-task-detail",
+          "action": "click",
+          "selector_hint": "第一行操作列「详情」按钮",
+          "note": "打开详情弹窗：应出现标题「下载任务详情」的 Dialog，内容含「任务编号」「文件名称」「过期时间」「保留天数」标签项；网络应有 GET /fms/download/get?id=<id> 返回 200。任一不符则 fail。"
+        },
+        {
+          "id": "close-task-detail",
+          "action": "click",
+          "selector_hint": "详情弹窗底部「关闭」按钮",
+          "note": "关闭后弹窗消失，列表页仍可见。"
+        },
+        {
+          "id": "download-completed-task",
+          "action": "click",
+          "selector_hint": "已完成任务行操作列按钮，文字为「下载」或「再次下载」（首次下载显示「下载」）",
+          "note": "下载动作：断言网络 GET /fms/download/download-url?id=<id> 返回 200 且响应含 url；若浏览器弹出新标签页记录其 URL，未弹出但接口成功也判 pass 并在 detail 说明。接口非 200 或报错则 fail。"
+        },
+        {
+          "id": "assert-console-clean",
+          "action": "assert",
+          "expect": {
+            "console_errors": "none"
+          },
+          "note": "全程控制台不允许 error 级错误；warn 级（router 菜单路径、VersionCheck、i18n 回退）单独归类为噪音不计失败。"
+        }
+      ]
+    },
+    "export-async-integration": {
+      "target": "fms-ui",
+      "dependsOn": ["fms-server"],
+      "description": "首批导出接入验收：在库存流水单页发起导出，验证 assess→create 异步分支与下载中心新任务呈现。",
+      "flows": ["login"],
+      "steps": [
+        {
+          "id": "open-inventory-bill",
+          "action": "click",
+          "selector_hint": "侧边菜单进入「库存流水单」（路由 fms/supplyChain/inventoryBill/flow，菜单名含 库存流水单 或 库存管理→库存流水单）",
+          "note": "走真实用户入口；若菜单层级找不到，允许点击可到达该页面的父菜单逐级展开。打开后应出现列表页与「导出」按钮。"
+        },
+        {
+          "id": "assert-inventory-bill-loaded",
+          "action": "assert",
+          "expect": {
+            "text_includes": "库存流水单",
+            "console_errors": "report"
+          },
+          "note": "列表页加载完成，存在导出相关按钮（「导出」或「导出含明细」）。记录当前可见按钮文字。"
+        },
+        {
+          "id": "trigger-export",
+          "action": "click",
+          "selector_hint": "导出按钮（文字含「导出」，如「导出」「导出含明细」）；随后处理可能连续出现的确认弹窗：导出确认、以及「未设置任何查询条件，将导出全部数据，是否继续？」的二次确认，均点击确认/确定",
+          "note": "核心步：点击导出并确认所有弹窗。观察网络：POST /fms/download/assess 必须被调用（exportCode=INVENTORY_BILL_EXPORT 或 INVENTORY_BILL_DETAIL_EXPORT，带 querySnapshot）。assess 返回后有两种走向，如实记录。"
+        },
+        {
+          "id": "assert-async-branch",
+          "action": "assert",
+          "expect": {
+            "text_includes": "已创建异步下载任务",
+            "console_errors": "report"
+          },
+          "note": "异步分支断言：应出现成功提示「数据量较大，已创建下载任务，可在顶部下载中心查看进度」，且网络 POST /fms/download/create 返回 200。若实际走同步导出（assess.mode=SYNC，直接下载文件），此步按实际分支标 outcome=needs_review 并记录 assess 评估结果与下载结果，不要标 fail。若 assess 或 create 报错（4xx/5xx 或 code 非成功）则 fail。"
+        },
+        {
+          "id": "open-download-center-after-export",
+          "action": "click",
+          "selector_hint": "顶部工具栏下载图标，title=下载中心",
+          "note": "导出后进入下载中心查看新任务。"
+        },
+        {
+          "id": "assert-new-task-present",
+          "action": "assert",
+          "expect": {
+            "url_includes": "download-center",
+            "console_errors": "report"
+          },
+          "note": "列表初始基线为 1 条任务（库存单据明细.xls）。异步分支成功时应出现新任务行（来源页面=库存流水单，状态可为 排队中/生成中/生成完成，因任务完成较快）；同时观察 my-pending-count 请求与顶部角标数量 ≥1，以及任务活跃时 my-page 是否约每 5 秒轮询一次。若前步走了同步导出（needs_review），此步如实记录列表是否仍为基线，标 needs_review。"
+        },
+        {
+          "id": "assert-console-clean",
+          "action": "assert",
+          "expect": {
+            "console_errors": "none"
+          },
+          "note": "全程控制台不允许 error 级错误；warn 级归类噪音。"
+        }
+      ]
+    }
+  }
+}

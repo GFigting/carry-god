@@ -1,0 +1,244 @@
+{
+  "targets": {
+    "lasen-ui": {
+      "url": "http://127.0.0.1:81/",
+      "health": "http://127.0.0.1:81/",
+      "startScript": "../lasen-runtime-center/scripts/start-lasen-ui.ps1",
+      "runtimeService": "LASEN:frontend",
+      "hint": "LASEN 前端 Vite dev server（运行中心以 pnpm run front 启动，.env.front 关闭验证码与租户开关）。"
+    },
+    "lasen-fc": {
+      "url": "http://127.0.0.1:49700/actuator/health",
+      "health": "http://127.0.0.1:49700/actuator/health",
+      "startScript": "../lasen-runtime-center/scripts/start-lasen-fc.ps1",
+      "runtimeService": "LASEN:backend",
+      "hint": "LASEN FC 后端健康检查地址；仅作前端测试的依赖预检。"
+    }
+  },
+  "credentials": {
+    "file": "test-credentials.local.json",
+    "required": ["username", "password"]
+  },
+  "flows": {
+    "login": [
+      {
+        "id": "open-login",
+        "action": "navigate",
+        "url": "{target.url}",
+        "expect": {
+          "visible": "placeholder=请输入用户名",
+          "text_includes": "登录"
+        },
+        "note": "会话检查步：访问根路径后若落在登录页（/login）说明未登录，继续执行标记 when:logged_out 的步骤；若已跳到 /index 等首页，说明登录态有效，后续 when:logged_out 步骤全部标记 skipped，直接进入套件自己的步骤。"
+      },
+      {
+        "id": "fill-username",
+        "action": "fill",
+        "when": "logged_out",
+        "selector_hint": "placeholder=请输入用户名",
+        "value": "{credentials.username}"
+      },
+      {
+        "id": "fill-password",
+        "action": "fill",
+        "when": "logged_out",
+        "selector_hint": "placeholder=请输入密码",
+        "value": "{credentials.password}"
+      },
+      {
+        "id": "submit-login",
+        "action": "click",
+        "when": "logged_out",
+        "selector_hint": "按钮文字=登录"
+      },
+      {
+        "id": "assert-home",
+        "action": "assert",
+        "expect": {
+          "url_not_includes": "/login"
+        },
+        "note": "无论新登录还是复用登录态都断言：最终必须不在 /login。控制台断言由各套件自己的步骤负责。"
+      }
+    ]
+  },
+  "suites": {
+    "smoke": {
+      "target": "lasen-ui",
+      "dependsOn": ["lasen-fc"],
+      "description": "登录冒烟：打开登录页、用本地测试账号登录、断言进入首页且无控制台错误。",
+      "flows": ["login"],
+      "steps": [
+        {
+          "id": "assert-console-clean",
+          "action": "assert",
+          "expect": {
+            "console_errors": "none"
+          },
+          "note": "登录后控制台不允许报错，失败网络请求记入 failed_requests；验证码/百度统计 ERR_ABORTED 按已知噪音归类。"
+        }
+      ]
+    },
+    "overseas-tax-dashboard": {
+      "target": "lasen-ui",
+      "dependsOn": ["lasen-fc"],
+      "description": "海外税务合规资产看板：验证页面加载、已到期指标与处置队列一致、重置后仍能正常取数，且无控制台错误。",
+      "flows": ["login"],
+      "steps": [
+        {
+          "id": "open-dashboard",
+          "action": "navigate",
+          "url": "{target.url}finance/overseas-tax-compliance/dashboard"
+        },
+        {
+          "id": "wait-dashboard-loaded",
+          "action": "wait",
+          "selector_hint": "看板加载遮罩（文字=正在更新看板数据…）",
+          "state": "hidden",
+          "timeout_ms": 15000
+        },
+        {
+          "id": "assert-dashboard-ready",
+          "action": "assert",
+          "evidence": { "screenshot": true },
+          "expect": {
+            "visible": "text=合规资产看板",
+            "url_includes": "/finance/overseas-tax-compliance/dashboard"
+          },
+          "note": "等待看板请求完成：确认‘正在更新看板数据…’遮罩消失且查询按钮可用，再读取指标。不要把加载期间的初始 0 当作最终结果。"
+        },
+        {
+          "id": "open-overdue-queue",
+          "action": "click",
+          "selector_hint": "已到期指标卡片（按钮可访问名称以‘已到期’开头）"
+        },
+        {
+          "id": "assert-overdue-queue",
+          "action": "assert",
+          "evidence": { "screenshot": true },
+          "expect": {
+            "visible": "text=已到期资产处置队列",
+            "text_includes": "已到期资产需优先记录续费、变更或终止的处置结果"
+          },
+          "note": "核对卡片已到期数量与弹窗中‘服务已到期’记录行数相等；允许真实测试数据没有已到期资产，此时数量和记录行数都应为 0 且显示空状态。将实际数量和对照结论写入本步证据。"
+        },
+        {
+          "id": "close-overdue-queue",
+          "action": "click",
+          "selector_hint": "已到期资产处置队列弹窗的关闭按钮"
+        },
+        {
+          "id": "reset-dashboard-filters",
+          "action": "click",
+          "selector_hint": "按钮文字=重置"
+        },
+        {
+          "id": "assert-dashboard-after-reset",
+          "action": "assert",
+          "evidence": { "screenshot": true },
+          "expect": {
+            "visible": "text=合规资产看板",
+            "url_includes": "/finance/overseas-tax-compliance/dashboard"
+          },
+          "note": "等待重置后的看板请求完成，并确认查询控件恢复默认值、指标正常展示；使用当次实际数据，不固定资产总数或已到期数量。"
+        },
+        {
+          "id": "assert-dashboard-console-clean",
+          "action": "assert",
+          "expect": {
+            "console_errors": "none"
+          },
+          "note": "全流程控制台不允许有未归类错误；失败网络请求记入 failed_requests，按工具说明单独归类已知噪音。"
+        }
+      ]
+    },
+    "overseas-tax-registration": {
+      "target": "lasen-ui",
+      "dependsOn": ["lasen-fc"],
+      "description": "海外税务注册管理：验证注册入口、类型切换与页面无错误。",
+      "flows": ["login"],
+      "steps": [
+        { "id": "open-registration", "action": "navigate", "url": "{target.url}finance/overseas-tax-compliance/registration-management" },
+        { "id": "assert-registration-ready", "action": "assert", "expect": { "visible": "text=注册管理", "url_includes": "/finance/overseas-tax-compliance/registration-management" }, "note": "等待页面初始化完成，确认注册管理主标题和类型入口可见。" },
+        { "id": "assert-registration-console-clean", "action": "assert", "expect": { "console_errors": "none" } }
+      ]
+    },
+    "overseas-tax-asset-management": {
+      "target": "lasen-ui",
+      "dependsOn": ["lasen-fc"],
+      "description": "海外税务资产管理：验证台账加载、查询重置和资产详情入口。",
+      "flows": ["login"],
+      "steps": [
+        { "id": "open-asset-management", "action": "navigate", "url": "{target.url}finance/overseas-tax-compliance/asset-management" },
+        { "id": "assert-asset-management-ready", "action": "assert", "expect": { "visible": "text=资产管理", "url_includes": "/finance/overseas-tax-compliance/asset-management" }, "note": "等待台账请求完成，确认查询区和表格或空状态可见。" },
+        { "id": "reset-asset-filters", "action": "click", "selector_hint": "按钮文字=重置" },
+        { "id": "assert-asset-after-reset", "action": "assert", "expect": { "visible": "text=资产管理" }, "note": "确认重置后页面仍在资产管理并恢复默认筛选。" },
+        { "id": "assert-asset-console-clean", "action": "assert", "expect": { "console_errors": "none" } }
+      ]
+    },
+    "overseas-tax-vat-management": {
+      "target": "lasen-ui",
+      "dependsOn": ["lasen-fc"],
+      "description": "海外税务 VAT 管理：验证 VAT 台账、筛选重置和空/有数据状态。",
+      "flows": ["login"],
+      "steps": [
+        { "id": "open-vat-management", "action": "navigate", "url": "{target.url}finance/overseas-tax-compliance/vat-management" },
+        { "id": "assert-vat-ready", "action": "assert", "expect": { "visible": "text=VAT", "url_includes": "/finance/overseas-tax-compliance/vat-management" }, "note": "等待 VAT 列表请求完成，确认 VAT 税号、国家/地区筛选和表格或空状态可见。" },
+        { "id": "reset-vat-filters", "action": "click", "selector_hint": "按钮文字=重置" },
+        { "id": "assert-vat-after-reset", "action": "assert", "expect": { "visible": "text=VAT" } },
+        { "id": "assert-vat-console-clean", "action": "assert", "expect": { "console_errors": "none" } }
+      ]
+    },
+    "overseas-tax-epr-management": {
+      "target": "lasen-ui",
+      "dependsOn": ["lasen-fc"],
+      "description": "海外税务 EPR/PPWR 管理：验证列表、服务类型筛选和重置。",
+      "flows": ["login"],
+      "steps": [
+        { "id": "open-epr-management", "action": "navigate", "url": "{target.url}finance/overseas-tax-compliance/epr-management" },
+        { "id": "assert-epr-ready", "action": "assert", "expect": { "visible": "text=EPR", "url_includes": "/finance/overseas-tax-compliance/epr-management" }, "note": "等待 EPR/PPWR 列表请求完成，确认服务类型筛选和列表或空状态可见。" },
+        { "id": "reset-epr-filters", "action": "click", "selector_hint": "按钮文字=重置" },
+        { "id": "assert-epr-after-reset", "action": "assert", "expect": { "visible": "text=EPR" } },
+        { "id": "assert-epr-console-clean", "action": "assert", "expect": { "console_errors": "none" } }
+      ]
+    },
+    "overseas-tax-authorized-representative": {
+      "target": "lasen-ui",
+      "dependsOn": ["lasen-fc"],
+      "description": "海外税务授权代表管理：验证代表台账、代表类型筛选和重置。",
+      "flows": ["login"],
+      "steps": [
+        { "id": "open-authorized-representative", "action": "navigate", "url": "{target.url}finance/overseas-tax-compliance/authorized-representative-management" },
+        { "id": "assert-authorized-representative-ready", "action": "assert", "expect": { "visible": "text=授权代表", "url_includes": "/finance/overseas-tax-compliance/authorized-representative-management" }, "note": "等待授权代表列表请求完成，确认代表类型筛选和列表或空状态可见。" },
+        { "id": "reset-authorized-representative-filters", "action": "click", "selector_hint": "按钮文字=重置" },
+        { "id": "assert-authorized-representative-after-reset", "action": "assert", "expect": { "visible": "text=授权代表" } },
+        { "id": "assert-authorized-representative-console-clean", "action": "assert", "expect": { "console_errors": "none" } }
+      ]
+    },
+    "overseas-tax-base-config": {
+      "target": "lasen-ui",
+      "dependsOn": ["lasen-fc"],
+      "description": "海外税务基础配置：验证服务商与申报税率配置工作台加载及刷新。",
+      "flows": ["login"],
+      "steps": [
+        { "id": "open-base-config", "action": "navigate", "url": "{target.url}finance/overseas-tax-compliance/base-config" },
+        { "id": "assert-base-config-ready", "action": "assert", "expect": { "visible": "text=配置维护工作台", "url_includes": "/finance/overseas-tax-compliance/base-config" }, "note": "确认服务商和申报税率工作区可见。" },
+        { "id": "refresh-base-config", "action": "click", "selector_hint": "按钮文字=刷新" },
+        { "id": "assert-base-config-after-refresh", "action": "assert", "expect": { "visible": "text=配置维护工作台" } },
+        { "id": "assert-base-config-console-clean", "action": "assert", "expect": { "console_errors": "none" } }
+      ]
+    },
+    "overseas-tax-monthly-exchange-rate": {
+      "target": "lasen-ui",
+      "dependsOn": ["lasen-fc"],
+      "description": "海外税务月度汇率：验证汇率配置页加载、查询和重置。",
+      "flows": ["login"],
+      "steps": [
+        { "id": "open-monthly-exchange-rate", "action": "navigate", "url": "{target.url}finance/overseas-tax-compliance/monthly-exchange-rate" },
+        { "id": "assert-monthly-exchange-rate-ready", "action": "assert", "expect": { "visible": "text=月度汇率", "url_includes": "/finance/overseas-tax-compliance/monthly-exchange-rate" }, "note": "等待月度汇率列表请求完成，确认筛选区和列表或空状态可见。" },
+        { "id": "reset-monthly-exchange-rate", "action": "click", "selector_hint": "按钮文字=重置" },
+        { "id": "assert-monthly-exchange-rate-after-reset", "action": "assert", "expect": { "visible": "text=月度汇率" } },
+        { "id": "assert-monthly-exchange-rate-console-clean", "action": "assert", "expect": { "console_errors": "none" } }
+      ]
+    }
+  }
+}
