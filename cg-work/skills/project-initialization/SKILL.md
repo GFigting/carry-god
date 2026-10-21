@@ -12,7 +12,7 @@ disable-model-invocation: true
 2. 检查项目根路径是否存在、是否为目录，以及是否能识别为项目仓库。
 3. 根据项目根目录名生成小写 `kebab-case` 的 `project-id`；重名时追加稳定的仓库或组织标识，并记录判断依据。
 4. 探测项目自身的 `AGENTS.md`、`CLAUDE.md`、`CODING_STANDARDS.md`、`CONTRIBUTING.md`、`README.md`、包管理文件、格式化/Lint 配置、测试配置、构建配置和文档目录。
-5. 识别技术栈、包管理器、测试命令和构建命令；无法确认的字段保持为空并记录缺口，不猜测。
+5. 识别技术栈和包管理器；测试、静态检查与构建入口按 [验证入口探测线索](../../core/project-context.md#验证入口探测线索) 的顺序探测，并登记到上下文 `verification.profiles`；无法确认的字段保持为空并记录缺口，不猜测。
 6. 识别启动入口、健康检查、业务文档、架构文档、接口文档、词汇表和项目技能路径。
 7. 创建 `local/projects/<project-id>/requirements-inbox/`，写入固定 `README.md`；需求包与附件只允许用户手动添加，Agent 不在此目录生成需求包，也不写入任务过程产物。
 8. 使用 `core/templates/project-context.template.yaml` 生成 `local/projects/<project-id>/project-context.yaml`，将需求箱路径登记到 `requirements.inbox_path`，并将已发现的项目代码规范文件登记到可选字段 `coding_standards.files`。未发现专门规范时保留空列表，并在初始化任务记录中说明。

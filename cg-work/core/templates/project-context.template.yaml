@@ -55,6 +55,14 @@ tooling:
 # 验证配置；每个 profile 定义一种可执行检查。
 verification:
   # 每项包含 id、stage、command、outcome 和环境限制 limitation。
+  # 探测线索见 core/project-context.md「验证入口探测线索」；无确认入口时保持空列表并记录缺口。
+  # 示例结构（登记时替换占位值）：
+  #   profiles:
+  #     - id: app-full-tests
+  #       stage: full_test
+  #       command: npm test
+  #       outcome: required
+  #       limitation: 命令工作目录必须是项目根目录。
   profiles: []
 # 框架本地的原始需求入口。
 requirements:

@@ -77,6 +77,17 @@
 
 `documentation` 子类别固定为 `project_rules`、`development_standards`、`business`、`architecture`、`api`、`data`、`operations`、`security`；`runtime`、`verification`、`database` 和 `product.roadmap_path` 是各自领域的专属入口，不重复登记进 `documentation`。
 
+### 验证入口探测线索
+
+`verification.profiles` 是项目测试、静态检查与构建入口的唯一登记处。项目首次接入或上下文失效时按以下顺序探测，可信度从高到低，不得凭经验编造命令：
+
+1. **CI/自动化配置**：`.github/workflows/`、`.gitlab-ci.yml`、`Jenkinsfile` 等文件中真实执行的测试、Lint 和构建命令；与文档描述冲突时以 CI 为准并记录差异。
+2. **项目自述文档**：`AGENTS.md`、`CLAUDE.md`、`CONTRIBUTING.md`、`README.md` 中的测试与验证章节。
+3. **构建工具配置映射**：`package.json` 的 `scripts.test`/`test:*`（`vitest.config.*`、`jest.config.*`、`playwright.config.*` 区分单测与 E2E 入口）、`pom.xml`（`mvn test`，多模块补 `-pl <module>` 定向入口）、`build.gradle*`/`gradlew`、`pytest.ini`/`pyproject.toml [tool.pytest]`/`tox.ini`、`go.mod`、`Cargo.toml`、`*.sln`/`*.csproj`、`Makefile` 的 `test:` 目标、`docker-compose.test.yml` 等容器化测试入口。
+4. **monorepo/多模块展开**：`pnpm-workspace.yaml`、`workspaces`、Maven 多模块的全量入口与模块级定向入口分别登记，工作目录与依赖前置条件写入 `limitation`。
+
+登记时按 `stage` 区分（如 `full_test`、`targeted_test`、`targeted_compile`、`static`、`build`）。四层都无线索时 `profiles` 保持为空，在初始化任务记录缺口并一问一答向用户确认。
+
 ### 优化规则
 
 - `documentation` 只关联稳定、可复用的文档；暂时没有某类文档时保留空列表并记录缺口，不创建占位文件。
@@ -107,7 +118,7 @@
 
 项目级路线图是可选的常驻产物，但**存放在原项目仓库内**：登记在项目上下文的可选字段 `product.roadmap_path`，由 `framework:product-management` 维护，内容由 `scripts/check-product.mjs` 校验，路径存在性由 `scripts/check-project.mjs` 校验。它与框架本地大任务的主任务（`role: parent`，单个大需求的拆分与覆盖记录）是两种产物，不要混用。
 
-单仓项目继续以 `project.root_path` 作为主仓库。存在前后端或多个独立仓库时，可在可选的 `repositories` 中登记每个仓库的稳定 `id`、`role` 和绝对 `root_path`；`project.root_path` 不因此失效。执行验证前，先读取可选的 `verification.profiles`：每项声明 `stage`、`command`、`outcome` 及可选 `limitation`。`required` 表示该阶段应执行，`environment_limited` 表示必须保留未完成原因而不能写为通过，`not_applicable` 表示该任务不适用。profile 是项目验证入口的唯一记录处，不替代任务内的新鲜验证证据。
+单仓项目继续以 `project.root_path` 作为主仓库。存在前后端或多个独立仓库时，可在可选的 `repositories` 中登记每个仓库的稳定 `id`、`role` 和绝对 `root_path`；`project.root_path` 不因此失效。执行验证前，先读取可选的 `verification.profiles`：每项声明 `stage`、`command`、`outcome` 及可选 `limitation`。`required` 表示该阶段应执行，`environment_limited` 表示必须保留未完成原因而不能写为通过，`not_applicable` 表示该任务不适用。profile 是项目验证入口的唯一记录处，不替代任务内的新鲜验证证据。`verification.profiles` 缺失或为空而任务需要执行验证时，先按 [验证入口探测线索](#验证入口探测线索) 探测并补登记；仍无法确认时记录为环境限制并请求补充上下文，不得凭经验编造验证命令。
 
 启动、停止或重启项目时，必须先读取项目上下文的 `runtime.entrypoints` 和相关 `runtime.health_checks`。`runtime.entrypoints` 每项可以是可执行命令（例如 `npm run dev`、`mvn spring-boot:run`），也可以是已存在的启动脚本路径；优先执行上下文登记的入口，不得凭经验另造启动命令。框架工具可以将入口指向 `tools/` 下的共享脚本。若入口为空、路径失效或命令需要未登记的参数，先记录环境限制并请求补充上下文，不得静默绕过上下文启动。
 
