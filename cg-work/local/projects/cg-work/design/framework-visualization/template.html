@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cg-work 框架全景</title>
+<style>
+  :root {
+    --bg: #faf9f7; --panel: #ffffff; --line: #e7e2d9; --line-strong: #d6cfc2;
+    --text: #2c2a26; --muted: #857f74; --faint: #a89f93;
+    --accent: #a8522a; --accent-bg: #f7ece5;
+    --done: #2e7d4f; --done-bg: #ecf4ef;
+    --prog: #2f5d8a; --prog-bg: #edf2f8;
+    --rev: #a97a1f; --rev-bg: #faf3e3;
+    --pend: #7d7669; --pend-bg: #f1efeb;
+    --warn: #b03a2e; --warn-bg: #f9efed;
+    --mono: "Cascadia Code", "JetBrains Mono", Consolas, "Courier New", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 14px; line-height: 1.6;
+  }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 24px 28px 60px; }
+
+  /* ---- 头部 ---- */
+  header.top { padding: 26px 0 18px; border-bottom: 1px solid var(--line); }
+  .top-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 24px; letter-spacing: 0.5px; }
+  .ver { font-family: var(--mono); font-size: 12px; color: var(--accent); background: var(--accent-bg);
+         border: 1px solid #e6cdbf; border-radius: 999px; padding: 2px 10px; }
+  .snap { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+  .sub { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; border-radius: 999px;
+           padding: 2px 10px; border: 1px solid var(--line-strong); background: var(--panel); color: var(--muted); }
+  .badge.ok { color: var(--done); border-color: #bcd8c6; background: var(--done-bg); }
+  .badge.fail { color: var(--warn); border-color: #e4b7b1; background: var(--warn-bg); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* ---- 导航 ---- */
+  nav { position: sticky; top: 0; z-index: 10; background: rgba(250,249,247,0.92); backdrop-filter: blur(6px);
+        border-bottom: 1px solid var(--line); margin: 0 -28px; padding: 10px 28px; display: flex; gap: 8px; flex-wrap: wrap; }
+  nav a { font-size: 13px; color: var(--muted); text-decoration: none; padding: 4px 12px; border-radius: 999px;
+          border: 1px solid transparent; }
+  nav a:hover { color: var(--accent); border-color: #e6cdbf; background: var(--accent-bg); }
+
+  /* ---- 区块 ---- */
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+            padding: 22px 24px; margin-top: 22px; scroll-margin-top: 64px; }
+  .sec-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+  .sec-no { font-family: var(--mono); font-size: 12px; color: var(--accent); border: 1px solid #e6cdbf;
+            background: var(--accent-bg); border-radius: 6px; padding: 1px 7px; }
+  h2 { font-size: 17px; }
+  .sec-desc { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; }
+
+  .grid { display: grid; gap: 16px; }
+  .g2 { grid-template-columns: 1fr 1fr; }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g-map { grid-template-columns: repeat(3, 1fr); }
+  .g-sm { grid-template-columns: 1.25fr 1fr; }
+  @media (max-width: 1024px) { .g-map, .g3, .g2, .g-sm { grid-template-columns: 1fr; } }
+
+  .card { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: #fdfcfb; }
+  .card h3 { font-size: 13.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .card h3 .path { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .card p { font-size: 12.5px; color: var(--muted); }
+  .card .big { font-family: var(--mono); font-size: 20px; color: var(--text); font-weight: 600; }
+
+  /* ---- 优先级链 ---- */
+  .chain { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; margin-top: 4px; }
+  .chain .node { background: var(--panel); border: 1px solid var(--line-strong); border-radius: 8px; padding: 4px 10px; }
+  .chain .node.hi { border-color: #e6cdbf; background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .chain .sep { color: var(--faint); font-family: var(--mono); }
+
+  ol.steps { columns: 2; column-gap: 28px; font-size: 12.5px; color: var(--muted); padding-left: 20px; }
+  @media (max-width: 768px) { ol.steps { columns: 1; } }
+  ol.steps li { margin-bottom: 4px; break-inside: avoid; }
+  ol.steps b { color: var(--text); font-weight: 600; }
+
+  /* ---- 状态机 ---- */
+  .sm-svg { width: 100%; height: auto; display: block; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .legend .item { display: inline-flex; align-items: center; gap: 7px; }
+  .sw { width: 26px; height: 0; border-top: 2px solid #6b655c; }
+  .sw.dash { border-top-style: dashed; border-top-color: #b9b2a6; }
+  .sw.box { width: 12px; height: 12px; border: 1.5px dashed var(--warn); border-radius: 3px; background: var(--warn-bg); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  th, td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; vertical-align: top; }
+  th { background: #f6f4f0; font-weight: 600; color: var(--text); white-space: nowrap; }
+  td.num, th.num { text-align: right; font-family: var(--mono); }
+  td.mono { font-family: var(--mono); font-size: 12px; }
+  tr:hover td { background: #faf8f5; }
+
+  .pill { display: inline-block; font-family: var(--mono); font-size: 11.5px; border-radius: 999px;
+          padding: 1px 9px; border: 1px solid var(--line-strong); background: #f6f4f0; color: var(--muted); }
+  .pill.done { color: var(--done); background: var(--done-bg); border-color: #bcd8c6; }
+  .pill.prog { color: var(--prog); background: var(--prog-bg); border-color: #b9c9db; }
+  .pill.rev { color: var(--rev); background: var(--rev-bg); border-color: #e2cd9d; }
+  .pill.pend { color: var(--pend); background: var(--pend-bg); }
+  .pill.warn { color: var(--warn); background: var(--warn-bg); border-color: #e4b7b1; }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .stat { border: 1px solid var(--line); border-radius: 10px; background: #fdfcfb; padding: 8px 14px; min-width: 86px; }
+  .stat .n { font-family: var(--mono); font-size: 19px; font-weight: 600; }
+  .stat .l { font-size: 11.5px; color: var(--muted); }
+  .stat.c-done .n { color: var(--done); } .stat.c-prog .n { color: var(--prog); }
+  .stat.c-rev .n { color: var(--rev); } .stat.c-pend .n { color: var(--pend); }
+  .stat.c-warn .n { color: var(--warn); } .stat.c-all .n { color: var(--accent); }
+
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 10px; }
+  .filters button { font-size: 12px; font-family: var(--mono); color: var(--muted); background: var(--panel);
+                    border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px 12px; cursor: pointer; }
+  .filters button.on { color: var(--accent); border-color: #e6cdbf; background: var(--accent-bg); }
+  .filters button:hover { border-color: var(--accent); }
+
+  /* ---- 交付路径 ---- */
+  .dp { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: #fdfcfb; position: relative; }
+  .dp h3 { font-size: 13.5px; display: flex; justify-content: space-between; align-items: center; }
+  .dp h3 .cnt { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .dp p { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+  .dp .tag { font-family: var(--mono); font-size: 11px; padding: 1px 8px; border-radius: 999px; }
+  .dp.lw .tag { color: var(--prog); background: var(--prog-bg); }
+  .dp.st .tag { color: var(--done); background: var(--done-bg); }
+  .dp.cp .tag { color: var(--rev); background: var(--rev-bg); }
+  .upgrade { font-size: 12px; color: var(--muted); background: #f6f4f0; border: 1px dashed var(--line-strong);
+             border-radius: 8px; padding: 8px 12px; margin-top: 12px; }
+  .checklist { list-style: none; margin-top: 10px; }
+  .checklist li { font-size: 12.5px; color: var(--muted); padding-left: 22px; position: relative; margin-bottom: 3px; }
+  .checklist li::before { content: "□"; position: absolute; left: 2px; color: var(--faint); font-family: var(--mono); }
+
+  /* ---- 时间线 ---- */
+  .tl-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tl-chart { display: flex; align-items: flex-end; gap: 2px; height: 150px; border-bottom: 1px solid var(--line-strong);
+              padding: 0 2px; position: relative; }
+  .tl-day { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; height: 100%; position: relative; }
+  .tl-day .bar { background: #d9a58c; border-radius: 2px 2px 0 0; min-height: 0; }
+  .tl-day.weekend .bar { background: #e5c4b2; }
+  .tl-day.peak .bar { background: var(--accent); }
+  .tl-day:hover .bar { filter: brightness(1.08); }
+  .tl-day .tip { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+                 background: var(--text); color: #fff; font-size: 11px; font-family: var(--mono);
+                 padding: 2px 7px; border-radius: 5px; white-space: nowrap; z-index: 5; margin-bottom: 3px; }
+  .tl-day:hover .tip { display: block; }
+  .tl-axis { display: flex; margin-top: 6px; position: relative; height: 16px; }
+  .tl-axis span { position: absolute; font-size: 11px; color: var(--faint); font-family: var(--mono); transform: translateX(-50%); }
+  .tl-peaks { font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .tl-peaks b { color: var(--accent); font-family: var(--mono); }
+
+  /* ---- 需求箱 ---- */
+  .rq-row { display: grid; grid-template-columns: 110px 1fr 44px; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 12.5px; }
+  .rq-row .name { font-family: var(--mono); font-size: 12px; color: var(--text); text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rq-track { height: 14px; background: #f1efeb; border-radius: 4px; overflow: hidden; display: flex; }
+  .rq-fill { background: var(--accent); height: 100%; }
+  .rq-arch { background: #d9d3c8; height: 100%; }
+  .rq-row .n { font-family: var(--mono); color: var(--muted); }
+
+  footer { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--line);
+           font-size: 12px; color: var(--faint); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  footer code { font-family: var(--mono); background: #f1efeb; border-radius: 4px; padding: 1px 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="top-row">
+      <h1>cg-work 框架全景</h1>
+      <span class="ver" id="ver"></span>
+      <span class="badge" id="check-badge"><span class="dot"></span><span id="check-text">…</span></span>
+      <span class="snap" id="snap"></span>
+    </div>
+    <p class="sub">内部 AI 软件开发框架 · 只读可视化镜像 — 一页看全：目录职责、任务状态机、实时看板、工作流、交付路径与提交活跃度。数据为构建时快照，刷新见页脚。</p>
+  </header>
+
+  <nav>
+    <a href="#map">框架地图</a>
+    <a href="#state">状态机</a>
+    <a href="#board">任务看板</a>
+    <a href="#workflows">工作流</a>
+    <a href="#timeline">提交时间线</a>
+    <a href="#health">需求箱与健康</a>
+  </nav>
+
+  <!-- 1 框架地图 -->
+  <section id="map">
+    <div class="sec-head"><span class="sec-no">01</span><h2>框架地图</h2></div>
+    <p class="sec-desc">五大目录各唯一职责；规则正文以 <b>README.md</b> 与 <b>core/</b> 为唯一来源，本页不复制规则、只做导航。</p>
+    <div class="grid g-map">
+      <div class="card"><h3><span class="path">AGENTS.md · README.md</span></h3><p>路由与唯一推荐入口：项目识别门禁 → 项目上下文 → 低风险判断 → 任务记录 → 技能加载 → review 收尾 → <code>npm run check</code>。</p></div>
+      <div class="card"><h3><span class="path">core/</span></h3><p>规则正文唯一来源：工作模型（状态机/证据生命周期）、项目上下文、命名与提交、框架维护、特殊操作授权边界 + 模板。</p></div>
+      <div class="card"><h3><span class="path">workflows/</span></h3><p>按开发意图的 8 个流程，共享同一阶段契约；技能引用分 <code>framework:</code> / <code>project:</code> 两类。</p></div>
+      <div class="card"><h3><span class="path">skills/</span></h3><p><span class="big" id="sk-total"></span> 个技能：<span id="sk-split"></span>。原始镜像保持上游原样，不做本地改写。</p></div>
+      <div class="card"><h3><span class="path">scripts/</span></h3><p>结构/锚点/镜像一致性校验与任务工具：check、queue、archive、migrate、task-stamp。</p></div>
+      <div class="card"><h3><span class="path">local/</span></h3><p><span class="big" id="proj-count"></span> 个受管项目的上下文、需求箱与任务产物；业务项目真实数据保持本地不入库。</p></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <h3>规则优先级（冲突时自上而下）</h3>
+        <div class="chain">
+          <span class="node hi">用户明确要求</span><span class="sep">&gt;</span>
+          <span class="node">项目自身规则</span><span class="sep">&gt;</span>
+          <span class="node">core/</span><span class="sep">&gt;</span>
+          <span class="node">workflows/</span><span class="sep">&gt;</span>
+          <span class="node">skills/ 建议</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>提交口径</h3>
+        <p>框架内容默认全部提交；业务项目数据、需求、任务与报告保持本地。收尾只建本地 commit；推送/合并/部署需单独授权。</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>使用顺序（README 十步）</h3>
+      <ol class="steps">
+        <li><b>读入口</b>：AGENTS.md + README.md</li>
+        <li><b>项目识别</b>：framework:project-discovery</li>
+        <li><b>上下文检查</b>：缺失则 project-initialization</li>
+        <li><b>低风险判断</b>：纯文案/样式走免记录路径</li>
+        <li><b>建任务</b>：其他变更创建 pending task</li>
+        <li><b>加载技能</b>：按流程声明 required skills</li>
+        <li><b>决策预检</b>：高风险等待用户确认</li>
+        <li><b>证据留痕</b>：计划/审查/验证分阶段落盘</li>
+        <li><b>校验</b>：npm run check / npm run queue</li>
+        <li><b>授权边界</b>：外部/破坏性操作先读 special-operations</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 2 状态机 -->
+  <section id="state">
+    <div class="sec-head"><span class="sec-no">02</span><h2>任务状态机</h2></div>
+    <p class="sec-desc">来源 <code>core/operating-model.md</code>：主链路 pending → in_progress → review → done；blocked / cancelled 为异常状态，done 与 cancelled 为终态。</p>
+    <div class="grid g-sm">
+      <div class="card">
+        <svg class="sm-svg" viewBox="0 0 840 320" role="img" aria-label="cg-work 任务状态机">
+          <defs>
+            <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="#6b655c"></path>
+            </marker>
+            <marker id="arrd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="#b9b2a6"></path>
+            </marker>
+          </defs>
+
+          <!-- 主链路 -->
+          <path d="M156,59 H244" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
+          <path d="M376,59 H464" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
+          <path d="M596,59 H684" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
+          <!-- 回退 -->
+          <path d="M532,84 C532,120 312,120 312,90" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
+          <!-- 异常/取消（虚线） -->
+          <path d="M92,84 C92,112 240,114 256,146" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path d="M312,84 V142" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path d="M532,84 C532,112 384,114 368,146" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path d="M258,158 C196,206 118,196 98,90" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path d="M324,142 V90" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path d="M92,84 C190,252 500,288 682,172" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
+          <path d="M312,84 C420,232 580,244 684,168" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
+          <path d="M532,84 C620,132 648,152 684,162" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
+
+          <!-- 边标签 -->
+          <text x="200" y="50" text-anchor="middle" font-size="10.5" fill="#857f74">验收标准已记录</text>
+          <text x="420" y="50" text-anchor="middle" font-size="10.5" fill="#857f74">实现完成</text>
+          <text x="640" y="50" text-anchor="middle" font-size="10.5" fill="#857f74">验证·审查·验收</text>
+          <text x="422" y="133" text-anchor="middle" font-size="10.5" fill="#857f74">验证失败或审查有问题</text>
+          <text x="322" y="110" font-size="10" fill="#a89f93">缺信息/权限/环境</text>
+
+          <!-- 节点 -->
+          <g>
+            <rect x="30" y="36" width="124" height="46" rx="10" fill="#f1efeb" stroke="#7d7669" stroke-width="1.6"></rect>
+            <text x="92" y="63" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">pending</text>
+          </g>
+          <g>
+            <rect x="250" y="36" width="124" height="46" rx="10" fill="#edf2f8" stroke="#2f5d8a" stroke-width="1.6"></rect>
+            <text x="312" y="63" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">in_progress</text>
+          </g>
+          <g>
+            <rect x="470" y="36" width="124" height="46" rx="10" fill="#faf3e3" stroke="#a97a1f" stroke-width="1.6"></rect>
+            <text x="532" y="63" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">review</text>
+          </g>
+          <g>
+            <rect x="690" y="36" width="124" height="46" rx="10" fill="#ecf4ef" stroke="#2e7d4f" stroke-width="1.6"></rect>
+            <text x="752" y="63" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">done</text>
+            <text x="752" y="102" text-anchor="middle" font-size="10" fill="#a89f93">终态</text>
+          </g>
+          <g>
+            <rect x="250" y="150" width="124" height="46" rx="10" fill="#f9efed" stroke="#b03a2e" stroke-width="1.4" stroke-dasharray="5 4"></rect>
+            <text x="312" y="177" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">blocked</text>
+          </g>
+          <g>
+            <rect x="690" y="150" width="124" height="46" rx="10" fill="#f9efed" stroke="#b03a2e" stroke-width="1.4" stroke-dasharray="5 4"></rect>
+            <text x="752" y="177" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">cancelled</text>
+            <text x="752" y="216" text-anchor="middle" font-size="10" fill="#a89f93">终态</text>
+          </g>
+        </svg>
+        <div class="legend">
+          <span class="item"><span class="sw"></span>主链路 / 回退</span>
+          <span class="item"><span class="sw dash"></span>异常与取消</span>
+          <span class="item"><span class="sw box"></span>异常状态（虚线框）</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>允许的状态转移</h3>
+        <table>
+          <thead><tr><th>当前状态</th><th>可转移到</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">pending</td><td>in_progress · blocked · cancelled</td></tr>
+            <tr><td class="mono">in_progress</td><td>review · blocked · cancelled</td></tr>
+            <tr><td class="mono">review</td><td>in_progress · done · blocked · cancelled</td></tr>
+            <tr><td class="mono">blocked</td><td>pending · in_progress · cancelled</td></tr>
+            <tr><td class="mono">done</td><td>无（终态，后续变更建新任务）</td></tr>
+            <tr><td class="mono">cancelled</td><td>无（终态，重启建新任务）</td></tr>
+          </tbody>
+        </table>
+        <h3 style="margin-top:12px">门禁要点</h3>
+        <ol class="steps" style="columns:1">
+          <li>不得跳过 <b>review</b> 直接进入 done</li>
+          <li>review 需<b>审查记录 + 新鲜验证证据</b>；声明原型的还需原型采纳记录</li>
+          <li>done 需<b>用户验收</b>（轻量自动完成条件除外）</li>
+          <li>验证失败/审查有问题回 <b>in_progress</b>，不设 revision 状态</li>
+          <li>review/blocked/done 时必须维护 <b>next_action</b>（required/action/message）</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 任务看板 -->
+  <section id="board">
+    <div class="sec-head"><span class="sec-no">03</span><h2>任务看板</h2></div>
+    <p class="sec-desc">扫描 <code>local/projects/*/tasks/**/task.yaml</code> 生成；归档任务单独计数，不代表 done 或验收。</p>
+    <div class="chips" id="stat-chips"></div>
+    <div class="card" style="overflow-x:auto">
+      <h3>项目 × 状态矩阵</h3>
+      <table id="matrix" style="margin-top:8px"></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>活跃非终态任务（<span id="active-count"></span>）</h3>
+      <div class="filters" id="proj-filters"></div>
+      <div style="overflow-x:auto">
+        <table id="active-table"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 工作流与交付路径 -->
+  <section id="workflows">
+    <div class="sec-head"><span class="sec-no">04</span><h2>工作流与交付路径</h2></div>
+    <p class="sec-desc">工作流按开发意图选择；交付路径按影响面与风险选择，不按任务名选择。次数列为任务记录中的实际引用统计。</p>
+    <div class="card" style="overflow-x:auto">
+      <table id="wf-table">
+        <thead><tr><th>工作流</th><th>使用场景</th><th>关键门禁</th><th class="num">引用次数</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">project-discovery</td><td>上下文加载前判断既有项目 / 新项目 / 信息不足</td><td>唯一匹配自动路由，其余确认后路由</td><td class="num" data-wf="project-discovery">–</td></tr>
+          <tr><td class="mono">feature-development</td><td>新功能和行为变更</td><td>小功能可走轻量执行；新业务规则/接口须独立验收</td><td class="num" data-wf="feature-development">–</td></tr>
+          <tr><td class="mono">low-risk-change</td><td>纯文案、样式、静态布局、可访问性标记</td><td>免记录路径；任一低风险条件不满足即升级</td><td class="num" data-wf="low-risk-change">–</td></tr>
+          <tr><td class="mono">bugfix</td><td>缺陷、回归和性能问题</td><td>根因已确认且仅恢复既有行为</td><td class="num" data-wf="bugfix">–</td></tr>
+          <tr><td class="mono">refactor</td><td>保持外部行为的结构调整</td><td>行为不变，验证绑定交付点</td><td class="num" data-wf="refactor">–</td></tr>
+          <tr><td class="mono">review</td><td>代码、变更和交付前审查</td><td>统一收尾六步：验证→测试→冗余→文档→清单→集成</td><td class="num" data-wf="review">–</td></tr>
+          <tr><td class="mono">framework-optimization</td><td>框架规则、流程、模板、校验器与自有技能演进</td><td>框架自身维护约束优先</td><td class="num" data-wf="framework-optimization">–</td></tr>
+          <tr><td class="mono">parent-child-decomposition</td><td>跨模块 / 跨会话 / 未决关键决策的大需求</td><td>主任务 role: parent，子任务 parent_reference 挂靠</td><td class="num" data-wf="parent-child-decomposition">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid g3" style="margin-top:16px" id="dp-cards"></div>
+    <div class="upgrade" id="dp-upgrade"></div>
+    <div class="card" style="margin-top:16px">
+      <h3>轻量执行决策清单（任一项为「是」即进入标准执行）</h3>
+      <ul class="checklist">
+        <li>是否跨模块（改动或验证超出单一模块/业务边界）？</li>
+        <li>是否改变业务规则、接口、数据或权限？</li>
+        <li>是否存在迁移、删除或其他不可逆写入？</li>
+        <li>是否有未决业务决策？</li>
+        <li>是否产生外部副作用？</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5 提交时间线 -->
+  <section id="timeline">
+    <div class="sec-head"><span class="sec-no">05</span><h2>提交时间线</h2></div>
+    <p class="sec-desc">git log 自 <span id="tl-since"></span> 起按日聚合；框架侧提交（含框架受管项目任务记录）。</p>
+    <div class="tl-stats" id="tl-stats"></div>
+    <div class="tl-chart" id="tl-chart"></div>
+    <div class="tl-axis" id="tl-axis"></div>
+    <div class="tl-peaks" id="tl-peaks"></div>
+  </section>
+
+  <!-- 6 需求箱与健康 -->
+  <section id="health">
+    <div class="sec-head"><span class="sec-no">06</span><h2>需求箱与框架健康</h2></div>
+    <p class="sec-desc">需求箱只允许用户手动添加原始需求，Agent 不生成；深色为存量、浅色为已归档。</p>
+    <div class="grid g2">
+      <div class="card">
+        <h3>需求箱存量（按项目）</h3>
+        <div id="rq-list" style="margin-top:10px"></div>
+      </div>
+      <div class="card">
+        <h3>框架健康</h3>
+        <div class="chips" style="margin-top:10px;margin-bottom:6px" id="health-chips"></div>
+        <p style="font-size:12.5px;color:var(--muted)" id="health-detail"></p>
+        <p style="font-size:12.5px;color:var(--muted);margin-top:8px">目录文件数：<span id="file-counts"></span></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>数据快照：<span id="foot-snap"></span> · 只读镜像，不替代 <code>npm run check</code> / <code>npm run queue</code></span>
+    <span>刷新：<code>node local/projects/cg-work/design/framework-visualization/build.mjs</code></span>
+  </footer>
+</div>
+
+<script>
+const DATA = /*__CG_DATA__*/;
+
+const $ = (s, r) => (r || document).querySelector(s);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+
+const STATUS_ORDER = ['pending', 'in_progress', 'review', 'done', 'cancelled'];
+const STATUS_LABEL = { pending: 'pending', in_progress: 'in_progress', review: 'review', done: 'done', cancelled: 'cancelled' };
+const STATUS_CLASS = { pending: 'pend', in_progress: 'prog', review: 'rev', done: 'done', cancelled: 'warn' };
+const activeTasks = DATA.tasks.filter(t => !t.archived);
+const archivedTasks = DATA.tasks.filter(t => t.archived);
+const countBy = (arr, key) => arr.reduce((m, t) => { const v = t[key]; m[v] = (m[v] || 0) + 1; return m; }, {});
+
+/* ---- 头部 ---- */
+$('#ver').textContent = 'v' + DATA.version;
+$('#snap').textContent = '快照 ' + DATA.generated_at;
+const cb = $('#check-badge');
+cb.classList.add(DATA.check.ok ? 'ok' : 'fail');
+$('#check-text').textContent = DATA.check.ok ? 'npm run check 通过' : 'npm run check 失败';
+$('#sk-total').textContent = DATA.skills.total;
+$('#sk-split').textContent = DATA.skills.framework + ' 框架自有 + ' + DATA.skills.localized + ' 本地化 + ' + DATA.skills.mirror + ' 原始镜像';
+$('#proj-count').textContent = Object.keys(DATA.projectMeta).length;
+
+/* ---- 看板 chips ---- */
+const activeByStatus = countBy(activeTasks, 'status');
+const chipsDef = [
+  ['c-all', activeTasks.length, '活跃任务'],
+  ['c-done', activeByStatus.done || 0, 'done'],
+  ['c-prog', activeByStatus.in_progress || 0, 'in_progress'],
+  ['c-rev', activeByStatus.review || 0, 'review'],
+  ['c-pend', activeByStatus.pending || 0, 'pending'],
+  ['c-warn', activeByStatus.cancelled || 0, 'cancelled'],
+  ['', archivedTasks.length, '已归档'],
+];
+const chipsBox = $('#stat-chips');
+chipsDef.forEach(([cls, n, l]) => {
+  const s = el('div', 'stat ' + cls);
+  s.appendChild(el('div', 'n', String(n)));
+  s.appendChild(el('div', 'l', l));
+  chipsBox.appendChild(s);
+});
+
+/* ---- 项目 × 状态矩阵 ---- */
+const projects = Object.keys(DATA.projectMeta)
+  .filter(p => DATA.projectMeta[p].tasks + DATA.projectMeta[p].archived > 0)
+  .sort((a, b) => (DATA.projectMeta[b].tasks + DATA.projectMeta[b].archived) - (DATA.projectMeta[a].tasks + DATA.projectMeta[a].archived));
+const mx = $('#matrix');
+const thead = document.createElement('thead');
+const hr = document.createElement('tr');
+['项目'].concat(STATUS_ORDER.map(s => STATUS_LABEL[s]), ['归档', '合计']).forEach(h => {
+  const th = el('th', null, h); if (h !== '项目') th.className = 'num'; hr.appendChild(th);
+});
+thead.appendChild(hr); mx.appendChild(thead);
+const mtbody = document.createElement('tbody');
+projects.forEach(p => {
+  const rows = DATA.tasks.filter(t => t.project === p);
+  const by = countBy(rows, 'status');
+  const tr = document.createElement('tr');
+  tr.appendChild(el('td', 'mono', p));
+  STATUS_ORDER.forEach(s => {
+    const n = by[s] || 0;
+    const td = el('td', 'num', n === 0 ? '–' : String(n));
+    if (n > 0 && s !== 'done') td.style.color = 'var(--' + (STATUS_CLASS[s] === 'warn' ? 'warn' : STATUS_CLASS[s] === 'prog' ? 'prog' : STATUS_CLASS[s] === 'rev' ? 'rev' : 'pend') + ')';
+    tr.appendChild(td);
+  });
+  tr.appendChild(el('td', 'num', String(DATA.projectMeta[p].archived)));
+  tr.appendChild(el('td', 'num', String(rows.length)));
+  mtbody.appendChild(tr);
+});
+mx.appendChild(mtbody);
+
+/* ---- 活跃非终态任务 ---- */
+const activeList = activeTasks.filter(t => t.status !== 'done')
+  .sort((a, b) => a.project.localeCompare(b.project) || a.id.localeCompare(b.id));
+$('#active-count').textContent = activeList.length + ' 项';
+
+let filterProj = '全部';
+const filtersBox = $('#proj-filters');
+const projWithActive = ['全部', ...new Set(activeList.map(t => t.project))];
+projWithActive.forEach(p => {
+  const b = el('button', p === filterProj ? 'on' : '', p);
+  b.onclick = () => {
+    filterProj = p;
+    filtersBox.querySelectorAll('button').forEach(x => x.classList.toggle('on', x.textContent === p));
+    renderActive();
+  };
+  filtersBox.appendChild(b);
+});
+
+function renderActive() {
+  const tb = $('#active-table');
+  tb.textContent = '';
+  const thead = document.createElement('thead');
+  const hr = document.createElement('tr');
+  ['项目', '任务', '状态', '工作流', '交付路径'].forEach(h => hr.appendChild(el('th', null, h)));
+  thead.appendChild(hr); tb.appendChild(thead);
+  const tbody = document.createElement('tbody');
+  activeList.filter(t => filterProj === '全部' || t.project === filterProj).forEach(t => {
+    const tr = document.createElement('tr');
+    tr.appendChild(el('td', 'mono', t.project));
+    tr.appendChild(el('td', 'mono', t.id));
+    const st = el('td'); st.appendChild(el('span', 'pill ' + STATUS_CLASS[t.status], STATUS_LABEL[t.status] || t.status));
+    tr.appendChild(st);
+    tr.appendChild(el('td', 'mono', t.workflow));
+    tr.appendChild(el('td', 'mono', t.delivery_path === '(默认standard)' ? 'standard (默认)' : t.delivery_path));
+    tbody.appendChild(tr);
+  });
+  tb.appendChild(tbody);
+}
+renderActive();
+
+/* ---- 工作流引用次数 ---- */
+const wfCount = countBy(DATA.tasks, 'workflow');
+document.querySelectorAll('#wf-table [data-wf]').forEach(td => {
+  const n = wfCount[td.dataset.wf] || 0;
+  td.textContent = String(n);
+  if (n === 0) td.style.color = 'var(--faint)';
+});
+
+/* ---- 交付路径 ---- */
+const dpCount = countBy(DATA.tasks, 'delivery_path');
+const dpDefs = [
+  ['lightweight', '轻量执行', '证据合并进 task.yaml 的 lightweight_evidence，不建独立产物文件。仅 bugfix / feature-development 可声明。', 'lw'],
+  ['standard', '标准执行（默认）', '按阶段生成 plan / review / verification / learning / handoff / closure 全套产物，artifacts 分组引用。', 'st'],
+  ['compact', '紧凑执行', 'task.yaml + 一个主产物（product/plan/research.md）；验证、学习与交接回写主产物或 task.yaml。', 'cp'],
+];
+const dpBox = $('#dp-cards');
+dpDefs.forEach(([key, name, desc, cls]) => {
+  const card = el('div', 'dp ' + cls);
+  const h3 = el('h3');
+  h3.appendChild(el('span', null, name));
+  h3.appendChild(el('span', 'cnt', dpCount[key] != null ? dpCount[key] + ' 个任务' : (dpCount['(默认standard)'] || 0) + ' 个任务'));
+  card.appendChild(h3);
+  card.appendChild(el('span', 'tag', 'delivery_path: ' + key));
+  card.appendChild(el('p', null, desc));
+  dpBox.appendChild(card);
+});
+$('#dp-upgrade').innerHTML = '<b>升级规则（只升不降）：</b>免记录 → 标准：低风险变更中冒出行为变化即停，新建 pending 任务收纳已完成改动；轻量 → 标准：决策清单任一项转为「是」时在原 task.yaml 内升级（保留 status_history 与已写证据，追加带原因的升级记录，补建 plan/review/verification）；产生可复用经验即升级为标准执行。';
+
+/* ---- 时间线 ---- */
+const commits = DATA.commits;
+const total = commits.reduce((s, c) => s + c.n, 0);
+const days = commits.filter(c => c.n > 0).length;
+const max = Math.max(...commits.map(c => c.n), 1);
+const last7 = commits.slice(-7).reduce((s, c) => s + c.n, 0);
+const peak = commits.reduce((a, b) => (b.n > a.n ? b : a), commits[0]);
+$('#tl-since').textContent = commits[0].date;
+[['提交总数', total], ['活跃天数', days], ['峰值单日', peak.n + '（' + peak.date + '）'], ['近 7 天', last7]].forEach(([l, n]) => {
+  const s = el('div', 'stat c-all');
+  s.appendChild(el('div', 'n', String(n)));
+  s.appendChild(el('div', 'l', l));
+  $('#tl-stats').appendChild(s);
+});
+const peaks = [...commits].sort((a, b) => b.n - a.n).slice(0, 3);
+const chart = $('#tl-chart');
+commits.forEach(c => {
+  const d = new Date(c.date + 'T00:00:00');
+  const w = d.getDay();
+  const day = el('div', 'tl-day' + (w === 0 || w === 6 ? ' weekend' : '') + (peaks.includes(c) && c.n > 0 ? ' peak' : ''));
+  const bar = el('div', 'bar');
+  bar.style.height = (c.n / max * 100) + '%';
+  const tip = el('div', 'tip', c.date + ' · ' + c.n + ' commits');
+  day.appendChild(tip); day.appendChild(bar);
+  chart.appendChild(day);
+});
+const axis = $('#tl-axis');
+commits.forEach((c, i) => {
+  if (c.date.endsWith('-01') || i === commits.length - 1) {
+    const s = el('span', null, c.date.slice(0, 7));
+    s.style.left = (i / (commits.length - 1) * 100) + '%';
+    axis.appendChild(s);
+  }
+});
+$('#tl-peaks').innerHTML = '高产期：<b>' + peaks.map(p => p.date + ' × ' + p.n).join('</b> · <b>') + '</b>';
+
+/* ---- 需求箱 ---- */
+const rqProjects = Object.keys(DATA.projectMeta)
+  .filter(p => DATA.projectMeta[p].requirements + DATA.projectMeta[p].requirementsArchived > 0)
+  .sort((a, b) => DATA.projectMeta[b].requirements - DATA.projectMeta[a].requirements);
+const rqMax = Math.max(...rqProjects.map(p => DATA.projectMeta[p].requirements + DATA.projectMeta[p].requirementsArchived), 1);
+const rqBox = $('#rq-list');
+rqProjects.forEach(p => {
+  const m = DATA.projectMeta[p];
+  const row = el('div', 'rq-row');
+  row.appendChild(el('div', 'name', p));
+  const track = el('div', 'rq-track');
+  const f = el('div', 'rq-fill'); f.style.width = (m.requirements / rqMax * 100) + '%';
+  const a = el('div', 'rq-arch'); a.style.width = (m.requirementsArchived / rqMax * 100) + '%';
+  track.appendChild(f); track.appendChild(a);
+  row.appendChild(track);
+  row.appendChild(el('div', 'n', String(m.requirements) + (m.requirementsArchived ? ' +' + m.requirementsArchived : '')));
+  rqBox.appendChild(row);
+});
+const rqTotal = Object.values(DATA.projectMeta).reduce((s, m) => s + m.requirements, 0);
+const rqArch = Object.values(DATA.projectMeta).reduce((s, m) => s + m.requirementsArchived, 0);
+rqBox.appendChild(Object.assign(el('p', null, '合计存量 ' + rqTotal + ' 包' + (rqArch ? '，已归档 ' + rqArch + ' 包' : '')), { style: 'font-size:12.5px;color:var(--muted);margin-top:8px' }));
+
+/* ---- 健康 ---- */
+[['框架版本', 'v' + DATA.version], ['技能', DATA.skills.total + '（自有 ' + DATA.skills.framework + ' / 镜像 ' + DATA.skills.mirror + '）'], ['受管项目', Object.keys(DATA.projectMeta).length + ' 个'], ['任务记录', DATA.tasks.length + ' 个（归档 ' + archivedTasks.length + '）']].forEach(([l, v]) => {
+  const s = el('div', 'stat');
+  s.appendChild(el('div', 'n', v));
+  s.appendChild(el('div', 'l', l));
+  $('#health-chips').appendChild(s);
+});
+$('#health-detail').textContent = DATA.check.ok
+  ? '最近一次构建时 npm run check：' + DATA.check.detail
+  : '最近一次构建时 npm run check 未通过：' + DATA.check.detail;
+$('#file-counts').textContent = 'core ' + DATA.files.core + ' · workflows ' + DATA.files.workflows + ' · scripts ' + DATA.files.scripts + ' · test ' + DATA.files.tests + ' 个文件';
+$('#foot-snap').textContent = DATA.generated_at;
+</script>
+</body>
+</html>
