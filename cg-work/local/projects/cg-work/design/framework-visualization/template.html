@@ -21,7 +21,7 @@
   body {
     background: var(--bg); color: var(--text);
     font-family: -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    font-size: 14px; line-height: 1.6;
+    font-size: 16px; line-height: 1.6;
   }
   .wrap { max-width: 1240px; margin: 0 auto; padding: 24px 28px 60px; }
 
@@ -29,7 +29,7 @@
   header.top { padding: 26px 0 18px; border-bottom: 1px solid var(--line); }
   .top-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
   h1 { font-size: 24px; letter-spacing: 0.5px; }
-  .ver { font-family: var(--mono); font-size: 12px; color: var(--accent); background: var(--accent-bg);
+  .ver { font-size: 12px; color: var(--accent); background: var(--accent-bg);
          border: 1px solid #e6cdbf; border-radius: 999px; padding: 2px 10px; }
   .snap { font-size: 12px; color: var(--muted); font-family: var(--mono); }
   .sub { color: var(--muted); font-size: 13px; margin-top: 6px; }
@@ -40,20 +40,20 @@
   .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 
   /* ---- 导航 ---- */
-  nav { position: sticky; top: 0; z-index: 10; background: rgba(250,249,247,0.92); backdrop-filter: blur(6px);
+  nav { position: sticky; top: 0; z-index: 10; background: var(--bg);
         border-bottom: 1px solid var(--line); margin: 0 -28px; padding: 10px 28px; display: flex; gap: 8px; flex-wrap: wrap; }
   nav a { font-size: 13px; color: var(--muted); text-decoration: none; padding: 4px 12px; border-radius: 999px;
           border: 1px solid transparent; }
   nav a:hover { color: var(--accent); border-color: #e6cdbf; background: var(--accent-bg); }
 
   /* ---- 区块 ---- */
-  section { background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+  section { background: var(--panel); border-radius: 14px;
             padding: 22px 24px; margin-top: 22px; scroll-margin-top: 64px; }
   .sec-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
-  .sec-no { font-family: var(--mono); font-size: 12px; color: var(--accent); border: 1px solid #e6cdbf;
+  .sec-no { font-size: 12px; color: var(--accent); border: 1px solid #e6cdbf;
             background: var(--accent-bg); border-radius: 6px; padding: 1px 7px; }
   h2 { font-size: 17px; }
-  .sec-desc { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; }
+  .sec-desc { font-size: 14px; color: var(--muted); margin-bottom: 14px; }
 
   .grid { display: grid; gap: 16px; }
   .g2 { grid-template-columns: 1fr 1fr; }
@@ -62,19 +62,19 @@
   .g-sm { grid-template-columns: 1.25fr 1fr; }
   @media (max-width: 1024px) { .g-map, .g3, .g2, .g-sm { grid-template-columns: 1fr; } }
 
-  .card { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: #fdfcfb; }
-  .card h3 { font-size: 13.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .card { border-radius: 10px; padding: 14px 16px; background: #f6f4f0; }
+  .card h3 { font-size: 15px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
   .card h3 .path { font-family: var(--mono); font-size: 12px; color: var(--accent); }
-  .card p { font-size: 12.5px; color: var(--muted); }
+  .card p { font-size: 14px; color: var(--muted); }
   .card .big { font-family: var(--mono); font-size: 20px; color: var(--text); font-weight: 600; }
 
   /* ---- 优先级链 ---- */
-  .chain { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; margin-top: 4px; }
+  .chain { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; margin-top: 4px; }
   .chain .node { background: var(--panel); border: 1px solid var(--line-strong); border-radius: 8px; padding: 4px 10px; }
   .chain .node.hi { border-color: #e6cdbf; background: var(--accent-bg); color: var(--accent); font-weight: 600; }
   .chain .sep { color: var(--faint); font-family: var(--mono); }
 
-  ol.steps { columns: 2; column-gap: 28px; font-size: 12.5px; color: var(--muted); padding-left: 20px; }
+  ol.steps { columns: 2; column-gap: 28px; font-size: 14px; color: var(--muted); padding-left: 20px; }
   @media (max-width: 768px) { ol.steps { columns: 1; } }
   ol.steps li { margin-bottom: 4px; break-inside: avoid; }
   ol.steps b { color: var(--text); font-weight: 600; }
@@ -96,7 +96,7 @@
   .sm-edge.dim { opacity: 0.12; }
   .sm-node.sel .sm-box { stroke: var(--accent); stroke-width: 2.4; }
   .sm-detail { margin-top: 12px; border: 1px solid #e6cdbf; background: var(--accent-bg); border-radius: 8px;
-               padding: 10px 14px; font-size: 12.5px; display: none; }
+               padding: 10px 14px; font-size: 14px; display: none; }
   .sm-detail.show { display: block; }
   .sm-detail b { color: var(--accent); font-family: var(--mono); }
   .sm-detail .cnt { font-family: var(--mono); color: var(--muted); margin-left: 8px; }
@@ -111,16 +111,16 @@
   .tl-day.has-commits { cursor: pointer; }
   .tl-day.has-commits:hover .bar { filter: brightness(1.12); }
   .tl-day.sel .bar { outline: 2px solid var(--text); outline-offset: 1px; }
-  #tl-detail { display: none; margin-top: 12px; border: 1px solid var(--line); border-radius: 8px;
-               background: #fdfcfb; padding: 12px 16px; }
+  #tl-detail { display: none; margin-top: 12px; border-radius: 8px;
+               background: #f6f4f0; padding: 12px 16px; }
   #tl-detail.show { display: block; }
-  #tl-detail h4 { font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+  #tl-detail h4 { font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
   #tl-detail h4 .close { font-size: 12px; color: var(--muted); background: none; border: none; cursor: pointer; }
-  #tl-detail ul { margin: 8px 0 0 18px; font-size: 12.5px; color: var(--muted); }
+  #tl-detail ul { margin: 8px 0 0 18px; font-size: 14px; color: var(--muted); }
   #tl-detail li { margin-bottom: 3px; }
   #tl-detail li b { color: var(--text); font-weight: 500; }
 
-  table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
   th, td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; vertical-align: top; }
   th { background: #f6f4f0; font-weight: 600; color: var(--text); white-space: nowrap; }
   td.num, th.num { text-align: right; font-family: var(--mono); }
@@ -136,7 +136,7 @@
   .pill.warn { color: var(--warn); background: var(--warn-bg); border-color: #e4b7b1; }
 
   .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-  .stat { border: 1px solid var(--line); border-radius: 10px; background: #fdfcfb; padding: 8px 14px; min-width: 86px; }
+  .stat { border-radius: 10px; background: #f6f4f0; padding: 8px 14px; min-width: 86px; }
   .stat .n { font-family: var(--mono); font-size: 19px; font-weight: 600; }
   .stat .l { font-size: 11.5px; color: var(--muted); }
   .stat.c-done .n { color: var(--done); } .stat.c-prog .n { color: var(--prog); }
@@ -150,10 +150,10 @@
   .filters button:hover { border-color: var(--accent); }
 
   /* ---- 交付路径 ---- */
-  .dp { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: #fdfcfb; position: relative; }
-  .dp h3 { font-size: 13.5px; display: flex; justify-content: space-between; align-items: center; }
+  .dp { border-radius: 10px; padding: 14px 16px; background: #f6f4f0; position: relative; }
+  .dp h3 { font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
   .dp h3 .cnt { font-family: var(--mono); font-size: 12px; color: var(--muted); }
-  .dp p { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+  .dp p { font-size: 14px; color: var(--muted); margin-top: 6px; }
   .dp .tag { font-family: var(--mono); font-size: 11px; padding: 1px 8px; border-radius: 999px; }
   .dp.lw .tag { color: var(--prog); background: var(--prog-bg); }
   .dp.st .tag { color: var(--done); background: var(--done-bg); }
@@ -161,7 +161,7 @@
   .upgrade { font-size: 12px; color: var(--muted); background: #f6f4f0; border: 1px dashed var(--line-strong);
              border-radius: 8px; padding: 8px 12px; margin-top: 12px; }
   .checklist { list-style: none; margin-top: 10px; }
-  .checklist li { font-size: 12.5px; color: var(--muted); padding-left: 22px; position: relative; margin-bottom: 3px; }
+  .checklist li { font-size: 14px; color: var(--muted); padding-left: 22px; position: relative; margin-bottom: 3px; }
   .checklist li::before { content: "□"; position: absolute; left: 2px; color: var(--faint); font-family: var(--mono); }
 
   /* ---- 时间线 ---- */
@@ -183,9 +183,9 @@
   .tl-peaks b { color: var(--accent); font-family: var(--mono); }
 
   /* ---- 需求箱 ---- */
-  .rq-row { display: grid; grid-template-columns: 110px 1fr 44px; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 12.5px; }
+  .rq-row { display: grid; grid-template-columns: 110px 1fr 44px; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 14px; }
   .rq-row .name { font-family: var(--mono); font-size: 12px; color: var(--text); text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .rq-track { height: 14px; background: #f1efeb; border-radius: 4px; overflow: hidden; display: flex; }
+  .rq-track { height: 14px; background: #e8e2d8; border-radius: 4px; overflow: hidden; display: flex; }
   .rq-fill { background: var(--accent); height: 100%; }
   .rq-arch { background: #d9d3c8; height: 100%; }
   .rq-row .n { font-family: var(--mono); color: var(--muted); }
@@ -436,8 +436,8 @@
       <div class="card">
         <h3>框架健康</h3>
         <div class="chips" style="margin-top:10px;margin-bottom:6px" id="health-chips"></div>
-        <p style="font-size:12.5px;color:var(--muted)" id="health-detail"></p>
-        <p style="font-size:12.5px;color:var(--muted);margin-top:8px">目录文件数：<span id="file-counts"></span></p>
+        <p style="font-size:14px;color:var(--muted)" id="health-detail"></p>
+        <p style="font-size:14px;color:var(--muted);margin-top:8px">目录文件数：<span id="file-counts"></span></p>
       </div>
     </div>
   </section>
@@ -752,7 +752,7 @@ rqProjects.forEach(p => {
 });
 const rqTotal = Object.values(DATA.projectMeta).reduce((s, m) => s + m.requirements, 0);
 const rqArch = Object.values(DATA.projectMeta).reduce((s, m) => s + m.requirementsArchived, 0);
-rqBox.appendChild(Object.assign(el('p', null, '合计存量 ' + rqTotal + ' 包' + (rqArch ? '，已归档 ' + rqArch + ' 包' : '')), { style: 'font-size:12.5px;color:var(--muted);margin-top:8px' }));
+rqBox.appendChild(Object.assign(el('p', null, '合计存量 ' + rqTotal + ' 包' + (rqArch ? '，已归档 ' + rqArch + ' 包' : '')), { style: 'font-size:14px;color:var(--muted);margin-top:8px' }));
 
 /* ---- 健康 ---- */
 [['框架版本', 'v' + DATA.version], ['技能', DATA.skills.total + '（自有 ' + DATA.skills.framework + ' / 镜像 ' + DATA.skills.mirror + '）'], ['受管项目', Object.keys(DATA.projectMeta).length + ' 个'], ['任务记录', DATA.tasks.length + ' 个（归档 ' + archivedTasks.length + '）']].forEach(([l, v]) => {
