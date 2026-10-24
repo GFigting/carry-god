@@ -1,0 +1,47 @@
+id: 2026-10-24-design-quality-skill
+status: done
+goal: 新增框架本地化技能 design-quality，吸收 impeccable 的设计上下文前置与场景路由、taste-skill 的可测量硬门禁与看-修收敛循环，并显式规定"用户指令优先于通用规则"，解决 UI 改动不按指令执行的问题
+workflow: framework:framework-optimization
+delivery_path: standard
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+documentation:
+  impact: add
+  files:
+    - skills/design-quality/SKILL.md
+    - skills/design-quality/references/design-context.md
+    - skills/design-quality/references/instruction-contract.md
+    - skills/design-quality/references/gate-pages.md
+    - skills/design-quality/references/gate-app-screens.md
+    - skills/design-quality/references/scorecard.md
+    - skills/design-quality/references/change-order.md
+    - skills/design-quality/references/measurement.md
+    - skills/design-quality/references/report.md
+    - skills/README.md
+    - VERSION
+created_at: 2026-10-24T09:10:00
+status_history:
+  - status: pending
+    at: 2026-10-24T09:10:00
+    reason: "用户要求让框架学习 impeccable 与 taste-skill 两者的优点，按框架优化流程建立任务记录"
+  - status: in_progress
+    at: 2026-10-24T09:12:00
+    reason: "计划审核通过，开始编写技能正文并同步索引与版本"
+  - status: review
+    at: 2026-10-24T09:24:00
+    reason: "技能正文、索引与版本已就绪，npm run check 通过，验证记录已回写，等待用户验收"
+  - status: in_progress
+    at: 2026-10-24T09:40:00
+    reason: "用户指出技能过于简单，按路由 + 参考体系重构：SKILL.md 收为骨架，细则拆为八篇 reference 并补充判定、边界、反例与模板"
+  - status: review
+    at: 2026-10-24T09:52:00
+    reason: "第 2 版重构完成，npm run check 通过，验证记录已更新，等待用户验收"
+  - status: done
+    at: 2026-10-24T10:05:00
+    reason: "用户确认按该方案执行；审查记录已补齐，npm run check 通过，创建本地提交收尾"
+next_action:
+  required: false
+  action: continue
+  message: "任务已完成。遗留项：门禁阈值待用真实页面校准，自动化测量脚本可按需单独立项"

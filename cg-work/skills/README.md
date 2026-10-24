@@ -4,7 +4,7 @@
 
 框架自有技能包括 `project-initialization`、`framework-optimization`、`parent-child-decomposition` 与 `subagent-dispatch-timing`，由本框架维护，保持来源登记。`parent-child-decomposition` 只定义主任务与子任务的本地拆分、推进与关闭约定，分别引用原始镜像技能 `wayfinder` 和 `to-tickets`，不复制其正文。`subagent-dispatch-timing` 是子智能体派发时机与判据的唯一来源（比例原则、分阶段判据、派发契约、反模式），引用镜像技能 `subagent-driven-development`、`dispatching-parallel-agents` 与 `executing-plans` 的流程正文，不复制。
 
-框架本地化技能包括 `baoyu-design`。它复用上游设计方法，但其目录与任务记录规则由 cg-work 维护，因此不登记为原始镜像。
+框架本地化技能包括 `baoyu-design` 与 `design-quality`。`baoyu-design` 复用上游设计方法，但其目录与任务记录规则由 cg-work 维护，因此不登记为原始镜像。`design-quality` 复用 impeccable 与 taste-skill 的方法，正文由 cg-work 重写，负责设计决策与交付门禁，不负责产出设计稿；其本地覆盖规则与上游来源声明以技能正文为唯一来源。
 
 ## 核心技能
 
@@ -16,7 +16,7 @@
 
 特殊技能只在特定场景主动触发：
 
-`improve-codebase-architecture`、`grilling`、`grill-with-docs`、`handoff`、`to-questionnaire`、`wayfinder`、`to-spec`、`to-tickets`、`parent-child-decomposition`、`resolving-merge-conflicts`、`prototype`、`baoyu-design`、`dispatching-parallel-agents`、`subagent-driven-development`、`executing-plans`、`writing-skills`、`gstack-review`、`qa-only`、`finishing-a-development-branch`。
+`improve-codebase-architecture`、`grilling`、`grill-with-docs`、`handoff`、`to-questionnaire`、`wayfinder`、`to-spec`、`to-tickets`、`parent-child-decomposition`、`resolving-merge-conflicts`、`prototype`、`baoyu-design`、`design-quality`、`dispatching-parallel-agents`、`subagent-driven-development`、`executing-plans`、`writing-skills`、`gstack-review`、`qa-only`、`finishing-a-development-branch`。
 
 `product-management` 是框架自有的产品定义技能，用于将产品问题、用户需求或业务目标整理为可验收的需求、优先级、路线图和版本验收结论。它显式调用，不自动加载到所有开发任务。
 
