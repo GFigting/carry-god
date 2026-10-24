@@ -82,18 +82,23 @@ const files = {
 
 // ---- git 提交时间线（近 90 天） ----
 const since = '2026-09-01';
-const logOut = execSync(`git log --since="${since}" --pretty=%ad --date=short`, { cwd: repo, encoding: 'utf8' });
+const logOut = execSync(`git log --since="${since}" --pretty=%ad%x09%s --date=short`, { cwd: repo, encoding: 'utf8' });
 const commitMap = {};
 for (const line of logOut.split('\n')) {
-  const d = line.trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(d)) commitMap[d] = (commitMap[d] || 0) + 1;
+  const idx = line.indexOf('\t');
+  if (idx < 0) continue;
+  const d = line.slice(0, idx).trim();
+  const subject = line.slice(idx + 1).trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) continue;
+  (commitMap[d] = commitMap[d] || []).push(subject);
 }
 const commits = [];
 const start = new Date(`${since}T00:00:00`);
 const end = new Date();
 for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
   const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  commits.push({ date: key, n: commitMap[key] || 0 });
+  const titles = commitMap[key] || [];
+  commits.push({ date: key, n: titles.length, titles });
 }
 
 // ---- 框架校验 ----

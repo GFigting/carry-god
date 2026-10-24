@@ -87,6 +87,39 @@
   .sw.dash { border-top-style: dashed; border-top-color: #b9b2a6; }
   .sw.box { width: 12px; height: 12px; border: 1.5px dashed var(--warn); border-radius: 3px; background: var(--warn-bg); }
 
+  /* ---- 交互 ---- */
+  .sm-node { cursor: pointer; }
+  .sm-node .sm-box { transition: filter .15s ease; }
+  .sm-node:hover .sm-box { filter: brightness(0.96); }
+  .sm-edge { transition: opacity .15s ease; }
+  .sm-edge.lit { stroke: var(--accent); opacity: 1; }
+  .sm-edge.dim { opacity: 0.12; }
+  .sm-node.sel .sm-box { stroke: var(--accent); stroke-width: 2.4; }
+  .sm-detail { margin-top: 12px; border: 1px solid #e6cdbf; background: var(--accent-bg); border-radius: 8px;
+               padding: 10px 14px; font-size: 12.5px; display: none; }
+  .sm-detail.show { display: block; }
+  .sm-detail b { color: var(--accent); font-family: var(--mono); }
+  .sm-detail .cnt { font-family: var(--mono); color: var(--muted); margin-left: 8px; }
+
+  td.clickable { cursor: pointer; }
+  td.clickable:hover { background: var(--accent-bg); }
+  td.on { background: var(--accent-bg); box-shadow: inset 0 0 0 1px #e6cdbf; }
+  .clear-filter { font-size: 12px; color: var(--accent); background: none; border: none; cursor: pointer;
+                  padding: 0 0 0 10px; text-decoration: underline; }
+
+  .tl-day { cursor: default; }
+  .tl-day.has-commits { cursor: pointer; }
+  .tl-day.has-commits:hover .bar { filter: brightness(1.12); }
+  .tl-day.sel .bar { outline: 2px solid var(--text); outline-offset: 1px; }
+  #tl-detail { display: none; margin-top: 12px; border: 1px solid var(--line); border-radius: 8px;
+               background: #fdfcfb; padding: 12px 16px; }
+  #tl-detail.show { display: block; }
+  #tl-detail h4 { font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+  #tl-detail h4 .close { font-size: 12px; color: var(--muted); background: none; border: none; cursor: pointer; }
+  #tl-detail ul { margin: 8px 0 0 18px; font-size: 12.5px; color: var(--muted); }
+  #tl-detail li { margin-bottom: 3px; }
+  #tl-detail li b { color: var(--text); font-weight: 500; }
+
   table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
   th, td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; vertical-align: top; }
   th { background: #f6f4f0; font-weight: 600; color: var(--text); white-space: nowrap; }
@@ -246,20 +279,20 @@
           </defs>
 
           <!-- 主链路 -->
-          <path d="M156,59 H244" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
-          <path d="M376,59 H464" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
-          <path d="M596,59 H684" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
+          <path class="sm-edge" data-from="pending" data-to="in_progress" d="M156,59 H244" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
+          <path class="sm-edge" data-from="in_progress" data-to="review" d="M376,59 H464" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
+          <path class="sm-edge" data-from="review" data-to="done" d="M596,59 H684" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
           <!-- 回退 -->
-          <path d="M532,84 C532,120 312,120 312,90" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
+          <path class="sm-edge" data-from="review" data-to="in_progress" d="M532,84 C532,120 312,120 312,90" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
           <!-- 异常/取消（虚线） -->
-          <path d="M92,84 C92,112 240,114 256,146" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M312,84 V142" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M532,84 C532,112 384,114 368,146" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M258,158 C196,206 118,196 98,90" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M324,142 V90" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M92,84 C190,252 500,288 682,172" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M312,84 C420,232 580,244 684,168" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M532,84 C620,132 648,152 684,162" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="pending" data-to="blocked" d="M92,84 C92,112 240,114 256,146" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="in_progress" data-to="blocked" d="M312,84 V142" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="review" data-to="blocked" d="M532,84 C532,112 384,114 368,146" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="blocked" data-to="pending" d="M258,158 C196,206 118,196 98,90" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="blocked" data-to="in_progress" d="M324,142 V90" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="pending" data-to="cancelled" d="M92,84 C190,252 500,288 682,172" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="in_progress" data-to="cancelled" d="M312,84 C420,232 580,244 684,168" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="review" data-to="cancelled" d="M532,84 C620,132 648,152 684,162" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
 
           <!-- 边标签 -->
           <text x="200" y="50" text-anchor="middle" font-size="10.5" fill="#857f74">验收标准已记录</text>
@@ -269,29 +302,29 @@
           <text x="322" y="110" font-size="10" fill="#a89f93">缺信息/权限/环境</text>
 
           <!-- 节点 -->
-          <g>
-            <rect x="30" y="36" width="124" height="46" rx="10" fill="#f1efeb" stroke="#7d7669" stroke-width="1.6"></rect>
+          <g class="sm-node" data-state="pending">
+            <rect class="sm-box" x="30" y="36" width="124" height="46" rx="10" fill="#f1efeb" stroke="#7d7669" stroke-width="1.6"></rect>
             <text x="92" y="63" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">pending</text>
           </g>
-          <g>
-            <rect x="250" y="36" width="124" height="46" rx="10" fill="#edf2f8" stroke="#2f5d8a" stroke-width="1.6"></rect>
+          <g class="sm-node" data-state="in_progress">
+            <rect class="sm-box" x="250" y="36" width="124" height="46" rx="10" fill="#edf2f8" stroke="#2f5d8a" stroke-width="1.6"></rect>
             <text x="312" y="63" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">in_progress</text>
           </g>
-          <g>
-            <rect x="470" y="36" width="124" height="46" rx="10" fill="#faf3e3" stroke="#a97a1f" stroke-width="1.6"></rect>
+          <g class="sm-node" data-state="review">
+            <rect class="sm-box" x="470" y="36" width="124" height="46" rx="10" fill="#faf3e3" stroke="#a97a1f" stroke-width="1.6"></rect>
             <text x="532" y="63" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">review</text>
           </g>
-          <g>
-            <rect x="690" y="36" width="124" height="46" rx="10" fill="#ecf4ef" stroke="#2e7d4f" stroke-width="1.6"></rect>
+          <g class="sm-node" data-state="done">
+            <rect class="sm-box" x="690" y="36" width="124" height="46" rx="10" fill="#ecf4ef" stroke="#2e7d4f" stroke-width="1.6"></rect>
             <text x="752" y="63" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">done</text>
             <text x="752" y="102" text-anchor="middle" font-size="10" fill="#a89f93">终态</text>
           </g>
-          <g>
-            <rect x="250" y="150" width="124" height="46" rx="10" fill="#f9efed" stroke="#b03a2e" stroke-width="1.4" stroke-dasharray="5 4"></rect>
+          <g class="sm-node" data-state="blocked">
+            <rect class="sm-box" x="250" y="150" width="124" height="46" rx="10" fill="#f9efed" stroke="#b03a2e" stroke-width="1.4" stroke-dasharray="5 4"></rect>
             <text x="312" y="177" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">blocked</text>
           </g>
-          <g>
-            <rect x="690" y="150" width="124" height="46" rx="10" fill="#f9efed" stroke="#b03a2e" stroke-width="1.4" stroke-dasharray="5 4"></rect>
+          <g class="sm-node" data-state="cancelled">
+            <rect class="sm-box" x="690" y="150" width="124" height="46" rx="10" fill="#f9efed" stroke="#b03a2e" stroke-width="1.4" stroke-dasharray="5 4"></rect>
             <text x="752" y="177" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">cancelled</text>
             <text x="752" y="216" text-anchor="middle" font-size="10" fill="#a89f93">终态</text>
           </g>
@@ -300,7 +333,9 @@
           <span class="item"><span class="sw"></span>主链路 / 回退</span>
           <span class="item"><span class="sw dash"></span>异常与取消</span>
           <span class="item"><span class="sw box"></span>异常状态（虚线框）</span>
+          <span class="item" style="color:var(--faint)">点击节点查看门禁与出入边</span>
         </div>
+        <div class="sm-detail" id="sm-detail"></div>
       </div>
       <div class="card">
         <h3>允许的状态转移</h3>
@@ -337,7 +372,7 @@
       <table id="matrix" style="margin-top:8px"></table>
     </div>
     <div class="card" style="margin-top:16px">
-      <h3>活跃非终态任务（<span id="active-count"></span>）</h3>
+      <h3>活跃非终态任务（<span id="active-count"></span>）<span id="active-filter-label" style="font-size:12px;color:var(--muted);font-weight:400"></span></h3>
       <div class="filters" id="proj-filters"></div>
       <div style="overflow-x:auto">
         <table id="active-table"></table>
@@ -385,6 +420,7 @@
     <div class="tl-stats" id="tl-stats"></div>
     <div class="tl-chart" id="tl-chart"></div>
     <div class="tl-axis" id="tl-axis"></div>
+    <div id="tl-detail"></div>
     <div class="tl-peaks" id="tl-peaks"></div>
   </section>
 
@@ -413,7 +449,7 @@
 </div>
 
 <script>
-const DATA = {"generated_at":"2026-10-24T08:26:07","version":"2.33.1","check":{"ok":true,"detail":"cg-work checks passed"},"skills":{"total":37,"framework":5,"localized":1,"mirror":31},"files":{"core":13,"workflows":10,"scripts":9,"tests":15},"tasks":[{"id":"2026-09-13-multi-repository-verification-profiles","project":"cg-work","status":"in_progress","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-01-consistency-alignments","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"lightweight","role":"","archived":false},{"id":"2026-10-01-lean-fast-lane","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-01-review-closeout-consolidation","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-02-acceptance-queue-channel","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-artifact-and-field-simplification","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-check-skills-line-ending-tolerant","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-framework-consistency-and-simplification","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-localized-skill-registration","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-project-roadmap","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-prototype-sections-merge","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-retire-initialization-report","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-workflow-and-template-consolidation","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-07-archive-storage-audit","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-07-delivery-path-consistency","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-07-documentation-metadata-canonicalization","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-07-requirement-package-on-demand","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-07-status-history-timestamps","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-07-task-archive-bypass","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-07-task-archive-storage","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-10-framework-invalid-content","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-15-task-yaml-field-refactor","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-16-core-context-merge","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-16-merge-next-action","project":"cg-work","status":"in_progress","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-16-remove-redundant-task-fields","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-16-script-stamped-timestamps","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-16-task-yaml-closed-schema","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-16-timestamp-tooling-hardening","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"lightweight","role":"","archived":false},{"id":"2026-10-17-path-gate-and-template-move","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-17-remove-path-absolute-gate","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-19-lasen-dashboard-browser-suite","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-19-parent-child-task-decomposition","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-20-project-discovery-auto-continue","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-20-standards-preflight-chinese","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-20-task-time-field-check","project":"cg-work","status":"done","workflow":"bugfix","delivery_path":"lightweight","role":"","archived":false},{"id":"2026-10-20-workflow-layer-slimming","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-21-browser-test-to-git","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-21-subagent-dispatch-timing","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-21-verification-tool-discovery","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-24-framework-visualization-page","project":"cg-work","status":"in_progress","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-09-11-add-continuous-learning-loop","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-11-add-framework-optimization","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-11-add-requirements-inbox","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-11-consolidate-layering","project":"cg-work","status":"done","workflow":"refactor","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-13-local-design-storage-policy","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-13-prototype-adoption-traceability","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-14-large-task-decomposition-closure","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-14-next-user-action-protocol","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-15-project-code-standards","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-15-proportionate-bugfix-workflow","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-17-claude-md-generation","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-23-agent-review-protocol","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-23-business-weekly-report-handoff","project":"cg-work","status":"cancelled","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-23-plan-review-simplification","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-23-plan-template-review-checklist","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-23-task-evidence-lifecycle","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-23-task-scope-evidence-boundary","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-24-model-compatibility-decision-governance","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-26-decision-preflight-visible","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-26-project-discovery-onboarding","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-27-add-product-management-skill","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-27-simplify-task-artifacts","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-28-docs-maintainer-integration","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-28-prototype-location-selection","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-28-remove-project-tests-on-submit","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-28-submit-branch-tool","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-29-project-submit-test-scope","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-29-prototype-fidelity-contract","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-10-10-deprecated-template-retention","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-25-company-profile-and-jobs","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-25-server-autostart-browser","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-25-ui-redesign","project":"job-hunt","status":"in_progress","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-board-empty-collapse","project":"job-hunt","status":"review","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-card-keyboard","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-company-directory","project":"job-hunt","status":"review","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-drawer-focus-and-favicon","project":"job-hunt","status":"review","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-entry-animation","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-icon-system","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-paper-editorial","project":"job-hunt","status":"review","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-resume-page-redesign","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-resume-recommend-score","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-unify-drawer-icon","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-28-llm-config-page","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-28-resume-ai-recommend","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-05-job-posting-times","project":"job-hunt","status":"review","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-07-homepage-comprehensive-center","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-07-job-detail-new-tab","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-07-jobs-selective-refresh-and-detail-page","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-08-company-detail-backfill","project":"job-hunt","status":"in_progress","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-08-split-fetch-and-board","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-09-company-nature-pull-ui","project":"job-hunt","status":"in_progress","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-24-stock-reports-initialization","project":"stock-reports","status":"pending","workflow":"project-initialization","delivery_path":"compact","role":"","archived":false}],"projectMeta":{"acceptance-queue-test":{"tasks":0,"archived":0,"requirements":0,"requirementsArchived":0},"cg-work":{"tasks":40,"archived":29,"requirements":43,"requirementsArchived":2},"fms":{"tasks":0,"archived":0,"requirements":0,"requirementsArchived":0},"job-hunt":{"tasks":22,"archived":0,"requirements":10,"requirementsArchived":0},"lasen":{"tasks":0,"archived":0,"requirements":0,"requirementsArchived":0},"stock-reports":{"tasks":1,"archived":0,"requirements":2,"requirementsArchived":0}},"commits":[{"date":"2026-09-01","n":0},{"date":"2026-09-02","n":0},{"date":"2026-09-03","n":0},{"date":"2026-09-04","n":4},{"date":"2026-09-05","n":1},{"date":"2026-09-06","n":3},{"date":"2026-09-07","n":0},{"date":"2026-09-08","n":3},{"date":"2026-09-09","n":1},{"date":"2026-09-10","n":0},{"date":"2026-09-11","n":2},{"date":"2026-09-12","n":0},{"date":"2026-09-13","n":0},{"date":"2026-09-14","n":0},{"date":"2026-09-15","n":1},{"date":"2026-09-16","n":0},{"date":"2026-09-17","n":2},{"date":"2026-09-18","n":0},{"date":"2026-09-19","n":0},{"date":"2026-09-20","n":1},{"date":"2026-09-21","n":5},{"date":"2026-09-22","n":0},{"date":"2026-09-23","n":2},{"date":"2026-09-24","n":5},{"date":"2026-09-25","n":0},{"date":"2026-09-26","n":1},{"date":"2026-09-27","n":1},{"date":"2026-09-28","n":11},{"date":"2026-09-29","n":7},{"date":"2026-09-30","n":1},{"date":"2026-10-01","n":4},{"date":"2026-10-02","n":3},{"date":"2026-10-03","n":0},{"date":"2026-10-04","n":1},{"date":"2026-10-05","n":0},{"date":"2026-10-06","n":0},{"date":"2026-10-07","n":2},{"date":"2026-10-08","n":0},{"date":"2026-10-09","n":0},{"date":"2026-10-10","n":4},{"date":"2026-10-11","n":1},{"date":"2026-10-12","n":0},{"date":"2026-10-13","n":0},{"date":"2026-10-14","n":0},{"date":"2026-10-15","n":1},{"date":"2026-10-16","n":0},{"date":"2026-10-17","n":2},{"date":"2026-10-18","n":0},{"date":"2026-10-19","n":0},{"date":"2026-10-20","n":4},{"date":"2026-10-21","n":10},{"date":"2026-10-22","n":0},{"date":"2026-10-23","n":0},{"date":"2026-10-24","n":3}]};
+const DATA = {"generated_at":"2026-10-24T08:44:42","version":"2.33.1","check":{"ok":true,"detail":"cg-work checks passed"},"skills":{"total":37,"framework":5,"localized":1,"mirror":31},"files":{"core":13,"workflows":10,"scripts":9,"tests":15},"tasks":[{"id":"2026-09-13-multi-repository-verification-profiles","project":"cg-work","status":"in_progress","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-01-consistency-alignments","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"lightweight","role":"","archived":false},{"id":"2026-10-01-lean-fast-lane","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-01-review-closeout-consolidation","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-02-acceptance-queue-channel","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-artifact-and-field-simplification","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-check-skills-line-ending-tolerant","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-framework-consistency-and-simplification","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-localized-skill-registration","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-project-roadmap","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-prototype-sections-merge","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-retire-initialization-report","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-02-workflow-and-template-consolidation","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-07-archive-storage-audit","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-07-delivery-path-consistency","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-07-documentation-metadata-canonicalization","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-07-requirement-package-on-demand","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-07-status-history-timestamps","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-07-task-archive-bypass","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-07-task-archive-storage","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-10-framework-invalid-content","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-15-task-yaml-field-refactor","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-16-core-context-merge","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-16-merge-next-action","project":"cg-work","status":"in_progress","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-16-remove-redundant-task-fields","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-16-script-stamped-timestamps","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-16-task-yaml-closed-schema","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-16-timestamp-tooling-hardening","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"lightweight","role":"","archived":false},{"id":"2026-10-17-path-gate-and-template-move","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-17-remove-path-absolute-gate","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-19-lasen-dashboard-browser-suite","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-19-parent-child-task-decomposition","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-20-project-discovery-auto-continue","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-20-standards-preflight-chinese","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-20-task-time-field-check","project":"cg-work","status":"done","workflow":"bugfix","delivery_path":"lightweight","role":"","archived":false},{"id":"2026-10-20-workflow-layer-slimming","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-21-browser-test-to-git","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-21-subagent-dispatch-timing","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-10-21-verification-tool-discovery","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-24-framework-visualization-page","project":"cg-work","status":"in_progress","workflow":"framework-optimization","delivery_path":"standard","role":"","archived":false},{"id":"2026-09-11-add-continuous-learning-loop","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-11-add-framework-optimization","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-11-add-requirements-inbox","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-11-consolidate-layering","project":"cg-work","status":"done","workflow":"refactor","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-13-local-design-storage-policy","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-13-prototype-adoption-traceability","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-14-large-task-decomposition-closure","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-14-next-user-action-protocol","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-15-project-code-standards","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-15-proportionate-bugfix-workflow","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-17-claude-md-generation","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-23-agent-review-protocol","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-23-business-weekly-report-handoff","project":"cg-work","status":"cancelled","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-23-plan-review-simplification","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-23-plan-template-review-checklist","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-23-task-evidence-lifecycle","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-23-task-scope-evidence-boundary","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-24-model-compatibility-decision-governance","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-26-decision-preflight-visible","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-26-project-discovery-onboarding","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-27-add-product-management-skill","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-27-simplify-task-artifacts","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-28-docs-maintainer-integration","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-28-prototype-location-selection","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-28-remove-project-tests-on-submit","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-28-submit-branch-tool","project":"cg-work","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-29-project-submit-test-scope","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-29-prototype-fidelity-contract","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-10-10-deprecated-template-retention","project":"cg-work","status":"done","workflow":"framework-optimization","delivery_path":"(默认standard)","role":"","archived":true},{"id":"2026-09-25-company-profile-and-jobs","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-25-server-autostart-browser","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-25-ui-redesign","project":"job-hunt","status":"in_progress","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-board-empty-collapse","project":"job-hunt","status":"review","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-card-keyboard","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-company-directory","project":"job-hunt","status":"review","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-drawer-focus-and-favicon","project":"job-hunt","status":"review","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-entry-animation","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-icon-system","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-paper-editorial","project":"job-hunt","status":"review","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-resume-page-redesign","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-resume-recommend-score","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-27-unify-drawer-icon","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-28-llm-config-page","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-09-28-resume-ai-recommend","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-05-job-posting-times","project":"job-hunt","status":"review","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-07-homepage-comprehensive-center","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-07-job-detail-new-tab","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-07-jobs-selective-refresh-and-detail-page","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-08-company-detail-backfill","project":"job-hunt","status":"in_progress","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-08-split-fetch-and-board","project":"job-hunt","status":"done","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-09-company-nature-pull-ui","project":"job-hunt","status":"in_progress","workflow":"feature-development","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-24-view-interaction-syntax","project":"job-hunt","status":"in_progress","workflow":"refactor","delivery_path":"(默认standard)","role":"","archived":false},{"id":"2026-10-24-stock-reports-initialization","project":"stock-reports","status":"pending","workflow":"project-initialization","delivery_path":"compact","role":"","archived":false},{"id":"2026-10-24-stock-reports-scheduled-tasks","project":"stock-reports","status":"in_progress","workflow":"feature-development","delivery_path":"standard","role":"","archived":false}],"projectMeta":{"acceptance-queue-test":{"tasks":0,"archived":0,"requirements":0,"requirementsArchived":0},"cg-work":{"tasks":40,"archived":29,"requirements":43,"requirementsArchived":2},"fms":{"tasks":0,"archived":0,"requirements":0,"requirementsArchived":0},"job-hunt":{"tasks":23,"archived":0,"requirements":10,"requirementsArchived":0},"lasen":{"tasks":0,"archived":0,"requirements":0,"requirementsArchived":0},"stock-reports":{"tasks":2,"archived":0,"requirements":2,"requirementsArchived":0}},"commits":[{"date":"2026-09-01","n":0,"titles":[]},{"date":"2026-09-02","n":0,"titles":[]},{"date":"2026-09-03","n":0,"titles":[]},{"date":"2026-09-04","n":4,"titles":["chore: 添加 GGFrame, compound-engineering-plugin, gstack, skills, superpowers","Merge branch 'main' of https://github.com/GFigting/carry-god","Initial commit","第一次提交：初始化项目"]},{"date":"2026-09-05","n":1,"titles":["feat: add lightweight cg harness"]},{"date":"2026-09-06","n":3,"titles":["cg-harness-new-补充代码图谱适配指南","cg-harness-new-首版框架","feat: 完善 cg-harness 全流程与 Web 工作台"]},{"date":"2026-09-07","n":0,"titles":[]},{"date":"2026-09-08","n":3,"titles":["feat: 完善 cg-harness 全流程与 Web 工作台","完善框架规则与文档索引","完善项目初始化与交付规范"]},{"date":"2026-09-09","n":1,"titles":["docs(cg-harness): 完善框架自检与状态流转"]},{"date":"2026-09-10","n":0,"titles":[]},{"date":"2026-09-11","n":2,"titles":["feat(cg-harness): extend workflow and skill registry","feat(cg-work): 建立框架校验与持续集成"]},{"date":"2026-09-12","n":0,"titles":[]},{"date":"2026-09-13","n":0,"titles":[]},{"date":"2026-09-14","n":0,"titles":[]},{"date":"2026-09-15","n":1,"titles":["feat(framework): strengthen project governance"]},{"date":"2026-09-16","n":0,"titles":[]},{"date":"2026-09-17","n":2,"titles":["chore: 移除 cg-harness 遗留目录、docs 历史计划及引用","feat(framework): 新增 CLAUDE.md 薄指针入口并登记固定名称"]},{"date":"2026-09-18","n":0,"titles":[]},{"date":"2026-09-19","n":0,"titles":[]},{"date":"2026-09-20","n":1,"titles":["feat(framework): add proportionate change workflows"]},{"date":"2026-09-21","n":5,"titles":["job-hunt：补回 requirements-inbox 的两个哨兵文件","feat(framework): move constant checks before review","feat(framework): support explicit standard execution profile","feat(cg-work): 文档类路径支持相对 project.root_path 解析","chore(cg-work): 保留本地 framework 治理改动并补齐 requirements-inbox"]},{"date":"2026-09-22","n":0,"titles":[]},{"date":"2026-09-23","n":2,"titles":["feat(framework): enforce task scope evidence boundaries","feat(framework): optimize plan review and task evidence lifecycle"]},{"date":"2026-09-24","n":5,"titles":["docs: define framework full-submission closeout","chore(framework): hide local dot directories","chore(framework): record compatibility decision governance","docs(framework): add model compatibility decision rules","feat: add structured task metadata validation"]},{"date":"2026-09-25","n":0,"titles":[]},{"date":"2026-09-26","n":1,"titles":["feat: add project discovery and decision preflight"]},{"date":"2026-09-27","n":1,"titles":["feat: add product management framework skill"]},{"date":"2026-09-28","n":11,"titles":["chore: submit cg-work framework","Merge pull request #2 from GFigting/codex/submit-branch-tool","docs: 将 superpowers 任务文件关联项目上下文","chore: 删除根目录 docs","Merge pull request #1 from GFigting/codex/submit-branch-tool","feat(docs-maintainer): integrate documentation maintenance workflow","refactor(tools): 拆分项目默认配置","fix(tools): 修正 FMS 默认基线","feat(tools): 完善需求链接提交分支工具","docs: 收敛提交正文格式","docs: 设计需求链接提交分支工具"]},{"date":"2026-09-29","n":7,"titles":["docs(framework): define test generation criteria","docs(framework): define test file retention policy","feat(framework): register project submission tools","chore: remove obsolete requirements inbox sentinels","Merge origin/main into main","feat: add prototype implementation contract gate","docs: broaden project test cleanup gate"]},{"date":"2026-09-30","n":1,"titles":["chore: use relative project root path"]},{"date":"2026-10-01","n":4,"titles":["docs: consolidate review closeout workflow","chore(local): 框架优化任务记录（轻量档与一致性对齐）","refactor(process): 一致性对齐——测试价值分层统一口径、技能按需化、并行派发准则","feat(process): 轻量档与最小充分流程"]},{"date":"2026-10-02","n":3,"titles":["chore(local): record framework consistency convergence","refactor(framework): unify policy source and harden validation","chore(local): record framework optimization tasks"]},{"date":"2026-10-03","n":0,"titles":[]},{"date":"2026-10-04","n":1,"titles":["chore(cg-work): 2.24.0 框架存量收尾——校验器、模板、技能与工作流维护"]},{"date":"2026-10-05","n":0,"titles":[]},{"date":"2026-10-06","n":0,"titles":[]},{"date":"2026-10-07","n":2,"titles":["chore(local): record framework task records and archive relocation","chore(cg-work): 2.27.0 交付路径口径统一、需求包按需生成、归档存储与元数据收尾"]},{"date":"2026-10-08","n":0,"titles":[]},{"date":"2026-10-09","n":0,"titles":[]},{"date":"2026-10-10","n":4,"titles":["chore: archive deprecated template task","docs: remove obsolete template references","chore: remove obsolete framework templates","chore: trim obsolete framework templates"]},{"date":"2026-10-11","n":1,"titles":["docs: consolidate project context and architecture documentation"]},{"date":"2026-10-12","n":0,"titles":[]},{"date":"2026-10-13","n":0,"titles":[]},{"date":"2026-10-14","n":0,"titles":[]},{"date":"2026-10-15","n":1,"titles":["refactor: unify framework timestamps to timezone-free local time"]},{"date":"2026-10-16","n":0,"titles":[]},{"date":"2026-10-17","n":2,"titles":["chore(cg-work): record task evidence for context merge, path gate removal and template move","refactor: consolidate core context rules, drop absolute-path gate, move templates"]},{"date":"2026-10-18","n":0,"titles":[]},{"date":"2026-10-19","n":0,"titles":[]},{"date":"2026-10-20","n":4,"titles":["chore(cg-work): record task evidence for project discovery auto-continue","refactor(cg-work): auto-route project discovery for unique existing-project match","chore(cg-work): record task evidence for parent-child decomposition and unified acceptance","refactor: replace roadmaps index with parent-child task decomposition"]},{"date":"2026-10-21","n":10,"titles":["chore(cg-work): ignore local .codegraph tool directory","chore(cg-work): close browser-test tracking task after acceptance","chore(cg-work): extend browser-test task record with rule-layer pointer","docs(cg-work): add browser-test tool pointer to framework README","chore(cg-work): record task evidence for browser-test tool tracking","feat(cg-work): track browser-test acceptance tool with credential and evidence exclusions","chore(cg-work): record task evidence for verification tool discovery","feat(cg-work): add verification entrypoint discovery clues for project onboarding","chore(cg-work): record task evidence for four accepted framework tasks","refactor(cg-work): add subagent dispatch timing skill and land pending framework changes"]},{"date":"2026-10-22","n":0,"titles":[]},{"date":"2026-10-23","n":0,"titles":[]},{"date":"2026-10-24","n":4,"titles":["cg-work: 新增框架可视化单页原型（六视图 + 数据管线，零外链）","stock-reports: 移除旧 report-site 路径下的需求箱 README（改名收尾，与新路径 562ea0c 同一改动）","stock-reports: 需求箱 README 同步项目 id 与名称（report-site → stock-reports）","report-site: 登记项目需求箱 README（项目初始化接入）"]}]};
 
 const $ = (s, r) => (r || document).querySelector(s);
 const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
@@ -475,6 +511,13 @@ projects.forEach(p => {
     const n = by[s] || 0;
     const td = el('td', 'num', n === 0 ? '–' : String(n));
     if (n > 0 && s !== 'done') td.style.color = 'var(--' + (STATUS_CLASS[s] === 'warn' ? 'warn' : STATUS_CLASS[s] === 'prog' ? 'prog' : STATUS_CLASS[s] === 'rev' ? 'rev' : 'pend') + ')';
+    const hasActive = activeTasks.some(t => !t.archived && t.status !== 'done' && t.project === p && t.status === s);
+    if (hasActive) {
+      td.classList.add('clickable');
+      td.dataset.proj = p; td.dataset.status = s;
+      td.title = '点击筛选下方明细';
+      td.onclick = () => setFilter(p, s);
+    }
     tr.appendChild(td);
   });
   tr.appendChild(el('td', 'num', String(DATA.projectMeta[p].archived)));
@@ -483,23 +526,48 @@ projects.forEach(p => {
 });
 mx.appendChild(mtbody);
 
-/* ---- 活跃非终态任务 ---- */
+/* ---- 活跃非终态任务（项目 + 状态双过滤，矩阵单元格可点） ---- */
 const activeList = activeTasks.filter(t => t.status !== 'done')
   .sort((a, b) => a.project.localeCompare(b.project) || a.id.localeCompare(b.id));
 $('#active-count').textContent = activeList.length + ' 项';
 
 let filterProj = '全部';
+let filterStatus = null;
 const filtersBox = $('#proj-filters');
 const projWithActive = ['全部', ...new Set(activeList.map(t => t.project))];
 projWithActive.forEach(p => {
   const b = el('button', p === filterProj ? 'on' : '', p);
-  b.onclick = () => {
-    filterProj = p;
-    filtersBox.querySelectorAll('button').forEach(x => x.classList.toggle('on', x.textContent === p));
-    renderActive();
-  };
+  b.onclick = () => setFilter(p, null);
   filtersBox.appendChild(b);
 });
+const clearBtn = el('button', '', '清除筛选');
+clearBtn.style.display = 'none';
+clearBtn.onclick = () => setFilter('全部', null);
+filtersBox.appendChild(clearBtn);
+
+function setFilter(proj, status) {
+  filterProj = proj;
+  filterStatus = status;
+  filtersBox.querySelectorAll('button').forEach(x => {
+    if (x === clearBtn) return;
+    x.classList.toggle('on', x.textContent === proj);
+  });
+  document.querySelectorAll('#matrix td[data-proj]').forEach(td => {
+    td.classList.toggle('on', td.dataset.proj === proj && td.dataset.status === status);
+  });
+  const label = $('#active-filter-label');
+  if (status) {
+    label.textContent = ' — 筛选：' + proj + ' / ' + status;
+    clearBtn.style.display = '';
+  } else if (proj !== '全部') {
+    label.textContent = ' — 筛选：' + proj;
+    clearBtn.style.display = '';
+  } else {
+    label.textContent = '';
+    clearBtn.style.display = 'none';
+  }
+  renderActive();
+}
 
 function renderActive() {
   const tb = $('#active-table');
@@ -509,7 +577,13 @@ function renderActive() {
   ['项目', '任务', '状态', '工作流', '交付路径'].forEach(h => hr.appendChild(el('th', null, h)));
   thead.appendChild(hr); tb.appendChild(thead);
   const tbody = document.createElement('tbody');
-  activeList.filter(t => filterProj === '全部' || t.project === filterProj).forEach(t => {
+  const rows = activeList.filter(t => (filterProj === '全部' || t.project === filterProj) && (!filterStatus || t.status === filterStatus));
+  if (rows.length === 0) {
+    const tr = document.createElement('tr');
+    const td = el('td', null, '无匹配任务'); td.colSpan = 5; td.style.color = 'var(--faint)';
+    tr.appendChild(td); tbody.appendChild(tr);
+  }
+  rows.forEach(t => {
     const tr = document.createElement('tr');
     tr.appendChild(el('td', 'mono', t.project));
     tr.appendChild(el('td', 'mono', t.id));
@@ -570,11 +644,13 @@ const chart = $('#tl-chart');
 commits.forEach(c => {
   const d = new Date(c.date + 'T00:00:00');
   const w = d.getDay();
-  const day = el('div', 'tl-day' + (w === 0 || w === 6 ? ' weekend' : '') + (peaks.includes(c) && c.n > 0 ? ' peak' : ''));
+  const day = el('div', 'tl-day' + (w === 0 || w === 6 ? ' weekend' : '') + (peaks.includes(c) && c.n > 0 ? ' peak' : '') + (c.n > 0 ? ' has-commits' : ''));
+  day.dataset.date = c.date;
   const bar = el('div', 'bar');
   bar.style.height = (c.n / max * 100) + '%';
   const tip = el('div', 'tip', c.date + ' · ' + c.n + ' commits');
   day.appendChild(tip); day.appendChild(bar);
+  if (c.n > 0) day.onclick = () => showDay(c.date);
   chart.appendChild(day);
 });
 const axis = $('#tl-axis');
@@ -585,7 +661,76 @@ commits.forEach((c, i) => {
     axis.appendChild(s);
   }
 });
-$('#tl-peaks').innerHTML = '高产期：<b>' + peaks.map(p => p.date + ' × ' + p.n).join('</b> · <b>') + '</b>';
+$('#tl-peaks').innerHTML = '高产期：<b>' + peaks.map(p => p.date + ' × ' + p.n).join('</b> · <b>') + '</b>（点击柱子查看当日提交）';
+
+/* ---- 状态机点选 ---- */
+const STATE_GATES = {
+  pending: '目标、范围和验收标准已记录，尚未开始实施。',
+  in_progress: '已满足执行前置条件，正在设计、编码或测试。',
+  review: '实现已完成：必须有审查记录和新鲜验证证据；声明原型的任务还必须有原型采纳记录。',
+  done: '验证通过、审查结论已处理，并确定保留/合并/推送/暂缓集成方式；标准任务还须用户验收。',
+  blocked: '缺少信息、权限、环境或外部依赖；须记录阻塞原因和解除条件。',
+  cancelled: '用户明确取消；须记录取消原因和已有产物位置。',
+};
+let selState = null;
+function selectState(state) {
+  selState = selState === state ? null : state;
+  document.querySelectorAll('.sm-node').forEach(g => g.classList.toggle('sel', g.dataset.state === selState));
+  document.querySelectorAll('.sm-edge').forEach(p => {
+    const rel = !!selState && (p.dataset.from === selState || p.dataset.to === selState);
+    p.classList.toggle('lit', rel);
+    p.classList.toggle('dim', !!selState && !rel);
+  });
+  const box = $('#sm-detail');
+  if (!selState) { box.classList.remove('show'); box.textContent = ''; return; }
+  const ins = [...document.querySelectorAll('.sm-edge')].filter(p => p.dataset.to === selState).map(p => p.dataset.from);
+  const outs = [...document.querySelectorAll('.sm-edge')].filter(p => p.dataset.from === selState).map(p => p.dataset.to);
+  box.textContent = '';
+  const head = el('div');
+  head.appendChild(el('b', null, selState));
+  head.appendChild(el('span', 'cnt', '活跃 ' + (activeByStatus[selState] || 0) + ' · 归档 ' + (countBy(archivedTasks, 'status')[selState] || 0)));
+  box.appendChild(head);
+  box.appendChild(el('div', null, STATE_GATES[selState] || ''));
+  const flow = el('div', null, '');
+  flow.style.marginTop = '6px';
+  flow.appendChild(el('span', null, '入边：' + (ins.length ? ins.join(' / ') : '无') + '　出边：' + (outs.length ? outs.join(' / ') : '无（终态）')));
+  flow.style.color = 'var(--muted)';
+  box.appendChild(flow);
+  box.classList.add('show');
+}
+document.querySelectorAll('.sm-node').forEach(g => g.addEventListener('click', () => selectState(g.dataset.state)));
+
+/* ---- 时间线当日提交展开 ---- */
+let selDay = null;
+function showDay(date) {
+  const c = commits.find(x => x.date === date);
+  if (!c || c.n === 0) return;
+  selDay = selDay === date ? null : date;
+  document.querySelectorAll('.tl-day').forEach(d => d.classList.toggle('sel', d.dataset.date === selDay));
+  const box = $('#tl-detail');
+  if (!selDay) { box.classList.remove('show'); box.textContent = ''; return; }
+  box.textContent = '';
+  const h4 = el('h4');
+  h4.appendChild(el('span', null, date + ' · ' + c.n + ' commits'));
+  const close = el('button', 'close', '收起');
+  close.onclick = () => showDay(date);
+  h4.appendChild(close);
+  box.appendChild(h4);
+  const ul = document.createElement('ul');
+  c.titles.forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+  box.appendChild(ul);
+  box.classList.add('show');
+}
+
+/* ---- query 调试/验收开关：?sel=<state> ?day=<date> ?cell=<project>:<status> ---- */
+const params = new URLSearchParams(location.search);
+if (params.get('sel')) selectState(params.get('sel'));
+if (params.get('day')) showDay(params.get('day'));
+const cell = params.get('cell');
+if (cell) {
+  const sep = cell.indexOf(':');
+  if (sep > 0) setFilter(cell.slice(0, sep), cell.slice(sep + 1));
+}
 
 /* ---- 需求箱 ---- */
 const rqProjects = Object.keys(DATA.projectMeta)

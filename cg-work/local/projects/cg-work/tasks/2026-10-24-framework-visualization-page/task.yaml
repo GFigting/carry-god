@@ -25,7 +25,13 @@ status_history:
   - status: review
     at: 2026-10-24T08:29:18
     reason: "实施与验证完成：六视图原型、数据管线与评审记录就绪，headless 截图与数字对账通过，等待用户验收"
+  - status: in_progress
+    at: 2026-10-24T08:40:28
+    reason: "用户验收前要求适当增加交互：回到 in_progress 补充交互能力后再送审"
+  - status: review
+    at: 2026-10-24T08:51:09
+    reason: "交互增补完成：状态机点选/矩阵联动过滤/时间线当日提交三类交互，默认态与交互态双截图对拍无回归，记录已更新"
 next_action:
   required: true
   action: acceptance
-  message: "请验收框架可视化页面：双击打开 local/projects/cg-work/design/framework-visualization/index.html 查看；如需调整视图或数据口径请直接说明"
+  message: "请验收增补交互后的可视化页面：打开 index.html 试点击状态机节点、矩阵状态格、时间线柱体；?sel=review&day=2026-09-28&cell=job-hunt:review 可复现交互态"

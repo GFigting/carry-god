@@ -87,6 +87,39 @@
   .sw.dash { border-top-style: dashed; border-top-color: #b9b2a6; }
   .sw.box { width: 12px; height: 12px; border: 1.5px dashed var(--warn); border-radius: 3px; background: var(--warn-bg); }
 
+  /* ---- 交互 ---- */
+  .sm-node { cursor: pointer; }
+  .sm-node .sm-box { transition: filter .15s ease; }
+  .sm-node:hover .sm-box { filter: brightness(0.96); }
+  .sm-edge { transition: opacity .15s ease; }
+  .sm-edge.lit { stroke: var(--accent); opacity: 1; }
+  .sm-edge.dim { opacity: 0.12; }
+  .sm-node.sel .sm-box { stroke: var(--accent); stroke-width: 2.4; }
+  .sm-detail { margin-top: 12px; border: 1px solid #e6cdbf; background: var(--accent-bg); border-radius: 8px;
+               padding: 10px 14px; font-size: 12.5px; display: none; }
+  .sm-detail.show { display: block; }
+  .sm-detail b { color: var(--accent); font-family: var(--mono); }
+  .sm-detail .cnt { font-family: var(--mono); color: var(--muted); margin-left: 8px; }
+
+  td.clickable { cursor: pointer; }
+  td.clickable:hover { background: var(--accent-bg); }
+  td.on { background: var(--accent-bg); box-shadow: inset 0 0 0 1px #e6cdbf; }
+  .clear-filter { font-size: 12px; color: var(--accent); background: none; border: none; cursor: pointer;
+                  padding: 0 0 0 10px; text-decoration: underline; }
+
+  .tl-day { cursor: default; }
+  .tl-day.has-commits { cursor: pointer; }
+  .tl-day.has-commits:hover .bar { filter: brightness(1.12); }
+  .tl-day.sel .bar { outline: 2px solid var(--text); outline-offset: 1px; }
+  #tl-detail { display: none; margin-top: 12px; border: 1px solid var(--line); border-radius: 8px;
+               background: #fdfcfb; padding: 12px 16px; }
+  #tl-detail.show { display: block; }
+  #tl-detail h4 { font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+  #tl-detail h4 .close { font-size: 12px; color: var(--muted); background: none; border: none; cursor: pointer; }
+  #tl-detail ul { margin: 8px 0 0 18px; font-size: 12.5px; color: var(--muted); }
+  #tl-detail li { margin-bottom: 3px; }
+  #tl-detail li b { color: var(--text); font-weight: 500; }
+
   table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
   th, td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; vertical-align: top; }
   th { background: #f6f4f0; font-weight: 600; color: var(--text); white-space: nowrap; }
@@ -246,20 +279,20 @@
           </defs>
 
           <!-- 主链路 -->
-          <path d="M156,59 H244" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
-          <path d="M376,59 H464" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
-          <path d="M596,59 H684" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
+          <path class="sm-edge" data-from="pending" data-to="in_progress" d="M156,59 H244" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
+          <path class="sm-edge" data-from="in_progress" data-to="review" d="M376,59 H464" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
+          <path class="sm-edge" data-from="review" data-to="done" d="M596,59 H684" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
           <!-- 回退 -->
-          <path d="M532,84 C532,120 312,120 312,90" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
+          <path class="sm-edge" data-from="review" data-to="in_progress" d="M532,84 C532,120 312,120 312,90" stroke="#6b655c" stroke-width="1.8" marker-end="url(#arr)" fill="none"></path>
           <!-- 异常/取消（虚线） -->
-          <path d="M92,84 C92,112 240,114 256,146" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M312,84 V142" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M532,84 C532,112 384,114 368,146" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M258,158 C196,206 118,196 98,90" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M324,142 V90" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M92,84 C190,252 500,288 682,172" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M312,84 C420,232 580,244 684,168" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
-          <path d="M532,84 C620,132 648,152 684,162" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="pending" data-to="blocked" d="M92,84 C92,112 240,114 256,146" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="in_progress" data-to="blocked" d="M312,84 V142" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="review" data-to="blocked" d="M532,84 C532,112 384,114 368,146" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="blocked" data-to="pending" d="M258,158 C196,206 118,196 98,90" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="blocked" data-to="in_progress" d="M324,142 V90" stroke="#b9b2a6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="pending" data-to="cancelled" d="M92,84 C190,252 500,288 682,172" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="in_progress" data-to="cancelled" d="M312,84 C420,232 580,244 684,168" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
+          <path class="sm-edge" data-from="review" data-to="cancelled" d="M532,84 C620,132 648,152 684,162" stroke="#c9c2b6" stroke-width="1.3" stroke-dasharray="4 5" marker-end="url(#arrd)" fill="none"></path>
 
           <!-- 边标签 -->
           <text x="200" y="50" text-anchor="middle" font-size="10.5" fill="#857f74">验收标准已记录</text>
@@ -269,29 +302,29 @@
           <text x="322" y="110" font-size="10" fill="#a89f93">缺信息/权限/环境</text>
 
           <!-- 节点 -->
-          <g>
-            <rect x="30" y="36" width="124" height="46" rx="10" fill="#f1efeb" stroke="#7d7669" stroke-width="1.6"></rect>
+          <g class="sm-node" data-state="pending">
+            <rect class="sm-box" x="30" y="36" width="124" height="46" rx="10" fill="#f1efeb" stroke="#7d7669" stroke-width="1.6"></rect>
             <text x="92" y="63" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">pending</text>
           </g>
-          <g>
-            <rect x="250" y="36" width="124" height="46" rx="10" fill="#edf2f8" stroke="#2f5d8a" stroke-width="1.6"></rect>
+          <g class="sm-node" data-state="in_progress">
+            <rect class="sm-box" x="250" y="36" width="124" height="46" rx="10" fill="#edf2f8" stroke="#2f5d8a" stroke-width="1.6"></rect>
             <text x="312" y="63" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">in_progress</text>
           </g>
-          <g>
-            <rect x="470" y="36" width="124" height="46" rx="10" fill="#faf3e3" stroke="#a97a1f" stroke-width="1.6"></rect>
+          <g class="sm-node" data-state="review">
+            <rect class="sm-box" x="470" y="36" width="124" height="46" rx="10" fill="#faf3e3" stroke="#a97a1f" stroke-width="1.6"></rect>
             <text x="532" y="63" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">review</text>
           </g>
-          <g>
-            <rect x="690" y="36" width="124" height="46" rx="10" fill="#ecf4ef" stroke="#2e7d4f" stroke-width="1.6"></rect>
+          <g class="sm-node" data-state="done">
+            <rect class="sm-box" x="690" y="36" width="124" height="46" rx="10" fill="#ecf4ef" stroke="#2e7d4f" stroke-width="1.6"></rect>
             <text x="752" y="63" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">done</text>
             <text x="752" y="102" text-anchor="middle" font-size="10" fill="#a89f93">终态</text>
           </g>
-          <g>
-            <rect x="250" y="150" width="124" height="46" rx="10" fill="#f9efed" stroke="#b03a2e" stroke-width="1.4" stroke-dasharray="5 4"></rect>
+          <g class="sm-node" data-state="blocked">
+            <rect class="sm-box" x="250" y="150" width="124" height="46" rx="10" fill="#f9efed" stroke="#b03a2e" stroke-width="1.4" stroke-dasharray="5 4"></rect>
             <text x="312" y="177" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">blocked</text>
           </g>
-          <g>
-            <rect x="690" y="150" width="124" height="46" rx="10" fill="#f9efed" stroke="#b03a2e" stroke-width="1.4" stroke-dasharray="5 4"></rect>
+          <g class="sm-node" data-state="cancelled">
+            <rect class="sm-box" x="690" y="150" width="124" height="46" rx="10" fill="#f9efed" stroke="#b03a2e" stroke-width="1.4" stroke-dasharray="5 4"></rect>
             <text x="752" y="177" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2a26">cancelled</text>
             <text x="752" y="216" text-anchor="middle" font-size="10" fill="#a89f93">终态</text>
           </g>
@@ -300,7 +333,9 @@
           <span class="item"><span class="sw"></span>主链路 / 回退</span>
           <span class="item"><span class="sw dash"></span>异常与取消</span>
           <span class="item"><span class="sw box"></span>异常状态（虚线框）</span>
+          <span class="item" style="color:var(--faint)">点击节点查看门禁与出入边</span>
         </div>
+        <div class="sm-detail" id="sm-detail"></div>
       </div>
       <div class="card">
         <h3>允许的状态转移</h3>
@@ -337,7 +372,7 @@
       <table id="matrix" style="margin-top:8px"></table>
     </div>
     <div class="card" style="margin-top:16px">
-      <h3>活跃非终态任务（<span id="active-count"></span>）</h3>
+      <h3>活跃非终态任务（<span id="active-count"></span>）<span id="active-filter-label" style="font-size:12px;color:var(--muted);font-weight:400"></span></h3>
       <div class="filters" id="proj-filters"></div>
       <div style="overflow-x:auto">
         <table id="active-table"></table>
@@ -385,6 +420,7 @@
     <div class="tl-stats" id="tl-stats"></div>
     <div class="tl-chart" id="tl-chart"></div>
     <div class="tl-axis" id="tl-axis"></div>
+    <div id="tl-detail"></div>
     <div class="tl-peaks" id="tl-peaks"></div>
   </section>
 
@@ -475,6 +511,13 @@ projects.forEach(p => {
     const n = by[s] || 0;
     const td = el('td', 'num', n === 0 ? '–' : String(n));
     if (n > 0 && s !== 'done') td.style.color = 'var(--' + (STATUS_CLASS[s] === 'warn' ? 'warn' : STATUS_CLASS[s] === 'prog' ? 'prog' : STATUS_CLASS[s] === 'rev' ? 'rev' : 'pend') + ')';
+    const hasActive = activeTasks.some(t => !t.archived && t.status !== 'done' && t.project === p && t.status === s);
+    if (hasActive) {
+      td.classList.add('clickable');
+      td.dataset.proj = p; td.dataset.status = s;
+      td.title = '点击筛选下方明细';
+      td.onclick = () => setFilter(p, s);
+    }
     tr.appendChild(td);
   });
   tr.appendChild(el('td', 'num', String(DATA.projectMeta[p].archived)));
@@ -483,23 +526,48 @@ projects.forEach(p => {
 });
 mx.appendChild(mtbody);
 
-/* ---- 活跃非终态任务 ---- */
+/* ---- 活跃非终态任务（项目 + 状态双过滤，矩阵单元格可点） ---- */
 const activeList = activeTasks.filter(t => t.status !== 'done')
   .sort((a, b) => a.project.localeCompare(b.project) || a.id.localeCompare(b.id));
 $('#active-count').textContent = activeList.length + ' 项';
 
 let filterProj = '全部';
+let filterStatus = null;
 const filtersBox = $('#proj-filters');
 const projWithActive = ['全部', ...new Set(activeList.map(t => t.project))];
 projWithActive.forEach(p => {
   const b = el('button', p === filterProj ? 'on' : '', p);
-  b.onclick = () => {
-    filterProj = p;
-    filtersBox.querySelectorAll('button').forEach(x => x.classList.toggle('on', x.textContent === p));
-    renderActive();
-  };
+  b.onclick = () => setFilter(p, null);
   filtersBox.appendChild(b);
 });
+const clearBtn = el('button', '', '清除筛选');
+clearBtn.style.display = 'none';
+clearBtn.onclick = () => setFilter('全部', null);
+filtersBox.appendChild(clearBtn);
+
+function setFilter(proj, status) {
+  filterProj = proj;
+  filterStatus = status;
+  filtersBox.querySelectorAll('button').forEach(x => {
+    if (x === clearBtn) return;
+    x.classList.toggle('on', x.textContent === proj);
+  });
+  document.querySelectorAll('#matrix td[data-proj]').forEach(td => {
+    td.classList.toggle('on', td.dataset.proj === proj && td.dataset.status === status);
+  });
+  const label = $('#active-filter-label');
+  if (status) {
+    label.textContent = ' — 筛选：' + proj + ' / ' + status;
+    clearBtn.style.display = '';
+  } else if (proj !== '全部') {
+    label.textContent = ' — 筛选：' + proj;
+    clearBtn.style.display = '';
+  } else {
+    label.textContent = '';
+    clearBtn.style.display = 'none';
+  }
+  renderActive();
+}
 
 function renderActive() {
   const tb = $('#active-table');
@@ -509,7 +577,13 @@ function renderActive() {
   ['项目', '任务', '状态', '工作流', '交付路径'].forEach(h => hr.appendChild(el('th', null, h)));
   thead.appendChild(hr); tb.appendChild(thead);
   const tbody = document.createElement('tbody');
-  activeList.filter(t => filterProj === '全部' || t.project === filterProj).forEach(t => {
+  const rows = activeList.filter(t => (filterProj === '全部' || t.project === filterProj) && (!filterStatus || t.status === filterStatus));
+  if (rows.length === 0) {
+    const tr = document.createElement('tr');
+    const td = el('td', null, '无匹配任务'); td.colSpan = 5; td.style.color = 'var(--faint)';
+    tr.appendChild(td); tbody.appendChild(tr);
+  }
+  rows.forEach(t => {
     const tr = document.createElement('tr');
     tr.appendChild(el('td', 'mono', t.project));
     tr.appendChild(el('td', 'mono', t.id));
@@ -570,11 +644,13 @@ const chart = $('#tl-chart');
 commits.forEach(c => {
   const d = new Date(c.date + 'T00:00:00');
   const w = d.getDay();
-  const day = el('div', 'tl-day' + (w === 0 || w === 6 ? ' weekend' : '') + (peaks.includes(c) && c.n > 0 ? ' peak' : ''));
+  const day = el('div', 'tl-day' + (w === 0 || w === 6 ? ' weekend' : '') + (peaks.includes(c) && c.n > 0 ? ' peak' : '') + (c.n > 0 ? ' has-commits' : ''));
+  day.dataset.date = c.date;
   const bar = el('div', 'bar');
   bar.style.height = (c.n / max * 100) + '%';
   const tip = el('div', 'tip', c.date + ' · ' + c.n + ' commits');
   day.appendChild(tip); day.appendChild(bar);
+  if (c.n > 0) day.onclick = () => showDay(c.date);
   chart.appendChild(day);
 });
 const axis = $('#tl-axis');
@@ -585,7 +661,76 @@ commits.forEach((c, i) => {
     axis.appendChild(s);
   }
 });
-$('#tl-peaks').innerHTML = '高产期：<b>' + peaks.map(p => p.date + ' × ' + p.n).join('</b> · <b>') + '</b>';
+$('#tl-peaks').innerHTML = '高产期：<b>' + peaks.map(p => p.date + ' × ' + p.n).join('</b> · <b>') + '</b>（点击柱子查看当日提交）';
+
+/* ---- 状态机点选 ---- */
+const STATE_GATES = {
+  pending: '目标、范围和验收标准已记录，尚未开始实施。',
+  in_progress: '已满足执行前置条件，正在设计、编码或测试。',
+  review: '实现已完成：必须有审查记录和新鲜验证证据；声明原型的任务还必须有原型采纳记录。',
+  done: '验证通过、审查结论已处理，并确定保留/合并/推送/暂缓集成方式；标准任务还须用户验收。',
+  blocked: '缺少信息、权限、环境或外部依赖；须记录阻塞原因和解除条件。',
+  cancelled: '用户明确取消；须记录取消原因和已有产物位置。',
+};
+let selState = null;
+function selectState(state) {
+  selState = selState === state ? null : state;
+  document.querySelectorAll('.sm-node').forEach(g => g.classList.toggle('sel', g.dataset.state === selState));
+  document.querySelectorAll('.sm-edge').forEach(p => {
+    const rel = !!selState && (p.dataset.from === selState || p.dataset.to === selState);
+    p.classList.toggle('lit', rel);
+    p.classList.toggle('dim', !!selState && !rel);
+  });
+  const box = $('#sm-detail');
+  if (!selState) { box.classList.remove('show'); box.textContent = ''; return; }
+  const ins = [...document.querySelectorAll('.sm-edge')].filter(p => p.dataset.to === selState).map(p => p.dataset.from);
+  const outs = [...document.querySelectorAll('.sm-edge')].filter(p => p.dataset.from === selState).map(p => p.dataset.to);
+  box.textContent = '';
+  const head = el('div');
+  head.appendChild(el('b', null, selState));
+  head.appendChild(el('span', 'cnt', '活跃 ' + (activeByStatus[selState] || 0) + ' · 归档 ' + (countBy(archivedTasks, 'status')[selState] || 0)));
+  box.appendChild(head);
+  box.appendChild(el('div', null, STATE_GATES[selState] || ''));
+  const flow = el('div', null, '');
+  flow.style.marginTop = '6px';
+  flow.appendChild(el('span', null, '入边：' + (ins.length ? ins.join(' / ') : '无') + '　出边：' + (outs.length ? outs.join(' / ') : '无（终态）')));
+  flow.style.color = 'var(--muted)';
+  box.appendChild(flow);
+  box.classList.add('show');
+}
+document.querySelectorAll('.sm-node').forEach(g => g.addEventListener('click', () => selectState(g.dataset.state)));
+
+/* ---- 时间线当日提交展开 ---- */
+let selDay = null;
+function showDay(date) {
+  const c = commits.find(x => x.date === date);
+  if (!c || c.n === 0) return;
+  selDay = selDay === date ? null : date;
+  document.querySelectorAll('.tl-day').forEach(d => d.classList.toggle('sel', d.dataset.date === selDay));
+  const box = $('#tl-detail');
+  if (!selDay) { box.classList.remove('show'); box.textContent = ''; return; }
+  box.textContent = '';
+  const h4 = el('h4');
+  h4.appendChild(el('span', null, date + ' · ' + c.n + ' commits'));
+  const close = el('button', 'close', '收起');
+  close.onclick = () => showDay(date);
+  h4.appendChild(close);
+  box.appendChild(h4);
+  const ul = document.createElement('ul');
+  c.titles.forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+  box.appendChild(ul);
+  box.classList.add('show');
+}
+
+/* ---- query 调试/验收开关：?sel=<state> ?day=<date> ?cell=<project>:<status> ---- */
+const params = new URLSearchParams(location.search);
+if (params.get('sel')) selectState(params.get('sel'));
+if (params.get('day')) showDay(params.get('day'));
+const cell = params.get('cell');
+if (cell) {
+  const sep = cell.indexOf(':');
+  if (sep > 0) setFilter(cell.slice(0, sep), cell.slice(sep + 1));
+}
 
 /* ---- 需求箱 ---- */
 const rqProjects = Object.keys(DATA.projectMeta)
