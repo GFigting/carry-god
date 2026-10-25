@@ -39,3 +39,13 @@
 ## 结论
 
 第 2 版由单文件改为路由 + 八篇参考，细则可查、模板可复制。结构校验通过，等待用户验收后提交收尾。
+
+## 补充变更（第 3 轮：文件落位与项目上下文关联）
+
+| 文件 | 变更 | 说明 |
+|---|---|---|
+| `skills/design-quality/references/design-context.md` | 重写 | 产物路径统一为 `local/projects/<project-id>/design/design-context.md`；新增反参考、三词人格、3–5 条原则、无障碍四项；共享 + 页面清单两级结构；登记方式与冲突规则；不建占位文件 |
+| `skills/design-quality/SKILL.md` | 修改 | 第 0 步补产物路径与"无则问一轮再写" |
+| `skills/design-quality/references/report.md` | 修改 | 报告中的上下文来源路径同步 |
+
+决策：设计上下文不写进业务仓库根，也不复制到任务目录；登记进 `documentation.development_standards`（`load: when_relevant`）。曾改挂 `business`，按用户决定恢复初版选择，并在 reference 中补一条使用约束——该文件是方向依据，权威低于用户当次指令与既有设计系统，反参考不得升级为全站禁令。按 `core/project-context.md` 第 93 条，当前无实际设计上下文时不建占位文件、不登记空路径，等首个 UI 任务问清后落盘再登记。

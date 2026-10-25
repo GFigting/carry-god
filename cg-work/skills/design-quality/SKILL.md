@@ -23,7 +23,7 @@ description: 设计决策与验收门。用于判定一次 UI 工作的方向、
 
 | 步 | 做什么 | 细则 |
 |---|---|---|
-| 0 | 设计上下文：受众、用途、调性、差异化 + 品牌与素材现实，禁止从代码反推 | `references/design-context.md` |
+| 0 | 设计上下文：必填项 + 反参考 + 3–5 条原则；禁止从代码推断感受；产物落 `local/projects/<project-id>/design/design-context.md`，无则问一轮再写 | `references/design-context.md` |
 | 1 | 分流：这一屏是被读（页面）还是被操作（后台界面） | 下方分流表 |
 | 2 | 指令契约：复述目标、列出会动的位置、声明不动的部分；一次只改一个维度 | `references/instruction-contract.md` |
 | 3 | 新页面先写"主张 + 证据"清单，删掉没有主张的区块；素材诚实 | `references/gate-pages.md`（主张一节） |
