@@ -7,8 +7,8 @@ description: 设计决策与验收门。用于判定一次 UI 工作的方向、
 
 方法复用上游，正文由 cg-work 重写并维护。本文件只做路由与流程骨架，判定细则一律在 `references/` 下，避免同一规则出现两处。
 
-- 上游来源一：impeccable（Apache 2.0，Paul Bakaus，基于 Anthropic frontend-design）——设计上下文前置、质量维度评分、状态完整性。
-- 上游来源二：taste-skill / design-taste-frontend（MIT，Leon Lin）——可测量硬门禁、页面与后台界面分流、看-修收敛、改版顺序。
+- 上游来源一：impeccable（Apache 2.0，Paul Bakaus，基于 Anthropic frontend-design；https://github.com/pbakaus/impeccable）——设计上下文前置、质量维度评分、状态完整性。
+- 上游来源二：taste-skill / design-taste-frontend（MIT，Leon Lin；https://github.com/Leonxlnx/taste-skill）——可测量硬门禁、页面与后台界面分流、看-修收敛、改版顺序。
 - 本地覆盖规则：脚本化测量降级为人工测量清单（见 `references/measurement.md`）；"规则绝对优先"改为"用户明确指令优先，让位必须记录"（见 `references/instruction-contract.md`）；产出交给 `baoyu-design` 或 `prototype`。
 
 ## 加载时机
@@ -54,7 +54,7 @@ description: 设计决策与验收门。用于判定一次 UI 工作的方向、
 
 | 场景 | 用谁 |
 |---|---|
-| 产出设计稿、可交互原型、HTML 交付物 | `baoyu-design` 产出，本技能定方向、过门禁 |
+| 产出设计稿、可交互原型、HTML 交付物 | `baoyu-design`（MIT，Jim Liu 宝玉；https://github.com/JimLiu/baoyu-design）产出，本技能定方向、过门禁 |
 | 少量结构变体做取舍 | `prototype`（UI 分支）生成变体，本技能提供评分卡与门禁 |
 | 真实业务页面改版 | 本技能定顺序与门禁，实现走所在项目的工作流 |
 | 纯技术审查（a11y 细节、性能、包体） | 本技能只做设计侧判定，工程侧走 `code-review` 与项目验证 |
