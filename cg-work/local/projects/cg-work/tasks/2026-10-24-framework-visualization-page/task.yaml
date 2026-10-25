@@ -1,5 +1,5 @@
 id: 2026-10-24-framework-visualization-page
-status: review
+status: done
 goal: 为 cg-work 框架生成单页可视化页面：框架目录地图、任务状态机、实时任务看板、工作流速查、交付路径三档、提交活动时间线，零外链依赖，存放于 local/projects/cg-work/design/framework-visualization/
 workflow: framework:framework-optimization
 delivery_path: standard
@@ -31,7 +31,10 @@ status_history:
   - status: review
     at: 2026-10-24T08:51:09
     reason: "交互增补完成：状态机点选/矩阵联动过滤/时间线当日提交三类交互，默认态与交互态双截图对拍无回归，记录已更新"
+  - status: done
+    at: "2026-10-25T13:57:14"
+    reason: "用户已验收。"
 next_action:
-  required: true
-  action: acceptance
-  message: "请验收增补交互后的可视化页面：打开 index.html 试点击状态机节点、矩阵状态格、时间线柱体；?sel=review&day=2026-09-28&cell=job-hunt:review 可复现交互态"
+  required: false
+  action: none
+  message: 用户已验收。

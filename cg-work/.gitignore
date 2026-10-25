@@ -16,6 +16,7 @@
 /local/tools/browser-test/**/exports/
 /local/tools/browser-test/**/_tmp-*.mjs
 node_modules/
+/local/projects/cg-work/design/framework-visualization/dist/
 /.workbuddy/
 /.obsidian/
 /.playwright-mcp/
