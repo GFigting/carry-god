@@ -1,0 +1,26 @@
+id: 2026-10-25-batch-accept-writing
+status: review
+goal: 任务看板在开发态支持页面直接批量验收：勾选 review 任务、二次确认后写回 task.yaml，并给出产物齐备与久留优先建议；静态产物保持只读
+workflow: framework:framework-optimization
+delivery_path: standard
+created_at: 2026-10-25T12:36:48
+status_history:
+  - status: pending
+    at: 2026-10-25T12:36:48
+    reason: "用户要求页面直接操作验收并支持批量"
+  - status: review
+    at: 2026-10-25T12:55:49
+    reason: "构建、13 步静态验收、dev 写接口与批量写回实测完成，等待用户验收"
+  - status: done
+    at: "2026-10-25T13:57:14"
+    reason: "用户已验收。"
+  - status: in_progress
+    at: 2026-10-25T16:46:24
+    reason: "追加优化：增量刷新、地址统一、搜索与队列分组、验收反馈与窄屏适配"
+  - status: review
+    at: 2026-10-25T17:04:30
+    reason: "增量刷新、地址统一、搜索与分组、跨刷新反馈、窄屏适配完成并复验 14/14"
+next_action:
+  required: true
+  action: confirm
+  message: "打开 http://127.0.0.1:5173/ 核对批量验收、搜索与队列分组；静态产物仍只读"

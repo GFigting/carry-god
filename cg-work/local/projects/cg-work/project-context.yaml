@@ -20,6 +20,8 @@ documentation:
   development_standards:
     - path: ./core/project-code-standards.md
       load: always
+    - path: ./local/projects/cg-work/design/design-context.md
+      load: when_relevant
   # 项目目标、使用方式和业务上下文。
   business:
     - path: ./README.md
@@ -29,6 +31,8 @@ documentation:
     - path: ./core/operating-model.md
       load: when_relevant
     - path: ./core/project-context.md
+      load: when_relevant
+    - path: ./local/projects/cg-work/design/framework-visualization/README.md
       load: when_relevant
   # API、事件和消息契约。
   api: []
@@ -44,6 +48,9 @@ technology:
   stack:
     - Node.js
     - ECMAScript modules
+    - Vue 3
+    - TypeScript
+    - Vite
   # 项目使用的包管理器。
   package_manager: npm
 # 运行入口和健康检查。
@@ -68,6 +75,11 @@ verification:
       stage: full_test
       command: npm test
       outcome: required
+    - id: framework-visualization-build
+      stage: build
+      command: npm --prefix local/projects/cg-work/design/framework-visualization run build
+      outcome: required
+      limitation: 首次运行需先在该目录 npm install；构建会执行 vue-tsc 类型检查并收集快照。
 # 框架本地的原始需求入口。
 requirements:
   # 本项目需求包目录，相对于框架根目录。
