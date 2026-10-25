@@ -13,6 +13,7 @@ browser-test/
 │   └── export-document-rule.mjs  # FMS 单据生成规则接口导出（直连后端）
 ├── fms/                       # FMS 项目：test-suites.json、凭据、runs/、exports/
 ├── lasen/                     # LASEN 项目：test-suites.json、凭据、runs/
+├── cg-work/                   # cg-work 项目：设计预览静态服务 + design-preview 套件（无登录）
 └── README.md
 ```
 
@@ -74,6 +75,29 @@ node run.mjs --project fms --suite smoke --visible prepare
 | 现有套件 | `smoke`、`smoke-download-center`、`export-document-rule` | `smoke`、`overseas-tax-dashboard` |
 
 LASEN 的海外税务套件按前端模块拆分为 `overseas-tax-dashboard`、`overseas-tax-registration`、`overseas-tax-asset-management`、`overseas-tax-vat-management`、`overseas-tax-epr-management`、`overseas-tax-authorized-representative`、`overseas-tax-base-config` 和 `overseas-tax-monthly-exchange-rate`。看板套件覆盖已到期指标与处置队列核对；列表套件覆盖加载、重置或刷新和控制台错误检查。动态数量不固定预期值，执行时先等待请求完成并在逐步证据中记录实际结果。
+
+## cg-work 设计预览
+
+`cg-work/` 用于框架自有页面（当前是 `local/projects/cg-work/design/framework-visualization`，Vue 3 + TS + Vite 工程）的设计验收。与其他项目不同：
+
+- 无登录：`test-suites.json` 不声明 `credentials`（该字段对无登录项目可省略；声明了就必须完整）。
+- 无后端：先在该目录执行 `npm install` 与 `npm run build` 生成 `dist/`；`cg-work/serve.mjs` 以只读静态服务暴露 `dist/` 到 `http://127.0.0.1:8125/index.html`。预检不可达时调 `cg-work/start-static.ps1`（`--start`），已在运行则直接退出。
+- 套件 `design-preview`：打开页面、断言标题与六个区块可见、控制台零报错，页面壳步骤留存截图。
+
+```powershell
+# 页面改动后先构建（依赖只在首次安装）
+Set-Location '<框架根目录>/local/projects/cg-work/design/framework-visualization'
+npm install
+npm run build
+
+Set-Location '<框架根目录>/local/tools/browser-test'
+node scripts/preflight.mjs --project cg-work --suite design-preview --start
+node run.mjs --project cg-work --suite design-preview prepare
+# 派发 browser_use 执行，主 Agent 落 result.json 后：
+node run.mjs --project cg-work --suite design-preview --run <runs/下目录名> verify
+```
+
+计算样式类断言（正文字号、描边宽度、是否溢出）不在本工具能力内，仍按 `skills/design-quality/references/measurement.md` 的人工测量执行。
 
 ## 登录口径
 

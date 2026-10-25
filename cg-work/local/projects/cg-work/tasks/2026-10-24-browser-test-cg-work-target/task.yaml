@@ -1,0 +1,31 @@
+id: 2026-10-24-browser-test-cg-work-target
+status: done
+goal: 把框架可视化页面接入 local/tools/browser-test，新增 cg-work 项目目标与 design-preview 套件（本地静态服务、六区块可见性断言、控制台零报错、截图证据），并允许无登录项目不配置凭据
+workflow: framework:framework-optimization
+delivery_path: standard
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+documentation:
+  impact: update
+  files:
+    - local/tools/browser-test/README.md
+created_at: 2026-10-24T10:35:00
+status_history:
+  - status: pending
+    at: 2026-10-24T10:35:00
+    reason: "用户选择接入 browser-test，为框架可视化页建立可复跑的浏览器验收"
+  - status: in_progress
+    at: 2026-10-24T10:36:00
+    reason: "用户确认方案，开始新增 cg-work 目标配置、静态服务脚本与凭据可选支持"
+  - status: review
+    at: 2026-10-24T12:26:00
+    reason: "配置校验、预检、prepare、browser_use 执行与 verify 全部通过（9/9），证据落 runs/20261024-122414-design-preview/，等待用户验收"
+  - status: done
+    at: "2026-10-25T13:57:14"
+    reason: "用户已验收。"
+next_action:
+  required: false
+  action: none
+  message: 用户已验收。

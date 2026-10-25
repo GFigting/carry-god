@@ -1,0 +1,101 @@
+{
+  "targets": {
+    "framework-visualization": {
+      "url": "http://127.0.0.1:8125/index.html",
+      "health": "http://127.0.0.1:8125/index.html",
+      "startScript": "cg-work/start-static.ps1",
+      "hint": "cg-work 框架可视化页（Vue 3 + TS + Vite，构建产物 dist/），无登录，数据为构建时快照。"
+    }
+  },
+  "suites": {
+    "design-preview": {
+      "target": "framework-visualization",
+      "description": "框架可视化页设计验收：页面可打开、六个区块可见、任务看板待验收队列与筛选展开可用、无控制台报错，并留存整页与展开态截图。",
+      "steps": [
+        {
+          "id": "open-page",
+          "action": "navigate",
+          "url": "{target.url}"
+        },
+        {
+          "id": "assert-page-shell",
+          "action": "assert",
+          "evidence": { "screenshot": true },
+          "expect": {
+            "visible": "text=框架全景",
+            "url_includes": "index.html"
+          },
+          "note": "确认页面标题渲染完成后再截图；截图保存为相对本次运行目录的路径。"
+        },
+        {
+          "id": "assert-section-map",
+          "action": "assert",
+          "expect": { "visible": "text=框架地图" }
+        },
+        {
+          "id": "assert-section-state-machine",
+          "action": "assert",
+          "expect": { "visible": "text=任务状态机" }
+        },
+        {
+          "id": "assert-section-board",
+          "action": "assert",
+          "expect": { "visible": "text=任务看板" }
+        },
+        {
+          "id": "assert-board-queue",
+          "action": "assert",
+          "expect": { "visible": "text=待验收队列" },
+          "note": "待验收队列与 acceptance-queue 同口径，是本次交互优化的主入口。"
+        },
+        {
+          "id": "assert-board-search",
+          "action": "assert",
+          "expect": { "visible": "text=搜索" },
+          "note": "明细搜索是本次新增，静态产物也应可用；不依赖具体任务数据。建议标签依赖「≥7 天」等数据条件，不放进套件避免数据漂移。批量验收控件只在 dev 出现，不在断言范围。"
+        },
+        {
+          "id": "assert-board-group",
+          "action": "assert",
+          "expect": { "visible": "text=等待用户操作" },
+          "note": "待验收队列按「待审查 / 等待用户操作 / 其它待办」分组；等待用户组在静态页也可见。"
+        },
+        {
+          "id": "filter-board-progress",
+          "action": "click",
+          "selector_hint": "任务看板统计 chips 中标签为 in_progress 的按钮（.stat.c-prog）",
+          "expect": { "visible": "text=筛选：in_progress", "url_includes": "status=in_progress" }
+        },
+        {
+          "id": "expand-first-task",
+          "action": "click",
+          "selector_hint": "任务明细表中第一行任务（tr.task-row）",
+          "evidence": { "screenshot": true },
+          "expect": { "visible": "text=进入当前状态", "url_includes": "task=" },
+          "note": "展开行应显示进入当前状态时间与停留来源，截图留存展开态；地址栏同步 task 参数以复现视图。"
+        },
+        {
+          "id": "assert-section-workflow",
+          "action": "assert",
+          "expect": { "visible": "text=工作流与交付路径" }
+        },
+        {
+          "id": "assert-section-timeline",
+          "action": "assert",
+          "expect": { "visible": "text=提交时间线" }
+        },
+        {
+          "id": "assert-section-requirements",
+          "action": "assert",
+          "expect": { "visible": "text=需求箱与框架健康" }
+        },
+        {
+          "id": "assert-console-clean",
+          "action": "assert",
+          "expect": { "console_errors": "none" },
+          "note": "静态页不应产生控制台错误；无网络请求，若有 4xx/5xx 记为 failed_requests。"
+        }
+      ]
+    }
+  }
+}

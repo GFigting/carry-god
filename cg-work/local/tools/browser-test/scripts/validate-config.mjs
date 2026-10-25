@@ -29,12 +29,15 @@ export const validateTestConfig = (candidate) => {
     }
   }
 
+  // 无登录项目可省略 credentials；一旦声明就必须完整，避免半截配置。
   const credentials = candidate.credentials
-  if (!credentials || typeof credentials !== 'object' || !credentials.file || !Array.isArray(credentials.required) || !credentials.required.length) {
-    return fail('credentials 必须包含 file 与非空 required 列表')
-  }
-  if (credentials.required.some((key) => typeof key !== 'string' || !key.trim())) {
-    return fail('credentials.required 必须是非空字符串列表')
+  if (credentials !== undefined && credentials !== null) {
+    if (typeof credentials !== 'object' || !credentials.file || !Array.isArray(credentials.required) || !credentials.required.length) {
+      return fail('credentials 必须包含 file 与非空 required 列表')
+    }
+    if (credentials.required.some((key) => typeof key !== 'string' || !key.trim())) {
+      return fail('credentials.required 必须是非空字符串列表')
+    }
   }
 
   const suites = candidate.suites

@@ -61,6 +61,7 @@ const loadConfig = (options) => {
 }
 
 const loadCredentials = (config, options) => {
+  if (!config.credentials) return {}
   const file = path.resolve(projectRoot(options), config.credentials.file)
   if (!existsSync(file)) {
     console.error(`缺少本地测试账号：${file}（复制 test-credentials.example.json 后填写；该文件不入框架提交）`)
