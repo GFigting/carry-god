@@ -1,0 +1,44 @@
+id: 2026-10-27-review-auto-acceptance
+status: done
+goal: 框架自动验收：任务提交进入 review 并完成统一收尾后，Agent 按证据门禁自动验收标记 done；不满足条件的任务保持 review 等待用户
+workflow: framework:framework-optimization
+delivery_path: standard
+created_at: 2026-10-27T09:15:19
+artifacts:
+  plan: plan.md
+  review: review.md
+  verification: verification.md
+status_history:
+  - status: pending
+    at: 2026-10-27T09:15:19
+    reason: "用户要求框架优化：任务提交后自动验收，减少人工验收积压"
+  - status: in_progress
+    at: 2026-10-27T09:19:12
+    reason: "用户确认按推荐方案执行：D0 提交后自动验收 done、D1 业务变更证据齐全可自动验收、D2 主任务保留人工验收、D3 存量逐条核对"
+  - status: review
+    at: 2026-10-27T09:23:04
+    reason: "收尾完成：门禁落唯一来源并同步 5 个引用点，VERSION 2.35.0；npm run check 全绿、npm test 51/51、旧口径零残留、存量队列 14→2 且剩余 2 条均正确保持 review"
+  - status: done
+    at: 2026-10-27T09:23:05
+    reason: "自动验收：满足自动验收门禁四条件（验收标准全部新鲜通过见 verification.md、D0-D3 无未决、无环境受限未执行项、仅规则文档变更不触特殊操作边界），非主任务；依据留痕 verification.md 自动验收依据节"
+decisions:
+  - name: 自动验收方向（D0）
+    detail: 任务提交进入 review 完成收尾后，满足门禁由 Agent 自动验收标记 done（而非仅自动派发取证）
+    confirmed_by: 用户
+    confirmed_at: 2026-10-27
+  - name: 门禁范围（D1）
+    detail: 改变业务规则/接口/数据的任务证据齐全且无未决事项时同样允许自动验收；生产执行、不可逆外部副作用、凭据权限变更、数据迁移删除除外
+    confirmed_by: 用户
+    confirmed_at: 2026-10-27
+  - name: 主任务关闭（D2）
+    detail: "role: parent 主任务关闭始终保留用户验收，不适用自动验收"
+    confirmed_by: 用户
+    confirmed_at: 2026-10-27
+  - name: 存量追溯（D3）
+    detail: 新规则生效后立即对当前待验收清单逐条按门禁核对，合格项自动验收并留痕，不合格项保持 review 且 next_action 明确
+    confirmed_by: 用户
+    confirmed_at: 2026-10-27
+next_action:
+  required: false
+  action: none
+  message: "自动验收完成：任务提交后满足门禁即自动验收 done 已生效"

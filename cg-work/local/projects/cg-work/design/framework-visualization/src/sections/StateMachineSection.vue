@@ -164,7 +164,7 @@ onMounted(() => {
         <ol class="steps" style="columns:1">
           <li>不得跳过 <b>review</b> 直接进入 done</li>
           <li>review 需<b>审查记录 + 新鲜验证证据</b>；声明原型的还需原型采纳记录</li>
-          <li>done 需<b>用户验收</b>（轻量自动完成条件除外）</li>
+          <li>done 需<b>用户验收</b>（满足自动验收门禁可自动验收并留痕）</li>
           <li>验证失败/审查有问题回 <b>in_progress</b>，不设 revision 状态</li>
           <li>review/blocked/done 时必须维护 <b>next_action</b>（required/action/message）</li>
         </ol>
