@@ -19,4 +19,4 @@ conditional_skills:
 
 `review` 阶段的统一收尾顺序（新鲜验证、测试处理、直接相关冗余清理、SQL 整合、文档同步、集成决策）以 [工作模型](../core/operating-model.md#review-阶段统一收尾) 为唯一来源，提交边界以 [命名与提交](../core/naming-and-submission.md#原项目提交口径) 为唯一来源，本文件不重复正文。审查类子智能体可并行派发，派发时机、判据与主 Agent 汇总职责以 [`framework:subagent-dispatch-timing`](../skills/subagent-dispatch-timing/SKILL.md) 为唯一来源。本文件只补充按需加载：高风险 PR 用 `gstack-review`，需要独立 Web 用户路径验证时用 `qa-only`，准备决定如何集成时用 `finishing-a-development-branch`。
 
-审查任务只有在收尾完成、文档结论、验证证据和集成决策都已记录，并获得用户接受后才能标记为 `done`。
+审查任务只有在收尾完成、文档结论、验证证据和集成决策都已记录后，才按 [review 阶段统一收尾](../core/operating-model.md#review-阶段统一收尾) 的自动验收门禁判定：满足门禁可自动验收并留痕，否则保持 `review` 等待用户验收。
