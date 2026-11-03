@@ -1,0 +1,24 @@
+id: 2026-11-03-submit-test-cleanup
+status: done
+goal: 更新本机业务提交工具，强制复核并清理任务相关测试，保留无关历史测试
+workflow: framework:framework-optimization
+delivery_path: compact
+created_at: '2026-11-03T09:26:23'
+artifacts:
+  primary: plan.md
+documentation:
+  impact: update
+  files:
+    - local/tools/submit-branch/README.md
+  reason: 更新本机提交工具参数迁移和测试清理门禁说明。
+status_history:
+  - status: pending
+    at: '2026-11-03T09:26:23'
+    reason: 用户明确要求两个业务项目强制清理本任务相关测试。
+  - status: done
+    at: '2026-11-03T09:26:23'
+    reason: 工具17项回归测试通过，清理与差异验证完成，自动验收。
+next_action:
+  required: false
+  action: none
+  message: 本机工具更新及17项测试、业务删除清单校验完成；无需用户操作。
