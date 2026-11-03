@@ -11,14 +11,33 @@ const files = {
   bugfix: 'workflows/bugfix.md',
 };
 
-test('原项目提交默认保留测试，授权后才允许清理并记录证据', async () => {
+test('项目未规定测试处理时默认保留，授权后才允许清理并记录证据', async () => {
   const content = await readFile(files.submission, 'utf8');
   assert.match(content, /当提交目标是原项目业务仓库时/);
   assert.match(content, /测试文件默认保留，不因提交动作自动删除或排除/);
+  assert.match(content, /未配置项目提交工具，或项目未规定测试处理时/);
   assert.match(content, /用户或任务范围明确授权清理/);
   assert.match(content, /删除前先完成必要验证/);
   assert.match(content, /任务验证或交接记录中保存删除清单/);
   assert.match(content, /复核提交差异/);
+});
+
+test('已配置的项目提交工具优先，清理授权限于任务范围', async () => {
+  const content = await readFile(files.submission, 'utf8');
+  assert.match(content, /以项目提交工具及 `submission.instructions` 为准/);
+  assert.match(content, /本节通用规则仅补充项目未规定的事项/);
+  assert.match(content, /不得以通用测试保留规则为由绕过项目工具/);
+  assert.match(content, /替代执行方式须有用户授权/);
+  assert.match(content, /按其范围先完成必要验证，再执行清理/);
+  assert.match(content, /无需为同一范围重复请求确认/);
+  assert.match(content, /不得扩大为清理无关历史测试或无法确认归属的改动/);
+  assert.doesNotMatch(content, /工具不得自动扫描后删除/);
+  const context = await readFile('core/project-context.md', 'utf8');
+  assert.match(context, /按 `submission.tool` 及其说明执行/);
+  assert.match(context, /naming-and-submission\.md#原项目提交口径/);
+  const operating = await readFile('core/operating-model.md', 'utf8');
+  assert.match(operating, /按 \[命名与提交\].*确定项目提交规则与通用规则的适用关系/);
+  assert.doesNotMatch(operating, /清理全部测试/);
 });
 
 test('原项目测试删除规则不扩展到 cg-work 框架测试', async () => {

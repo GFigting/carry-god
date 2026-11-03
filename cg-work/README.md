@@ -65,7 +65,7 @@
 
 多仓项目仍以 `project.root_path` 作为兼容的主仓库，可选 `repositories` 登记前后端等附属仓库；项目的验证入口、阶段和环境限制写在同一上下文的 `verification.profiles`。任务验证记录必须区分已通过、环境受限未执行和不适用，不能以替代检查冒充完整检查。
 
-项目若登记了上下文 `submission`，业务仓库提交必须优先使用其中的工具和说明；没有登记时才按 [命名与提交](core/naming-and-submission.md) 使用通用 Git 收尾流程。
+项目若登记了上下文 `submission`，业务仓库提交以其中的工具和说明为准；通用规则只补充项目未规定的事项，优先级和执行边界见 [命名与提交](core/naming-and-submission.md#原项目提交口径)。没有登记时使用通用 Git 收尾流程。
 
 ## 规则优先级
 

@@ -112,7 +112,7 @@
 
 项目技能路径使用 `skills.paths` 声明。项目上下文中登记的文件和目录路径可使用绝对路径，或相对 `project.root_path` 解析的路径，覆盖 `documentation.*`、历史文档字段、运行文件入口、需求箱、技能路径、原型路径、SQL 脚本目录和项目路线图路径；术语表归入 `documentation.business`；URL 与执行命令按各自字段语义处理。`cg-work` 的相对路径相对框架目录解析，并可用字面量 `project.root_path: .` 保持已提交上下文跨机可用。先加载 `cg-work/skills/` 中的框架技能，再加载项目技能路径中的技能。
 
-项目上下文可选声明 `submission`，登记业务仓库的提交工具、工具说明、默认参数和推送/合并/部署策略。进入提交或分支收尾流程前，Agent 必须先读取 `submission.instructions`，优先使用 `submission.tool`；`submission.policies` 只表达项目边界，不替代用户对推送、合并、部署等外部操作的明确授权。
+项目上下文可选声明 `submission`，登记业务仓库的提交工具、工具说明、默认参数和推送/合并/部署策略。进入提交或分支收尾流程前，Agent 必须先读取 `submission.instructions`，按 `submission.tool` 及其说明执行；项目提交规则与通用规则的适用关系见 [命名与提交](naming-and-submission.md#原项目提交口径)。`submission.policies` 只表达项目边界，不替代用户对推送、合并、部署等外部操作的明确授权。
 
 依赖业务项目代码的多页面原型可以放在 `<project.root_path>/prototypes/<design-name>/`。此类原型必须在项目上下文的可选 `prototypes.paths` 中登记 `id`、`path` 和 `entrypoint`，并由 `scripts/check-project.mjs` 校验。放在 `local/projects/<project-id>/design/<design-name>/` 的框架目录原型不写入该字段，直接由任务的 `prototype_reference` 引用。
 
