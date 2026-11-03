@@ -1,0 +1,33 @@
+id: 2026-11-03-project-submission-precedence
+status: done
+goal: 明确业务提交以项目提交工具为准，消除通用测试保留规则冲突
+workflow: framework:framework-optimization
+delivery_path: compact
+artifacts:
+  primary: plan.md
+documentation:
+  impact: update
+  files:
+    - README.md
+    - core/naming-and-submission.md
+    - core/project-context.md
+    - core/operating-model.md
+  reason: 明确项目提交工具与通用提交规则的适用关系。
+created_at: 2026-11-03T17:51:13
+status_history:
+  - status: pending
+    at: 2026-11-03T17:51:13
+    reason: "用户明确要求以项目提交工具为准，并优化框架"
+  - status: in_progress
+    at: 2026-11-03T17:51:33
+    reason: "已定位冲突并完成规则及测试调整"
+  - status: review
+    at: 2026-11-03T17:53:07
+    reason: "完整52项测试、结构及差异检查通过，规则与范围自审完成"
+  - status: done
+    at: 2026-11-03T17:53:07
+    reason: "自动验收：优先级与范围均有52项测试及结构校验证据，无未决决策、环境受限或外部副作用"
+next_action:
+  required: false
+  action: none
+  message: "规则优化完成，按显式清单分别提交框架规则与任务记录；无需用户操作。"
